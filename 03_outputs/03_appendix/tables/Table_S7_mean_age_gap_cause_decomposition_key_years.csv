@@ -1,0 +1,43 @@
+panel,race_ethnicity,cause_of_death,2010,2019,2021,2024
+Panel A: maternal death,NH White,Total diff,"-0.71 (-0.78, -0.65)","-0.91 (-0.97, -0.83)","-0.91 (-0.96, -0.84)","-0.61 (-0.67, -0.55)"
+Panel A: maternal death,NH White,Drug poisoning,-0.20,-0.33,-0.32,-0.22
+Panel A: maternal death,NH White,Firearm,-0.03,-0.03,-0.03,-0.03
+Panel A: maternal death,NH White,COVID-19,0.00,0.00,-0.07,0.00
+Panel A: maternal death,NH White,CVD and diabetes,-0.02,-0.05,-0.05,-0.01
+Panel A: maternal death,NH White,Cancer,-0.20,-0.20,-0.18,-0.15
+Panel A: maternal death,NH White,All other,-0.27,-0.30,-0.25,-0.20
+Panel A: maternal death,NH Black,Total diff,"-0.94 (-1.05, -0.82)","-1.10 (-1.20, -1.00)","-0.93 (-1.02, -0.85)","-0.76 (-0.87, -0.66)"
+Panel A: maternal death,NH Black,Drug poisoning,-0.04,-0.12,-0.16,-0.13
+Panel A: maternal death,NH Black,Firearm,-0.09,-0.10,-0.11,-0.09
+Panel A: maternal death,NH Black,COVID-19,0.00,0.00,-0.07,0.00
+Panel A: maternal death,NH Black,CVD and diabetes,-0.10,-0.19,-0.14,-0.08
+Panel A: maternal death,NH Black,Cancer,-0.19,-0.26,-0.17,-0.17
+Panel A: maternal death,NH Black,All other,-0.52,-0.42,-0.28,-0.29
+Panel A: maternal death,Hispanic,Total diff,"-1.34 (-1.52, -1.17)","-1.04 (-1.19, -0.90)","-0.75 (-0.87, -0.63)","-0.63 (-0.75, -0.51)"
+Panel A: maternal death,Hispanic,Drug poisoning,-0.14,-0.16,-0.15,-0.16
+Panel A: maternal death,Hispanic,Firearm,-0.07,-0.05,-0.03,-0.04
+Panel A: maternal death,Hispanic,COVID-19,0.00,0.00,-0.07,0.00
+Panel A: maternal death,Hispanic,CVD and diabetes,-0.12,-0.08,-0.05,-0.04
+Panel A: maternal death,Hispanic,Cancer,-0.39,-0.30,-0.24,-0.20
+Panel A: maternal death,Hispanic,All other,-0.62,-0.45,-0.21,-0.19
+Panel B: paternal death,NH White,Total diff,"-0.82 (-0.89, -0.68)","-0.94 (-1.02, -0.80)","-0.92 (-0.99, -0.82)","-0.78 (-0.85, -0.71)"
+Panel B: paternal death,NH White,Drug poisoning,-0.19,-0.23,-0.22,-0.15
+Panel B: paternal death,NH White,Firearm,-0.09,-0.08,-0.06,-0.08
+Panel B: paternal death,NH White,COVID-19,0.00,0.00,-0.09,0.00
+Panel B: paternal death,NH White,CVD and diabetes,-0.10,-0.14,-0.14,-0.14
+Panel B: paternal death,NH White,Cancer,-0.11,-0.16,-0.12,-0.14
+Panel B: paternal death,NH White,All other,-0.32,-0.32,-0.28,-0.28
+Panel B: paternal death,NH Black,Total diff,"-1.16 (-1.29, -1.03)","-1.41 (-1.59, -1.13)","-1.48 (-1.68, -1.22)","-1.40 (-1.59, -1.17)"
+Panel B: paternal death,NH Black,Drug poisoning,-0.05,-0.12,-0.18,-0.16
+Panel B: paternal death,NH Black,Firearm,-0.47,-0.41,-0.36,-0.30
+Panel B: paternal death,NH Black,COVID-19,0.00,0.00,-0.16,-0.01
+Panel B: paternal death,NH Black,CVD and diabetes,-0.21,-0.28,-0.26,-0.31
+Panel B: paternal death,NH Black,Cancer,-0.08,-0.17,-0.13,-0.18
+Panel B: paternal death,NH Black,All other,-0.36,-0.42,-0.38,-0.44
+Panel B: paternal death,Hispanic,Total diff,"-1.55 (-1.69, -1.43)","-1.55 (-1.79, -1.35)","-1.42 (-1.70, -1.22)","-1.09 (-1.40, -0.88)"
+Panel B: paternal death,Hispanic,Drug poisoning,-0.12,-0.22,-0.22,-0.17
+Panel B: paternal death,Hispanic,Firearm,-0.25,-0.16,-0.12,-0.09
+Panel B: paternal death,Hispanic,COVID-19,0.00,0.00,-0.29,0.00
+Panel B: paternal death,Hispanic,CVD and diabetes,-0.21,-0.27,-0.19,-0.22
+Panel B: paternal death,Hispanic,Cancer,-0.25,-0.24,-0.16,-0.23
+Panel B: paternal death,Hispanic,All other,-0.72,-0.65,-0.43,-0.37

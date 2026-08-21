@@ -1,0 +1,29 @@
+# Editors and operating system
+.DS_Store
+Thumbs.db
+Desktop.ini
+.Rproj.user/
+.vscode/
+.idea/
+
+# R session state
+.Rhistory
+.RData
+.Ruserdata
+.Renviron
+
+# Data are not distributed with this repository. Raw files are obtained as
+# described in README.md; everything under 02_processed/ is rebuilt by the
+# scripts in 02_codes/.
+/01_data/01_raw/**
+!/01_data/01_raw/
+!/01_data/01_raw/.gitkeep
+/01_data/02_processed/**
+!/01_data/02_processed/
+!/01_data/02_processed/.gitkeep
+/manuscript
+
+# Logs and temporary files
+*.log
+*.tmp
+*~
