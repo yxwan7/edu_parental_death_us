@@ -192,7 +192,7 @@ PARENT_LABELS <- c(mother = "Maternal death", father = "Paternal death")
 PARENT_WORDS <- c(mother = "maternal", father = "paternal")
 CAUSE_6_LABELS <- c(
   drug_poisoning = "Drug poisoning",
-  firearm_deaths = "Firearm deaths",
+  firearm_deaths = "Firearm-related deaths",
   covid19 = "COVID-19",
   cardiovascular_disease_and_diabetes = "Cardiovascular disease and diabetes",
   cancer = "Cancer",

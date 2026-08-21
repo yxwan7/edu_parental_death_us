@@ -528,14 +528,8 @@ PUBLICATION_PANEL_LABELS <- c(
 PUBLICATION_EDUCATION_LABELS <- c(
   No_BA = "No BA", BA_plus = "BA or higher"
 )
-PUBLICATION_CAUSE_LABELS <- c(
-  drug_poisoning = "Drug poisoning",
-  firearm_deaths = "Firearm",
-  covid19 = "COVID-19",
-  cardiovascular_disease_and_diabetes = "CVD and diabetes",
-  cancer = "Cancer",
-  all_other_causes = "All other"
-)
+
+PUBLICATION_GAP_ROW_LABELS <- c(RD = "Gap", RR = "Ratio")
 
 format_publication_ci <- function(value, lower, upper, digits = 2L) {
   rounding_threshold <- 0.5 * 10^(-digits)
@@ -557,7 +551,7 @@ format_publication_point <- function(value, digits = 2L) {
 
 build_level_gap_publication_table <- function(
     level_dt, gap_dt, level_columns, gap_columns, digits = 2L,
-    gap_label_column = NULL, gap_row_levels = "Diff") {
+    gap_label_column = NULL, gap_row_levels = "Gap") {
   levels <- as.data.table(level_dt)[
     year %in% PUBLICATION_KEY_YEARS &
       parent_educ2 %in% names(PUBLICATION_EDUCATION_LABELS),
@@ -577,7 +571,7 @@ build_level_gap_publication_table <- function(
       estimate = get(gap_columns[["estimate"]]),
       lower = get(gap_columns[["lower"]]),
       upper = get(gap_columns[["upper"]]),
-      row_label = if (is.null(gap_label_column)) "Diff" else
+      row_label = if (is.null(gap_label_column)) "Gap" else
         as.character(get(gap_label_column))
     )
   ]
@@ -620,7 +614,7 @@ build_decomposition_publication_table <- function(
     lower = get(total_columns[["lower"]]),
     upper = get(total_columns[["upper"]])
   )])
-  totals[, `:=`(cause_6 = NA_character_, row_label = "Total diff")]
+  totals[, `:=`(cause_6 = NA_character_, row_label = "Total gap")]
 
   contributions <- dt[, .(
     year, race_eth, parent_type, cause_6,
@@ -628,11 +622,11 @@ build_decomposition_publication_table <- function(
     lower = NA_real_,
     upper = NA_real_
   )]
-  contributions[, row_label := PUBLICATION_CAUSE_LABELS[cause_6]]
+  contributions[, row_label := CAUSE_6_LABELS[cause_6]]
 
   out <- rbindlist(list(totals, contributions), use.names = TRUE)
   row_levels <- c(
-    "Total diff", unname(PUBLICATION_CAUSE_LABELS[CAUSE_6_LEVELS])
+    "Total gap", unname(CAUSE_6_LABELS[CAUSE_6_LEVELS])
   )
   out[, `:=`(
     panel = PUBLICATION_PANEL_LABELS[parent_type],
@@ -642,7 +636,7 @@ build_decomposition_publication_table <- function(
     parent_order = match(parent_type, PARENT_TYPE_LEVELS)
   )]
   out[, display_value := fifelse(
-    row_label == "Total diff",
+    row_label == "Total gap",
     format_publication_ci(estimate, lower, upper, digits),
     format_publication_point(estimate, digits)
   )]
@@ -679,7 +673,7 @@ write_publication_panel_table_tex <- function(
     sprintf("\\begin{tabular}{%s}", tabular_columns),
     "\\toprule",
     paste0(
-      "Race/Ethnicity & ", second_column_label, " & ",
+      "Race and ethnicity & ", second_column_label, " & ",
       paste(latex_years, collapse = " & "), " ", row_ending
     ),
     "\\midrule"
@@ -786,7 +780,7 @@ setorder(table1_numeric, parent_order, race_order, row_label, period_order)
 
 format_count_ci <- function(value, lower, upper) {
   format_count <- function(x) {
-    gsub(",", " ", comma(round(x), accuracy = 1), fixed = TRUE)
+    comma(round(x), accuracy = 1)
   }
   sprintf(
     "\\shortstack[l]{%s \\\\ (%s, %s)}",
@@ -876,11 +870,11 @@ write_publication_panel_table_tex(
   notes = paste0(
     "BA = bachelor's degree; CI = confidence interval; NH = non-Hispanic; ",
     "the 2010--2024 column is the sum of annual numbers over the 15-year ",
-    "period; values in parentheses are 95\\% CIs from 1 000 Monte Carlo ",
-    "draws taking the 2.5th and 97.5th percentiles. No BA and BA or higher ",
-    "rows are the percentages of each total attributed to the corresponding ",
-    "parental education group, and percentages may not sum to 100 because of ",
-    "rounding."
+    "period; values in parentheses are 95\\% CIs from 1,000 Monte Carlo ",
+    "replicates taking the 2.5th and 97.5th percentiles. No BA and BA or ",
+    "higher rows are the percentages of each total attributed to the ",
+    "corresponding parental education group, and percentages may not sum ",
+    "to 100 because of rounding."
   )
 )
 
@@ -889,10 +883,16 @@ publication_panel_levels <- unname(
   PUBLICATION_PANEL_LABELS[PARENT_TYPE_LEVELS]
 )
 publication_race_levels <- unname(PUBLICATION_RACE_LABELS[RACES_R3])
+publication_gap_rows <- unname(PUBLICATION_GAP_ROW_LABELS)
+
+incidence_gap_rows <- incidence_gap[
+  gap_metric %in% names(PUBLICATION_GAP_ROW_LABELS)
+]
+incidence_gap_rows[, gap_metric := PUBLICATION_GAP_ROW_LABELS[gap_metric]]
 
 table_s4 <- build_level_gap_publication_table(
   level_dt = incidence_total,
-  gap_dt = incidence_gap[gap_metric %in% c("RD", "RR")],
+  gap_dt = incidence_gap_rows,
   level_columns = c(
     estimate = "parental_loss_per_1000_median",
     lower = "parental_loss_per_1000_lower_ci",
@@ -902,7 +902,7 @@ table_s4 <- build_level_gap_publication_table(
     estimate = "value_median", lower = "lower_ci", upper = "upper_ci"
   ),
   gap_label_column = "gap_metric",
-  gap_row_levels = c("RD", "RR")
+  gap_row_levels = publication_gap_rows
 )
 table_s4_csv <- copy(table_s4)
 setnames(
@@ -922,18 +922,18 @@ write_publication_panel_table_tex(
   year_columns = publication_year_columns,
   panel_levels = publication_panel_levels,
   race_levels = publication_race_levels,
-  row_levels = c(unname(PUBLICATION_EDUCATION_LABELS), "RD", "RR"),
-  bold_rows = c("RD", "RR"),
+  row_levels = c(unname(PUBLICATION_EDUCATION_LABELS), publication_gap_rows),
+  bold_rows = publication_gap_rows,
   panel_separator = "\\midrule",
   notes_size = "\\small",
   notes = c(
     "BA = bachelor's degree",
     "CI = confidence interval",
     "NH = non-Hispanic",
-    "RD = No BA $-$ BA or higher",
-    "RR = No BA / BA or higher",
+    "Gap = No BA $-$ BA or higher",
+    "Ratio = No BA / BA or higher",
     paste0(
-      "values in parentheses are 95\\% CIs from 1,000 Monte Carlo draws ",
+      "values in parentheses are 95\\% CIs from 1,000 Monte Carlo replicates ",
       "taking the 2.5th and 97.5th percentiles."
     )
   )
@@ -969,17 +969,17 @@ write_publication_panel_table_tex(
   year_columns = publication_year_columns,
   panel_levels = publication_panel_levels,
   race_levels = publication_race_levels,
-  row_levels = c(unname(PUBLICATION_EDUCATION_LABELS), "Diff"),
-  bold_rows = "Diff",
+  row_levels = c(unname(PUBLICATION_EDUCATION_LABELS), "Gap"),
+  bold_rows = "Gap",
   panel_separator = "\\midrule",
   notes_size = "\\small",
   notes = c(
     "BA = bachelor's degree",
     "CI = confidence interval",
     "NH = non-Hispanic",
-    "Diff = No BA minus BA or higher",
+    "Gap = No BA $-$ BA or higher",
     paste0(
-      "values in parentheses are 95\\% CIs from 1,000 Monte Carlo draws ",
+      "values in parentheses are 95\\% CIs from 1,000 Monte Carlo replicates ",
       "taking the 2.5th and 97.5th percentiles."
     )
   )
@@ -1013,19 +1013,18 @@ write_publication_panel_table_tex(
   panel_levels = publication_panel_levels,
   race_levels = publication_race_levels,
   row_levels = c(
-    "Total diff", unname(PUBLICATION_CAUSE_LABELS[CAUSE_6_LEVELS])
+    "Total gap", unname(CAUSE_6_LABELS[CAUSE_6_LEVELS])
   ),
-  bold_rows = "Total diff",
+  bold_rows = "Total gap",
   panel_separator = "\\midrule",
   notes_size = "\\small",
   notes = c(
     "BA = bachelor's degree",
     "CI = confidence interval",
-    "CVD = cardiovascular disease",
     "NH = non-Hispanic",
-    "Total diff = No BA - BA or higher in all cause",
+    "Total gap = No BA $-$ BA or higher for all causes",
     paste0(
-      "values in parentheses are 95\\% CIs from 1,000 Monte Carlo draws ",
+      "values in parentheses are 95\\% CIs from 1,000 Monte Carlo replicates ",
       "taking the 2.5th and 97.5th percentiles."
     )
   )
@@ -1059,19 +1058,18 @@ write_publication_panel_table_tex(
   panel_levels = publication_panel_levels,
   race_levels = publication_race_levels,
   row_levels = c(
-    "Total diff", unname(PUBLICATION_CAUSE_LABELS[CAUSE_6_LEVELS])
+    "Total gap", unname(CAUSE_6_LABELS[CAUSE_6_LEVELS])
   ),
-  bold_rows = "Total diff",
+  bold_rows = "Total gap",
   panel_separator = "\\midrule",
   notes_size = "\\small",
   notes = c(
     "BA = bachelor's degree",
     "CI = confidence interval",
-    "CVD = cardiovascular disease",
     "NH = non-Hispanic",
-    "Total diff = No BA - BA or higher in all cause",
+    "Total gap = No BA $-$ BA or higher for all causes",
     paste0(
-      "values in parentheses are 95\\% CIs from 1,000 Monte Carlo draws ",
+      "values in parentheses are 95\\% CIs from 1,000 Monte Carlo replicates ",
       "taking the 2.5th and 97.5th percentiles."
     )
   )
