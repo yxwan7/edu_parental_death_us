@@ -1,10 +1,6 @@
 Quantify the burden of children experiencing parental death by parental education in the United States, 2010-2024
 =================================================================================================================
 
-Replication code for a kinship-model estimate of how many children in the United
-States lose a parent, by parental education, race and ethnicity, and cause of
-death.
-
 ## Repository layout
 
 ```
@@ -35,11 +31,6 @@ death.
 └── 03_appendix/                   Tables S4-S7, Figures S1-S10, sensitivity CSVs
 ```
 
-`16_tables_figures.r` writes Table 1, Tables S4-S7, Figures 1-4 and Figures
-S1-S7. Figure S8 comes from `sensitivity/02_model_validation.r`, and Figures S9
-and S10 from `sensitivity/01_male_fertility.r`. Appendix tables are provided as
-CSV and LaTeX; publication tables are not written as RDS files.
-
 ## Data
 
 The inputs are public but not redistributed here. Place each at the path shown
@@ -59,25 +50,6 @@ NVSS natality and mortality come from
 the ACS from [IPUMS-USA](https://usa.ipums.org/usa/), and male age-specific
 fertility rates from the
 [Human Fertility Collection](https://www.fertilitydata.org/).
-
-Keep the NVSS archives zipped, with a four-digit year in each file name — that
-is how the scripts identify them. One per year, no gaps: processing stops if a
-year in 1990-2024 is missing or duplicated. The public-use mortality files
-suppress geography but carry the decedent's education, which is what this
-analysis uses.
-
-The ACS extract covers the 2000-2024 samples and must include `YEAR`, `SEX`,
-`AGE`, `RACE`, `HISPAN`, `EDUCD`, `PERWT`, and `REPWTP1`-`REPWTP80` (the
-replicate weights, needed only for the uncertainty layer). Save the fixed-width
-data file and its DDI companion, exactly one of each: the scripts refuse to
-guess column positions.
-
-`nsch_validation_race.csv` holds the published prevalence Figure S8 is checked
-against — Schlüter et al. (2024) and the National Survey of Children's Health,
-2016-2020. Transcribe it with the header
-`source,race_cat,year,median,lower95,upper95`, where `source` is either
-`Matrix Projection Model` or `National Survey of Children's Health` and the
-three estimate columns are percentages. Only Figure S8 reads it.
 
 ## Running the analysis
 
