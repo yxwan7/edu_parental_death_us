@@ -11,8 +11,8 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=32G
 # A random draw takes about 46 min and peaks below 32G. The walltime carries
-# the case where the node is shared, which roughly doubles the running time.
-#SBATCH --time=06:00:00
+# the case where the node is shared, which can stretch a draw several times over.
+#SBATCH --time=12:00:00
 
 set -euo pipefail
 
@@ -52,4 +52,4 @@ export EDU_PARENT_LOSS_DRAW_ROOT="$DRAW_ROOT"
 echo "batch $EDU_PARENT_LOSS_BATCH_ID, draw $SLURM_ARRAY_TASK_ID"
 echo "node $(hostname), start $(date -Is), scratch $DRAW_ROOT"
 
-Rscript --vanilla 02_codes/14_run_draw.r
+Rscript --vanilla 02_codes/uncertainty/02_run_draw.r

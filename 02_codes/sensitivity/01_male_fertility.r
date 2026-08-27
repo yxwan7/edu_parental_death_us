@@ -21,7 +21,7 @@ source(here::here("02_codes", "00_functions.r"))
 # ---- Sensitivity legs and files ----
 
 leg_specs <- as.data.table(copy(MALE_SENSITIVITY_LEGS))
-annual_input_name <- "03b_parent_loss_by_3_cause_annual.rds"
+annual_input_name <- "02_parent_loss_by_cause_atom_annual.rds"
 
 processed_root <- here(
   "01_data", "02_processed", "edu_parent_loss", "sensitivity"
@@ -186,18 +186,34 @@ prepare_figure_data <- function(path, specs) {
   )]
   out[, gap_metric_label := factor(
     fcase(
-      gap_metric == "rd_per_1000", "Rate difference",
+      gap_metric == "rd_per_1000", "Rate gap",
       gap_metric == "rr", "Rate ratio"
     ),
-    levels = c("Rate difference", "Rate ratio")
+    levels = c("Rate gap", "Rate ratio")
   )]
   setorder(out, race_eth, gap_metric_label, scenario_label, year)
   out[]
 }
 
 build_race_panel <- function(
-    dt, specs, race_value, tag, show_x_title, show_legend, legend_rows) {
+    dt, specs, race_value, tag, show_x_title, show_legend, legend_rows,
+    metric_limits = NULL) {
   palette <- setNames(specs$colour, specs$scenario_label)
+
+  # The three race panels share one y range per metric, so the rows read
+  # against each other instead of each on its own scale.
+  metric_range <- if (is.null(metric_limits)) {
+    dt[, .(value = range(value, na.rm = TRUE)), by = gap_metric_label]
+  } else {
+    data.table(
+      gap_metric_label = factor(
+        rep(names(metric_limits), each = 2L),
+        levels = levels(dt$gap_metric_label)
+      ),
+      value = unlist(metric_limits, use.names = FALSE)
+    )
+  }
+  metric_range[, year := min(dt$year)]
 
   out <- ggplot(
     dt[race_eth == race_value],
@@ -210,11 +226,18 @@ build_race_panel <- function(
   ) +
     geom_line(linewidth = 0.72, lineend = "round") +
     geom_point(size = 1.65, stroke = 0) +
+    geom_blank(
+      data = metric_range, aes(x = year, y = value), inherit.aes = FALSE
+    ) +
     facet_wrap(~gap_metric_label, nrow = 1, scales = "free_y") +
     common_x_scale() +
     scale_y_continuous(
       labels = label_number(accuracy = 0.1),
-      expand = expansion(mult = c(0.08, 0.08))
+      expand = if (is.null(metric_limits)) {
+        expansion(mult = c(0.08, 0.08))
+      } else {
+        expansion(mult = c(0, 0.02))
+      }
     ) +
     scale_colour_manual(
       values = palette,
@@ -261,11 +284,17 @@ build_race_panel <- function(
   }
 }
 
-build_figure <- function(dt, specs, legend_rows) {
+build_figure <- function(dt, specs, legend_rows, metric_limits = NULL) {
+  panel <- function(race_value, tag, show_x_title, show_legend) {
+    build_race_panel(
+      dt, specs, race_value, tag, show_x_title, show_legend, legend_rows,
+      metric_limits
+    )
+  }
   (
-    build_race_panel(dt, specs, "white", "A", FALSE, FALSE, legend_rows) /
-      build_race_panel(dt, specs, "black", "B", FALSE, FALSE, legend_rows) /
-      build_race_panel(dt, specs, "hispanic", "C", TRUE, TRUE, legend_rows)
+    panel("white", "A", FALSE, FALSE) /
+      panel("black", "B", FALSE, FALSE) /
+      panel("hispanic", "C", TRUE, TRUE)
   ) +
     plot_layout(heights = c(1, 1, 1.12))
 }
@@ -281,10 +310,16 @@ s1_figure_data <- prepare_figure_data(s1_annual_path, s1_plot_specs)
 s2_figure_data <- prepare_figure_data(s2_annual_path, s2_plot_specs)
 
 save_sensitivity_figure(
-  build_figure(s1_figure_data, s1_plot_specs, legend_rows = 1L),
+  build_figure(
+    s1_figure_data, s1_plot_specs, legend_rows = 1L,
+    metric_limits = list("Rate gap" = c(0, 5), "Rate ratio" = c(0, 5))
+  ),
   s1_figure_path
 )
 save_sensitivity_figure(
-  build_figure(s2_figure_data, s2_plot_specs, legend_rows = 2L),
+  build_figure(
+    s2_figure_data, s2_plot_specs, legend_rows = 2L,
+    metric_limits = list("Rate gap" = c(0, 7), "Rate ratio" = c(0, 7))
+  ),
   s2_figure_path
 )

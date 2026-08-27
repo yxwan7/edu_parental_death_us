@@ -23,7 +23,7 @@ source(here::here("02_codes", "00_functions.r"))
 
 exposure_path <- here(
   "01_data", "02_processed", "edu_parent_loss",
-  "02_education_parent_alive_exposure_pooled.rds"
+  "01_education_parent_alive_exposure_pooled.rds"
 )
 population_path <- here(
   "01_data", "02_processed", "population", "01_pop_main_panel.rds"
@@ -96,8 +96,7 @@ ours <- rbindlist(list(ours_by_race, ours_total), use.names = TRUE)
 ours[, `:=`(
   source = "Ours",
   lower95_pct = NA_real_,
-  upper95_pct = NA_real_,
-  interval_method = NA_character_
+  upper95_pct = NA_real_
 )]
 
 # ---- Published estimates ----
@@ -123,8 +122,6 @@ published_r3 <- published[
     upper95_pct = as.numeric(upper95)
   )
 ]
-published_r3[, interval_method := "Published 95% interval"]
-
 race_weights <- child_population[
   , .(n_children = sum(n_children)),
   by = .(year, race_eth)
@@ -150,8 +147,7 @@ published_total <- published_weighted[
 published_total[, `:=`(
   race_eth = "total",
   lower95_pct = pmax(0, estimate_pct - 1.96 * se_pct),
-  upper95_pct = estimate_pct + 1.96 * se_pct,
-  interval_method = "Approximate 95% interval; zero covariance assumed"
+  upper95_pct = estimate_pct + 1.96 * se_pct
 )]
 published_total[, se_pct := NULL]
 
@@ -164,6 +160,13 @@ validation_results[, race_eth := factor(
   levels = c("total", "white", "black", "hispanic")
 )]
 setorder(validation_results, race_eth, source, year)
+
+figure_data_dir <- here::here("03_outputs", "04_figure_data")
+dir.create(figure_data_dir, recursive = TRUE, showWarnings = FALSE)
+fwrite(
+  validation_results,
+  file.path(figure_data_dir, "Fig_S8_model_result_validation_data.csv")
+)
 
 # ---- Figure ----
 

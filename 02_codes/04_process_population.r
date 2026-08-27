@@ -46,9 +46,8 @@ birth_denominator_rds <- file.path(proc_dir, "03_pop_denominator_birth.rds")
 dir.create(proc_dir, recursive = TRUE, showWarnings = FALSE)
 
 # ---- ACS reducers ----
-# The ACS person-record recodes (sex, age, race/ethnicity, EDUCD education) are
-# shared with 13_replicate_weights.r and live in 00_functions.r, so the
-# point-weight and replicate panels classify every person identically.
+# The ACS person-record recodes (sex, age, race/ethnicity, EDUCD education) live
+# in 00_functions.r and are shared with uncertainty/01_replicate_weights.r.
 
 parse_raw_value <- function(x) {
   raw_chr <- trimws(as.character(x))
@@ -164,9 +163,6 @@ prepare_population_chunk <- function(chunk_df) {
 
   align_pop_panel_columns(panel)
 }
-
-# The two denominator derivations are shared with the ACS theta* draw prep and
-# live in 00_functions.r and are also used to construct each ACS draw.
 
 # ---- Read and harmonize the ACS extract ----
 

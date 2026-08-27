@@ -24,8 +24,7 @@ chunk_size <- {
   if (is.na(parsed) || parsed <= 0L) 100000L else parsed
 }
 
-# Formal runs rebuild every year by default. Set this to false only to resume an
-# interrupted run without changing the code or raw files.
+# Formal runs rebuild every year. Set false only to resume an interrupted run.
 force_reprocess <- {
   raw_value <- tolower(trimws(Sys.getenv("NCHS_BIRTH_FORCE_REPROCESS", unset = "true")))
   raw_value %in% c("true", "t", "1", "yes", "y")
@@ -216,9 +215,8 @@ select_parent_education <- function(educ_1989_raw, educ_2003_raw, educ_flag_raw)
   out_raw <- rep(NA_character_, length(use_revised))
   out_educ2 <- rep("Unknown", length(use_revised))
 
-  # Reporting flags indicate whether a revised item is reported in comparable
-  # form. They are not a complete substitute for certificate version, so the
-  # version label below is tied to the source field actually used.
+  # Reporting flags do not fully substitute for certificate version, so the
+  # version label follows the source field actually used.
   if (!is.null(educ_flag_raw)) {
     out_version[!is.na(educ_flag_raw) & educ_flag_raw == "1" & !use_1989] <- "2003_revision"
   }
@@ -238,13 +236,10 @@ resident_birth_flag <- function(resident_status_raw) {
   !is.na(status_num) & status_num %in% 1:3
 }
 
-# Mother age analytic window is 10-54, matching the female reproduction span in
-# the reference fertility framework (Schlüter et al., 2024; CDC ASFR age groups
-# 10-14 .. 45-54). The effective bounds differ by era because the source coding
-# does: 1990-2002 carries literal single years 10-54; 2003 is the MAGER41 recode
-# (see harmonize_mother_age_transition); 2004+ single-year MAGER is bottom-coded
-# at 12 and top-coded at 50 (50 = "50 years and over"), so 51-54 are not
-# separable and ages 10-11 do not occur.
+# Mother age analytic window is 10-54. The effective bounds differ by era with
+# the source coding: 1990-2002 carries literal single years 10-54; 2003 is the
+# MAGER41 recode (see harmonize_mother_age_transition); 2004+ single-year MAGER
+# is bottom-coded at 12 and top-coded at 50 (50 = "50 years and over").
 harmonize_mother_age_pre2003 <- function(mother_age_raw) {
   raw_num <- safe_integer(mother_age_raw)
   out <- rep(NA_integer_, length(raw_num))
@@ -264,12 +259,9 @@ harmonize_mother_age_transition <- function(mother_age_raw) {
   raw_num <- safe_integer(mother_age_raw)
   out <- rep(NA_integer_, length(raw_num))
 
-  # The 2003 public natality file stores mother age in MAGER41, not
-  # literal single years. Officially this is coded as 01 = under 15, 02 = 15,
-  # ..., 41 = 54. To keep a single-year age variable for downstream analysis,
-  # the under-15 bucket is approximated as age 14 and codes 02:41 are mapped to
-  # 15:54. Local continuity checks show this keeps the 2002 -> 2003 -> 2004
-  # age series stable.
+  # The 2003 public natality file stores mother age in MAGER41: 01 = under 15,
+  # 02 = 15, ..., 41 = 54. Mapped back to single years, with the under-15
+  # bucket taken as age 14 and codes 02:41 as 15:54.
   valid_idx <- !is.na(raw_num) & raw_num >= 1L & raw_num <= 41L
   out[valid_idx] <- raw_num[valid_idx] + 13L
   out
@@ -303,14 +295,22 @@ is_hispanic_2003plus <- function(hispanic_raw) {
   !is.na(raw_num) & raw_num %in% c(1L, 2L, 3L, 4L, 5L, 9L)
 }
 
+# Origin not stated, coded 9 in every era. The death numerator folds it into
+# Hispanic; the father path marks it not stated instead, because unstated origin
+# runs 15-16% on the father side against 3-5% on the mother side.
+is_origin_not_stated <- function(hispanic_raw) {
+  raw_num <- safe_integer(hispanic_raw)
+  !is.na(raw_num) & raw_num == 9L
+}
+
 map_old_race_to_group <- function(race_raw) {
   raw_num <- safe_integer(race_raw)
   out <- rep(NA_character_, length(raw_num))
   out[!is.na(raw_num) & raw_num == 1L] <- "white"
   out[!is.na(raw_num) & raw_num == 2L] <- "black"
   out[!is.na(raw_num) & raw_num == 3L] <- "aian"
-  # API codes match the death numerator's create_big_race() (Schlüter et al.,
-  # 2024): single Asian/PI races 4-7 plus combined-race codes 18..78.
+  # API codes match the death numerator: single Asian/PI races 4-7 plus
+  # combined-race codes 18..78.
   out[!is.na(raw_num) & raw_num %in% c(4L, 5L, 6L, 7L, 18L, 28L, 38L, 48L, 58L, 68L, 78L)] <- "api"
   out
 }
@@ -374,7 +374,8 @@ map_transition_race_to_group <- function(race_raw) {
   out
 }
 
-harmonize_race_eth_pre2003 <- function(race_eth_public_raw, hispanic_raw, race_raw) {
+harmonize_race_eth_pre2003 <- function(race_eth_public_raw, hispanic_raw, race_raw,
+                                       origin_not_stated_to_na = FALSE) {
   out <- map_pre2003_public_race_eth_recode(race_eth_public_raw)
   unresolved <- is.na(out)
   if (any(unresolved)) {
@@ -382,10 +383,12 @@ harmonize_race_eth_pre2003 <- function(race_eth_public_raw, hispanic_raw, race_r
     fallback[is_hispanic_old(hispanic_raw)] <- "hispanic"
     out[unresolved] <- fallback[unresolved]
   }
+  if (origin_not_stated_to_na) out[is_origin_not_stated(hispanic_raw)] <- NA_character_
   out
 }
 
-harmonize_race_eth_transition <- function(race_eth_public_raw, hispanic_raw, race_raw) {
+harmonize_race_eth_transition <- function(race_eth_public_raw, hispanic_raw, race_raw,
+                                          origin_not_stated_to_na = FALSE) {
   out <- map_transition_public_race_eth_recode(race_eth_public_raw)
   unresolved <- is.na(out)
   if (any(unresolved)) {
@@ -394,10 +397,12 @@ harmonize_race_eth_transition <- function(race_eth_public_raw, hispanic_raw, rac
     out[unresolved] <- fallback[unresolved]
   }
   out[is_hispanic_2003plus(hispanic_raw)] <- "hispanic"
+  if (origin_not_stated_to_na) out[is_origin_not_stated(hispanic_raw)] <- NA_character_
   out
 }
 
-harmonize_race_eth_2016plus <- function(hispanic_raw, race31_raw, race6_raw = NULL, race_eth_public_raw = NULL) {
+harmonize_race_eth_2016plus <- function(hispanic_raw, race31_raw, race6_raw = NULL, race_eth_public_raw = NULL,
+                                        origin_not_stated_to_na = FALSE) {
   out <- if (is.null(race_eth_public_raw)) {
     map_race31_to_group(race31_raw)
   } else {
@@ -414,16 +419,16 @@ harmonize_race_eth_2016plus <- function(hispanic_raw, race31_raw, race6_raw = NU
     mapped
   }
   out[is_hispanic_2003plus(hispanic_raw)] <- "hispanic"
+  if (origin_not_stated_to_na) out[is_origin_not_stated(hispanic_raw)] <- NA_character_
   out
 }
 
-# 2021-2024 single-race era. NCHS no longer ships bridged race, so race is taken
-# from the single-race recode (recode 15, with multi-race -> NA), falling back to
-# recode 6. Hispanic origin then takes precedence. Origin not stated (recode 9)
-# -> NA because race/ethnicity cannot be determined;
-# this mirrors the death numerator's single-race handling for 2021+ (Villaveces
-# et al., 2025), where the unknown-origin code maps to NA.
-harmonize_race_eth_2021plus <- function(hispanic_recode_raw, race15_raw, race6_raw = NULL, race_eth_public_raw = NULL) {
+# 2021-2024 single-race era: race comes from the single-race recode (recode 15,
+# multi-race -> NA), falling back to recode 6, with Hispanic origin taking
+# precedence. Origin not stated (recode 9) -> NA, as in the death numerator
+# (Villaveces et al., 2025).
+harmonize_race_eth_2021plus <- function(hispanic_recode_raw, race15_raw, race6_raw = NULL, race_eth_public_raw = NULL,
+                                        origin_not_stated_to_na = FALSE) {
   out <- map_race31_to_group(race15_raw)
   if (!is.null(race6_raw)) {
     unresolved <- is.na(out)
@@ -431,6 +436,7 @@ harmonize_race_eth_2021plus <- function(hispanic_recode_raw, race15_raw, race6_r
   }
   hispanic_num <- safe_integer(hispanic_recode_raw)
   out[!is.na(hispanic_num) & hispanic_num %in% c(1L, 2L, 3L, 4L, 5L)] <- "hispanic"
+  # A no-op for this era, which already marks origin not stated for both parents.
   out[!is.na(hispanic_num) & hispanic_num == 9L] <- NA_character_
   out
 }
@@ -510,7 +516,7 @@ harmonize_birth_chunk_pre2003 <- function(raw_chunk, year) {
     father_hispanic_raw = raw_chunk$father_hispanic_raw,
     father_hispanic_recode_raw = NA_character_,
     father_race_eth_public_raw = raw_chunk$father_race_eth_public_raw,
-    father_race_eth = harmonize_race_eth_pre2003(raw_chunk$father_race_eth_public_raw, raw_chunk$father_hispanic_raw, raw_chunk$father_race_raw),
+    father_race_eth = harmonize_race_eth_pre2003(raw_chunk$father_race_eth_public_raw, raw_chunk$father_hispanic_raw, raw_chunk$father_race_raw, origin_not_stated_to_na = TRUE),
     father_educ_flag_raw = NA_character_,
     father_educ_1989_raw = raw_chunk$father_educ_1989_raw,
     father_educ_2003_raw = NA_character_,
@@ -533,6 +539,14 @@ harmonize_birth_chunk_transition <- function(raw_chunk, year, age_harmonizer = h
     raw_chunk$father_race_raw_revised,
     raw_chunk$father_race_raw_old
   )
+  # The combined father age field is blank for every record of the 2012 and 2013
+  # files, which carry the father's age only in the revised-certificate field.
+  # It is never blank in 2003-2011, so the fallback fires only in those two years.
+  father_age_selected <- ifelse(
+    !is.na(raw_chunk$father_age_raw) & raw_chunk$father_age_raw != "",
+    raw_chunk$father_age_raw,
+    raw_chunk$father_age_alt_raw
+  )
 
   out <- data.frame(
     year = year,
@@ -540,8 +554,8 @@ harmonize_birth_chunk_transition <- function(raw_chunk, year, age_harmonizer = h
     resident_birth_flag = resident_birth_flag(raw_chunk$resident_status_raw),
     mother_age_raw = raw_chunk$mother_age_raw,
     mother_age_years = age_harmonizer(raw_chunk$mother_age_raw),
-    father_age_raw = raw_chunk$father_age_raw,
-    father_age_years = harmonize_father_age(raw_chunk$father_age_raw),
+    father_age_raw = father_age_selected,
+    father_age_years = harmonize_father_age(father_age_selected),
     mother_race_raw = raw_chunk$mother_race_raw,
     mother_race_recode6_raw = NA_character_,
     mother_race_recode15_raw = NA_character_,
@@ -562,7 +576,7 @@ harmonize_birth_chunk_transition <- function(raw_chunk, year, age_harmonizer = h
     father_hispanic_raw = raw_chunk$father_hispanic_raw,
     father_hispanic_recode_raw = NA_character_,
     father_race_eth_public_raw = raw_chunk$father_race_eth_public_raw,
-    father_race_eth = harmonize_race_eth_transition(raw_chunk$father_race_eth_public_raw, raw_chunk$father_hispanic_raw, father_race_selected),
+    father_race_eth = harmonize_race_eth_transition(raw_chunk$father_race_eth_public_raw, raw_chunk$father_hispanic_raw, father_race_selected, origin_not_stated_to_na = TRUE),
     father_educ_flag_raw = raw_chunk$father_educ_flag_raw,
     father_educ_1989_raw = NA_character_,
     father_educ_2003_raw = raw_chunk$father_educ_2003_raw,
@@ -622,7 +636,8 @@ harmonize_birth_chunk_2016plus <- function(raw_chunk, year, race_eth_harmonizer 
       raw_chunk$father_hispanic_recode_raw,
       raw_chunk$father_race_recode15_raw,
       raw_chunk$father_race_recode6_raw,
-      raw_chunk$father_race_eth_public_raw
+      raw_chunk$father_race_eth_public_raw,
+      origin_not_stated_to_na = TRUE
     ),
     father_educ_flag_raw = raw_chunk$father_educ_flag_raw,
     father_educ_1989_raw = NA_character_,
@@ -736,8 +751,7 @@ process_birth_year_file <- function(zip_path, year, layout, chunk_size) {
     )
 
     if (nrow(resident_chunk)) {
-      # Missingness counts accumulate per record (before aggregation) so they
-      # reflect births, not collapsed groups.
+      # Missingness counts accumulate per record, before aggregation.
       processing_counts$n_resident <- processing_counts$n_resident + nrow(resident_chunk)
       processing_counts$n_missing_mother_age <- processing_counts$n_missing_mother_age + sum(is.na(resident_chunk$mother_age_years))
       processing_counts$n_missing_father_age <- processing_counts$n_missing_father_age + sum(is.na(resident_chunk$father_age_years))
@@ -791,12 +805,12 @@ transition_fields <- data.frame(
     "mother_educ_2003_raw", "mother_educ_flag_raw",
     "mother_race_raw", "mother_hispanic_raw", "mother_race_eth_public_raw",
     "mother_educ_1989_raw", "mother_educ_1989_recode_raw",
-    "father_age_raw",
+    "father_age_raw", "father_age_alt_raw",
     "father_race_raw_revised", "father_hispanic_raw", "father_race_eth_public_raw", "father_race_raw_old",
     "father_educ_2003_raw", "father_educ_flag_raw"
   ),
-  start = c(138L, 89L, 155L, 571L, 142L, 148L, 149L, 156L, 158L, 184L, 188L, 195L, 196L, 199L, 197L, 572L),
-  end = c(138L, 90L, 155L, 571L, 143L, 148L, 149L, 157L, 158L, 185L, 189L, 195L, 196L, 200L, 197L, 572L),
+  start = c(138L, 89L, 155L, 571L, 142L, 148L, 149L, 156L, 158L, 184L, 182L, 188L, 195L, 196L, 199L, 197L, 572L),
+  end = c(138L, 90L, 155L, 571L, 143L, 148L, 149L, 157L, 158L, 185L, 183L, 189L, 195L, 196L, 200L, 197L, 572L),
   stringsAsFactors = FALSE
 )
 
@@ -833,9 +847,8 @@ layout_registry <- c(
     ),
     as.character(2004:2013)
   ),
-  # 2014-2020 keep the bridged-compatible race/eth handling; 2021-2024 switch to
-  # the single-race era (see harmonize_race_eth_2021plus), mirroring the death
-  # numerator's bridged -> single-race break at 2020/2021.
+  # 2014-2020 keep the bridged-compatible race/eth handling; 2021-2024 switch
+  # to the single-race era (see harmonize_race_eth_2021plus).
   setNames(
     replicate(
       length(2014:2020),
@@ -889,9 +902,8 @@ ordered_idx <- order(zip_years, zip_files)
 zip_files <- zip_files[ordered_idx]
 zip_years <- zip_years[ordered_idx]
 
-# Each year is processed independently and cached under per_year/, so an
-# interrupted run may explicitly reuse years already on disk by setting
-# NCHS_BIRTH_FORCE_REPROCESS=false.
+# Each year is processed independently and cached under per_year/. Setting
+# NCHS_BIRTH_FORCE_REPROCESS=false reuses the years already on disk.
 panel_results <- list()
 
 for (i in seq_along(zip_files)) {

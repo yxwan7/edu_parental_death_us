@@ -47,7 +47,8 @@ rate_dir <- here("01_data", "02_processed", "rate")
 dir.create(rate_dir, recursive = TRUE, showWarnings = FALSE)
 
 population_path <- here("01_data", "02_processed", "population", "01_pop_main_panel.rds")
-# Survival constraint from the all-cause mortality rate panel built by 05.
+# Survival constraint from the all-cause mortality rate panel built by
+# 05_mortality_rates.r.
 mortality_path <- file.path(rate_dir, "01_education_mortality_rate_panel.rds")
 transition_panel_rds_path <- file.path(rate_dir, "05_education_transition_panel.rds")
 
@@ -55,10 +56,6 @@ transition_panel_rds_path <- file.path(rate_dir, "05_education_transition_panel.
 
 clamp01 <- function(x) {
   pmin(pmax(x, 0), 1)
-}
-
-rate_to_survival <- function(rate_per_100k) {
-  exp(-(as.numeric(rate_per_100k) / 100000))
 }
 
 # A cell without origin support receives survival 1 and is excluded by the
@@ -187,7 +184,7 @@ build_survival_dt <- function(mortality_dt) {
       educ2 %chin% EDUC_LEVELS
   ]
   mortality_use[, educ_code := educ_code_map[educ2]]
-  mortality_use[, survival := rate_to_survival(mortality_rate_per_100k)]
+  mortality_use[, survival := exp(-(as.numeric(mortality_rate_per_100k) / 100000))]
 
   survival_dt <- dcast(
     mortality_use,
@@ -352,10 +349,9 @@ estimate_monotone_raw <- function(raw_pairs) {
   ]
 
   # Two-state monotone flow: BA_plus is absorbing, so the rise in its
-  # mortality-corrected share across the paired cross-sections identifies the
-  # single upward flow exactly. The floor at zero is structural, not a smoothing
-  # choice -- a degree cannot be un-earned, so a measured decline (sampling
-  # noise or net out-migration) is recorded as no upward flow.
+  # mortality-corrected share identifies the single upward flow. The floor at
+  # zero is structural, not smoothing -- a degree cannot be un-earned, so a
+  # measured decline is recorded as no upward flow.
   out[
     q12_eligible == TRUE,
     q12_raw := clamp01(pmax(share_ba_next - r_ba, 0) / r_noba)
@@ -428,10 +424,9 @@ survival_dt <- build_survival_dt(mortality_dt)
 raw_pairs <- build_raw_pairs(population_shares, survival_dt)
 raw_estimates <- estimate_monotone_raw(raw_pairs)
 
-# Used as read. Two states and an absorbing target make q12 point-identified by
-# the paired cross-sections. Sampling noise is carried by re-estimating the
-# panel inside each uncertainty draw (see 14), not by damping it out of the
-# point estimate.
+# Used as read: two states and an absorbing target make q12 point-identified by
+# the paired cross-sections. Sampling noise is carried by re-estimating the panel
+# inside each uncertainty draw (see uncertainty/02_run_draw.r).
 q_estimates <- raw_estimates[
   ,
   .(

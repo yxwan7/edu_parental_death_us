@@ -18,30 +18,12 @@ source(here::here("02_codes", "00_functions.r"))
 
 # ---- Parent-loss definitions ----
 
-# Flag-based 3-way split (rate/02b) and the ICD-10 cause_15/cause_6 panel (rate/02).
-CAUSE_LEVELS <- c("drugs", "firearms", "other")
-CAUSE_15_LEVELS <- c(
-  "drug_poisoning_overdose",
-  "firearm_homicide",
-  "firearm_suicide",
-  "other_firearm_deaths",
-  "covid19",
-  "heart_disease",
-  "cerebrovascular_disease",
-  "diabetes_mellitus",
-  "cancer",
-  "chronic_lower_respiratory_disease",
-  "alcohol_attributable",
-  "nonfirearm_suicide",
-  "nonfirearm_homicide",
-  "other_unintentional_injuries",
-  "all_remaining_causes"
-)
 TOL <- 1e-8
 
-# Male-fertility sensitivity leg, matching the argument given to 10. With no
-# argument this is the mainline; a leg reads 10's leg output and writes beside
-# it under 01_data/02_processed/edu_parent_loss/sensitivity/<leg>/.
+# Male-fertility sensitivity leg, matching the argument given to
+# 10_kinship_model.r. With no argument this is the mainline; a leg reads that
+# script's leg output and writes beside it under
+# 01_data/02_processed/edu_parent_loss/sensitivity/<leg>/.
 leg <- commandArgs(trailingOnly = TRUE)[1]
 parent_loss_dir <- if (is.na(leg)) {
   here("01_data", "02_processed", "edu_parent_loss")
@@ -54,30 +36,21 @@ dir.create(parent_loss_dir, recursive = TRUE, showWarnings = FALSE)
 
 rate_dir <- here("01_data", "02_processed", "rate")
 exposure_input_path <- file.path(
-  parent_loss_dir, "02_education_parent_alive_exposure_pooled.rds"
+  parent_loss_dir, "01_education_parent_alive_exposure_pooled.rds"
 )
-# Flag-based drugs/firearms/other cause rate panel (rate/02b) feeds the 3-way
-# family; the ICD-10 cause_15/cause_6 panel (rate/02) feeds the
-# 6/15-cause family. Both are shipped rate products of 06.
-mortality_by_cause_input_path <- file.path(
-  rate_dir, "02b_education_mortality_rate_panel_by_cause_flag3.rds"
-)
-cause_6_15_mortality_input_path <- file.path(
+# The ICD-10 cause_atom / cause_6 rate panel, a shipped product of 06.
+cause_atom_mortality_input_path <- file.path(
   rate_dir, "02_education_mortality_rate_panel_by_cause.rds"
 )
 population_input_path <- here(
   "01_data", "02_processed", "population", "01_pop_main_panel.rds"
 )
 
-annual_output_rds_path <- file.path(parent_loss_dir, "03b_parent_loss_by_3_cause_annual.rds")
-child_age_output_rds_path <- file.path(
-  parent_loss_dir, "03c_parent_loss_by_3_cause_child_age.rds"
+cause_atom_annual_output_rds_path <- file.path(
+  parent_loss_dir, "02_parent_loss_by_cause_atom_annual.rds"
 )
-cause_6_15_annual_output_rds_path <- file.path(
-  parent_loss_dir, "04b_parent_loss_by_6_15_cause_annual.rds"
-)
-cause_6_15_child_age_output_rds_path <- file.path(
-  parent_loss_dir, "04c_parent_loss_by_6_15_cause_child_age.rds"
+cause_atom_child_age_output_rds_path <- file.path(
+  parent_loss_dir, "03_parent_loss_by_cause_atom_child_age.rds"
 )
 
 # ---- Parent-loss calculations ----
@@ -168,8 +141,7 @@ aggregate_parent_age_dyads <- function(parent_child_age_dyads) {
   ][order(year, race_eth, parent_educ2, parent_type, age_parent)]
 }
 
-# Cause-specific parent deaths, for either cause family. The ICD-10 family also
-# carries cause_15 / cause_6 through; the 3-way family has only `cause`.
+# Cause-specific parent deaths, carrying cause_atom and cause_6 through.
 prepare_cause_mortality <- function(mortality_dt, rate_definition_id, cause_col,
                                     cause_levels, carry_cols = character(0)) {
   mort <- copy(as.data.table(mortality_dt))[
@@ -466,18 +438,18 @@ aggregate_annual <- function(age_dt, child_age_dt) {
   annual[]
 }
 
-finalize_cause_6_15_output <- function(dt, age_cols = character()) {
+finalize_cause_atom_output <- function(dt, age_cols = character()) {
   out <- copy(dt)
   out[
     ,
     `:=`(
-      cause_15 = cause,
-      cause_6 = classify_cause_6_from_cause_15(cause)
+      cause_atom = cause,
+      cause_6 = classify_cause_6_from_cause_atom(cause)
     )
   ]
   out[, cause := NULL]
 
-  front_cols <- c("year", "race_eth", "parent_educ2", "cause_15", "cause_6", "parent_type", age_cols)
+  front_cols <- c("year", "race_eth", "parent_educ2", "cause_atom", "cause_6", "parent_type", age_cols)
   setcolorder(out, c(front_cols, setdiff(names(out), front_cols)))
   setorderv(out, front_cols)
   out[]
@@ -486,8 +458,7 @@ finalize_cause_6_15_output <- function(dt, age_cols = character()) {
 # ---- Build the parent-loss inputs ----
 
 exposure_pooled <- readRDS(exposure_input_path)
-cause_mortality_panel <- readRDS(mortality_by_cause_input_path)
-cause_6_15_mortality_panel <- readRDS(cause_6_15_mortality_input_path)
+cause_atom_mortality_panel <- readRDS(cause_atom_mortality_input_path)
 population_panel <- readRDS(population_input_path)
 
 child_population <- prepare_child_population(population_panel)
@@ -498,139 +469,27 @@ parent_dyads <- aggregate_parent_age_dyads(parent_child_age_dyads)
 rm(exposure_pooled, child_population)
 gc()
 
-cause_mortality <- prepare_cause_mortality(
-  cause_mortality_panel,
-  rate_definition_id = "cause_specific",
-  cause_col = "cause",
-  cause_levels = CAUSE_LEVELS
+cause_atom_mortality <- prepare_cause_mortality(
+  cause_atom_mortality_panel,
+  rate_definition_id = "cause_atom",
+  cause_col = "cause_atom",
+  cause_levels = CAUSE_ATOM_LEVELS,
+  carry_cols = c("cause_atom", "cause_6")
 )
-rm(cause_mortality_panel)
+rm(cause_atom_mortality_panel)
 
-parent_age_base <- build_parent_age_base(parent_dyads, cause_mortality)
-parent_child_age_base <- build_parent_child_age_base(parent_child_age_dyads, cause_mortality)
-
-age_dt <- cause_mortality[
-  parent_age_base,
-  on = .(year, race_eth, age_parent, parent_educ2, parent_type)
-]
-
-age_dt[
-  ,
-  `:=`(
-    n_children_losing_parent = n_parent_deaths * children_per_parent,
-    n_children_losing_parent_all_cause_expected =
-      n_parent_deaths_all_cause * children_per_parent
-  )
-]
-age_dt[
-  ,
-  parental_loss_per_1000_age := fifelse(
-    child_parent_dyads > 0,
-    1000 * n_children_losing_parent / child_parent_dyads,
-    NA_real_
-  )
-]
-
-age_dt <- add_total_education_rows(age_dt)
-
-child_age_dt <- cause_mortality[
-  parent_child_age_base,
-  on = .(year, race_eth, age_parent, parent_educ2, parent_type),
-  allow.cartesian = TRUE
-]
-rm(parent_child_age_base, cause_mortality)
-
-if ("i.parent_population" %chin% names(child_age_dt)) {
-  child_age_dt[, i.parent_population := NULL]
-}
-child_age_dt[
-  ,
-  `:=`(
-    remaining_childhood_years = 18 - age_child,
-    n_children_losing_parent_at_child_age =
-      n_parent_deaths * children_per_parent_at_child_age,
-    n_children_losing_parent_all_cause_expected_at_child_age =
-      n_parent_deaths_all_cause * children_per_parent_at_child_age
-  )
-]
-child_age_dt[
-  ,
-  `:=`(
-    parent_years_lost_under18 =
-      n_children_losing_parent_at_child_age * remaining_childhood_years,
-    parent_years_lost_under18_all_cause_expected =
-      n_children_losing_parent_all_cause_expected_at_child_age *
-        remaining_childhood_years,
-    parental_loss_per_1000_child_age = fifelse(
-      child_parent_dyads_age_child > 0,
-      1000 * n_children_losing_parent_at_child_age /
-        child_parent_dyads_age_child,
-      NA_real_
-    )
-  )
-]
-
-child_age_dt <- add_total_education_child_age_rows(child_age_dt)
-setcolorder(
-  child_age_dt,
-  c(
-    "year", "race_eth", "parent_educ2", "cause", "parent_type",
-    "age_parent", "age_child", "remaining_childhood_years",
-    "n_children_losing_parent_at_child_age",
-    "child_parent_dyads_age_child", "children_per_parent_at_child_age",
-    "parent_years_lost_under18", "n_parent_deaths",
-    "n_parent_deaths_all_cause",
-    "n_children_losing_parent_all_cause_expected_at_child_age",
-    "parent_years_lost_under18_all_cause_expected", "parent_population",
-    "cause_share", "cause_share_source", "parental_loss_per_1000_child_age"
-  )
-)
-setorderv(
-  child_age_dt,
-  c("year", "race_eth", "parent_educ2", "cause", "parent_type", "age_parent", "age_child")
-)
-
-setcolorder(
-  age_dt,
-  c(
-    "year", "race_eth", "parent_educ2", "cause", "parent_type",
-    "age_parent", "n_children_losing_parent", "child_parent_dyads",
-    "children_per_parent", "n_parent_deaths", "n_parent_deaths_all_cause",
-    "n_children_losing_parent_all_cause_expected", "parent_population",
-    "cause_share", "cause_share_source", "parental_loss_per_1000_age"
-  )
-)
-setorderv(
-  age_dt,
-  c("year", "race_eth", "parent_educ2", "cause", "parent_type", "age_parent")
-)
-
-annual_dt <- aggregate_annual(age_dt, child_age_dt)
-
-saveRDS(annual_dt, annual_output_rds_path)
-saveRDS(child_age_dt, child_age_output_rds_path)
-
-cause_6_15_mortality <- prepare_cause_mortality(
-  cause_6_15_mortality_panel,
-  rate_definition_id = "cause_6_15",
-  cause_col = "cause_15",
-  cause_levels = CAUSE_15_LEVELS,
-  carry_cols = c("cause_15", "cause_6")
-)
-rm(cause_6_15_mortality_panel)
-
-cause_6_15_parent_age_base <- build_parent_age_base(parent_dyads, cause_6_15_mortality)
-cause_6_15_parent_child_age_base <- build_parent_child_age_base(
+cause_atom_parent_age_base <- build_parent_age_base(parent_dyads, cause_atom_mortality)
+cause_atom_parent_child_age_base <- build_parent_child_age_base(
   parent_child_age_dyads,
-  cause_6_15_mortality
+  cause_atom_mortality
 )
 
-cause_6_15_age_dt <- cause_6_15_mortality[
-  cause_6_15_parent_age_base,
+cause_atom_age_dt <- cause_atom_mortality[
+  cause_atom_parent_age_base,
   on = .(year, race_eth, age_parent, parent_educ2, parent_type)
 ]
 
-cause_6_15_age_dt[
+cause_atom_age_dt[
   ,
   `:=`(
     n_children_losing_parent = n_parent_deaths * children_per_parent,
@@ -638,7 +497,7 @@ cause_6_15_age_dt[
       n_parent_deaths_all_cause * children_per_parent
   )
 ]
-cause_6_15_age_dt[
+cause_atom_age_dt[
   ,
   parental_loss_per_1000_age := fifelse(
     child_parent_dyads > 0,
@@ -647,19 +506,19 @@ cause_6_15_age_dt[
   )
 ]
 
-cause_6_15_age_dt <- add_total_education_rows(cause_6_15_age_dt)
+cause_atom_age_dt <- add_total_education_rows(cause_atom_age_dt)
 
-cause_6_15_child_age_dt <- cause_6_15_mortality[
-  cause_6_15_parent_child_age_base,
+cause_atom_child_age_dt <- cause_atom_mortality[
+  cause_atom_parent_child_age_base,
   on = .(year, race_eth, age_parent, parent_educ2, parent_type),
   allow.cartesian = TRUE
 ]
-rm(cause_6_15_parent_child_age_base, cause_6_15_mortality)
+rm(cause_atom_parent_child_age_base, cause_atom_mortality)
 
-if ("i.parent_population" %chin% names(cause_6_15_child_age_dt)) {
-  cause_6_15_child_age_dt[, i.parent_population := NULL]
+if ("i.parent_population" %chin% names(cause_atom_child_age_dt)) {
+  cause_atom_child_age_dt[, i.parent_population := NULL]
 }
-cause_6_15_child_age_dt[
+cause_atom_child_age_dt[
   ,
   `:=`(
     remaining_childhood_years = 18 - age_child,
@@ -669,7 +528,7 @@ cause_6_15_child_age_dt[
       n_parent_deaths_all_cause * children_per_parent_at_child_age
   )
 ]
-cause_6_15_child_age_dt[
+cause_atom_child_age_dt[
   ,
   `:=`(
     parent_years_lost_under18 =
@@ -686,10 +545,10 @@ cause_6_15_child_age_dt[
   )
 ]
 
-cause_6_15_child_age_dt <- add_total_education_child_age_rows(cause_6_15_child_age_dt)
+cause_atom_child_age_dt <- add_total_education_child_age_rows(cause_atom_child_age_dt)
 
 setcolorder(
-  cause_6_15_child_age_dt,
+  cause_atom_child_age_dt,
   c(
     "year", "race_eth", "parent_educ2", "cause", "parent_type",
     "age_parent", "age_child", "remaining_childhood_years",
@@ -703,12 +562,12 @@ setcolorder(
   )
 )
 setorderv(
-  cause_6_15_child_age_dt,
+  cause_atom_child_age_dt,
   c("year", "race_eth", "parent_educ2", "cause", "parent_type", "age_parent", "age_child")
 )
 
 setcolorder(
-  cause_6_15_age_dt,
+  cause_atom_age_dt,
   c(
     "year", "race_eth", "parent_educ2", "cause", "parent_type",
     "age_parent", "n_children_losing_parent", "child_parent_dyads",
@@ -718,18 +577,20 @@ setcolorder(
   )
 )
 setorderv(
-  cause_6_15_age_dt,
+  cause_atom_age_dt,
   c("year", "race_eth", "parent_educ2", "cause", "parent_type", "age_parent")
 )
 
-cause_6_15_annual_dt <- aggregate_annual(cause_6_15_age_dt, cause_6_15_child_age_dt)
+cause_atom_annual_dt <- aggregate_annual(cause_atom_age_dt, cause_atom_child_age_dt)
 
-cause_6_15_annual_dt <- finalize_cause_6_15_output(cause_6_15_annual_dt)
-cause_6_15_child_age_dt <- finalize_cause_6_15_output(
-  cause_6_15_child_age_dt,
+cause_atom_annual_dt <- finalize_cause_atom_output(cause_atom_annual_dt)
+cause_atom_child_age_dt <- finalize_cause_atom_output(
+  cause_atom_child_age_dt,
   age_cols = c("age_parent", "age_child")
 )
-rm(parent_dyads, parent_child_age_dyads, cause_6_15_parent_age_base)
+rm(parent_dyads, parent_child_age_dyads, cause_atom_parent_age_base)
 
-saveRDS(cause_6_15_annual_dt, cause_6_15_annual_output_rds_path)
-saveRDS(cause_6_15_child_age_dt, cause_6_15_child_age_output_rds_path)
+# ---- Parent-loss panels ----
+
+saveRDS(cause_atom_annual_dt, cause_atom_annual_output_rds_path)
+saveRDS(cause_atom_child_age_dt, cause_atom_child_age_output_rds_path)

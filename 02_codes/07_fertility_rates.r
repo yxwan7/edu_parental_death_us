@@ -24,13 +24,11 @@ source(here::here("02_codes", "00_functions.r"))
 child_unknown_bridge_max_age <- 17L
 unknown_numerator_ages <- 18:54
 
-# Mother education on the birth certificate is missing far above baseline during
-# the staggered state rollout of the 2003 certificate revision (observed Unknown
-# share: 32.9% in 2009, falling to 2.4-3.0% by 2014-2015, back to the ~1.3%
-# baseline from 2016). Missingness is state-driven, i.e. not random, so within
-# this window the observed known-education composition is polluted and Unknown
-# births are instead allocated from education-specific rates log-interpolated
-# between the stable anchor years on either side.
+# Mother education is missing far above baseline during the staggered state
+# rollout of the 2003 certificate revision (Unknown share 32.9% in 2009, 2.4-3.0%
+# by 2014-2015, ~1.3% from 2016) and the missingness is state-driven. Across this
+# window Unknown births are allocated from education-specific rates
+# log-interpolated between the anchor years on either side.
 transition_high_missing_years <- 2009:2015
 transition_anchor_years <- c(2000:2008, 2016:2024)
 
@@ -73,9 +71,8 @@ get_fertility_age_band <- function(age_years) {
 }
 
 # Denominator: bridge child Unknown, scope to the analysis window. The ACS
-# female denominator is treated as fully observed exposure (Sasson, 2016, does
-# not impute the at-risk denominator); adult Unknown education is dropped and
-# its weighted size is retained in the fit record.
+# female denominator is fully observed exposure, so adult Unknown education is
+# dropped and its weighted size is retained in the fit record.
 prepare_denominator <- function(path) {
   dt <- as.data.table(readRDS(path))
   dt[, year := as.integer(year)]
@@ -148,9 +145,8 @@ bayes_candidate <- function(rule, event_dt, exposure_dt, threshold) {
 }
 
 # Transition-window donor: education-specific fertility rates estimated in each
-# anchor year, log-linearly interpolated to the target year (rates are strictly
-# positive, so the interpolation runs on the log scale; for 2009-2015 targets
-# this bridges the 2008 and 2016 anchors).
+# anchor year and log-linearly interpolated to the target year, bridging the 2008
+# and 2016 anchors.
 anchor_lograte_candidate <- function(
     rule,
     event_dt,
@@ -268,9 +264,8 @@ choose_bayes_donor <- function(candidates, target_exposure) {
     }
   }
 
-  # Graceful fallback: relax the broadest candidate's count threshold so a rare
-  # race x age cell with a small but non-empty donor pool still resolves instead
-  # of aborting the whole run.
+  # Relax the broadest candidate's count threshold, so a rare race x age cell
+  # with a small but non-empty donor pool still resolves.
   if (length(candidates) > 0L) {
     fallback <- candidates[[length(candidates)]]
     if (identical(fallback$type, "event_rate")) {

@@ -31,4 +31,4 @@ export MKL_NUM_THREADS=1
 export R_DATATABLE_NUM_THREADS=1
 
 cd "$EDU_PARENT_LOSS_REPO"
-Rscript --vanilla 02_codes/hpc/record_run_environment.r
+Rscript --vanilla 02_codes/uncertainty/hpc/record_run_environment.r

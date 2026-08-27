@@ -14,8 +14,7 @@ YEARS_REPORT <- 2010:2024
 AGES_MODEL <- 0:85
 AGES_MINOR <- 0:17
 
-# Age spans used in rate construction and positivity checks. Keeping them
-# together ensures that both operations refer to the same cells.
+# Age spans used in rate construction and positivity checks.
 AGES_FEMALE_REPRO <- 10:54
 AGES_MALE_REPRO <- 15:59
 AGES_EDUC_TRANSITION <- 0:97
@@ -32,7 +31,7 @@ EDUC_LEVELS <- c("No_BA", "BA_plus")
 RACES_R3 <- c("white", "black", "hispanic")
 RACES_R5 <- c("white", "black", "aian", "api", "hispanic")
 
-# Sensitivity legs shared by the model, table and QC scripts.
+# Sensitivity legs shared by the model and table scripts.
 MALE_SENSITIVITY_LEGS <- data.frame(
   leg = c(
     "primary",
@@ -51,10 +50,6 @@ MALE_SENSITIVITY_LEGS <- data.frame(
     "s2_mnar_all_ba"
   ),
   stringsAsFactors = FALSE
-)
-S1_SENSITIVITY_LEGS <- c("zero_gradient", "primary", "female_borrow")
-S2_SENSITIVITY_LEGS <- c(
-  "primary", "complete_case", "mnar_all_ba", "mnar_all_noba"
 )
 S2_MNAR_SCENARIOS <- data.frame(
   leg = c("s2_mnar_all_noba", "s2_mnar_all_ba"),
@@ -104,10 +99,9 @@ recode_educ2_from_2003 <- function(educ_2003_raw) {
   out
 }
 
-# IPUMS-USA EDUCD [detailed]: everything below a bachelor's degree (incl.
-# associate) counts as No_BA; bachelor's / master's / professional / doctoral
-# count as BA_plus; codes 0/1 (N/A) and 999 (missing) fall through to Unknown
-# and are dropped from rate denominators downstream.
+# IPUMS-USA EDUCD [detailed]: below a bachelor's degree (incl. associate) is
+# No_BA, bachelor's and above is BA_plus; codes 0/1 (N/A) and 999 (missing) are
+# Unknown.
 recode_educ2_from_educd <- function(educd_raw) {
   educ_num <- safe_integer(educd_raw)
   out <- rep("Unknown", length(educ_num))
@@ -118,8 +112,8 @@ recode_educ2_from_educd <- function(educd_raw) {
 
 # ---- Education-panel helpers ----
 
-# Children carry no completed education, so their Unknown is reassigned to No_BA
-# (symmetrically in numerator and denominator).
+# Children carry no completed education: their Unknown becomes No_BA, in
+# numerator and denominator alike.
 bridge_child_unknown_educ2 <- function(dt, age_col = "age_years", educ_col = "educ2",
                                        max_age = 17L, replacement = "No_BA") {
   out <- data.table::copy(dt)
@@ -145,42 +139,131 @@ sum_col_by_educ <- function(dt, value_col) {
 }
 
 # ---- Cause classification ----
+#
+# `cause_atom`: the 24 atom causes, a partition of every ICD-10 underlying cause.
+# `cause_6`: the 6 causes reported in the paper.
 
-# Collapse the 15-cause classification to the 6-cause grouping.
-classify_cause_6_from_cause_15 <- function(cause_15) {
-  cause_15 <- as.character(cause_15)
-  out <- rep(NA_character_, length(cause_15))
+CAUSE_ATOM_LEVELS <- c(
+  "drug_poisoning_unintentional",
+  "drug_poisoning_suicide",
+  "drug_poisoning_undetermined",
+  "drug_poisoning_homicide",
+  "alcohol_poisoning_unintentional",
+  "alcohol_poisoning_suicide",
+  "alcohol_poisoning_undetermined",
+  "firearm_suicide",
+  "firearm_homicide",
+  "firearm_other",
+  "suicide_other_means",
+  "homicide_other_means",
+  "alcoholic_liver_disease",
+  "alcohol_induced_other_adult",
+  "alcoholic_cardiomyopathy",
+  "alcohol_exposure_perinatal",
+  "cardiometabolic",
+  "cancer",
+  "chronic_lower_respiratory_disease",
+  "chronic_liver_disease_other",
+  "transport_unintentional",
+  "unintentional_injury_nontransport",
+  "covid19",
+  "all_remaining"
+)
 
-  out[cause_15 == "drug_poisoning_overdose"] <- "drug_poisoning"
-  out[cause_15 %in% c("firearm_homicide", "firearm_suicide", "other_firearm_deaths")] <-
+CAUSE_6_LEVELS <- c(
+  "drug_poisoning",
+  "firearm_deaths",
+  "covid19",
+  "cardiovascular_disease_and_diabetes",
+  "cancer",
+  "all_other_causes"
+)
+
+# The 24 atom causes have pairwise-disjoint code sets, so assignment is
+# order-free. Sixteen codes must be matched at four characters (E24.4, G31.2,
+# G62.1, G72.1, I42.6, K29.2, K85.2, K86.0, P04.3, Q86.0, R78.0, U01.4, U07.1,
+# Y35.0, Y87.0, Y87.1). Only a blank UCOD returns NA; the caller restricts this
+# to ICD-10.
+classify_cause_atom_icd10 <- function(ucod_raw) {
+  ucod <- gsub("[^A-Z0-9]", "", toupper(trimws(as.character(ucod_raw))))
+  ucod[ucod == ""] <- NA_character_
+  block <- suppressWarnings(as.integer(substr(ucod, 2L, 3L)))
+
+  rng <- function(letter, lo, hi) {
+    !is.na(ucod) & substr(ucod, 1L, 1L) == letter &
+      !is.na(block) & block >= lo & block <= hi
+  }
+  eq <- function(...) ucod %in% c(...)
+  pre <- function(prefix) !is.na(ucod) & startsWith(ucod, prefix)
+
+  out <- rep(NA_character_, length(ucod))
+  out[rng("X", 40, 44)] <- "drug_poisoning_unintentional"
+  out[rng("X", 60, 64)] <- "drug_poisoning_suicide"
+  out[rng("Y", 10, 14)] <- "drug_poisoning_undetermined"
+  out[pre("X85")] <- "drug_poisoning_homicide"
+  out[rng("X", 45, 45)] <- "alcohol_poisoning_unintentional"
+  out[rng("X", 65, 65)] <- "alcohol_poisoning_suicide"
+  out[rng("Y", 15, 15)] <- "alcohol_poisoning_undetermined"
+  out[rng("X", 72, 74)] <- "firearm_suicide"
+  out[eq("U014") | rng("X", 93, 95)] <- "firearm_homicide"
+  out[rng("W", 32, 34) | rng("Y", 22, 24) | eq("Y350")] <- "firearm_other"
+  out[pre("U03") | rng("X", 66, 71) | rng("X", 75, 84) | eq("Y870")] <-
+    "suicide_other_means"
+  out[(pre("U01") & !eq("U014")) | pre("U02") | rng("X", 86, 92) |
+        rng("X", 96, 99) | rng("Y", 0, 9) | eq("Y871")] <- "homicide_other_means"
+  out[pre("K70")] <- "alcoholic_liver_disease"
+  out[pre("F10") | eq("E244", "G312", "G621", "G721", "K292", "K852", "K860", "R780")] <-
+    "alcohol_induced_other_adult"
+  out[eq("I426")] <- "alcoholic_cardiomyopathy"
+  out[eq("P043", "Q860")] <- "alcohol_exposure_perinatal"
+  out[rng("I", 0, 9) | pre("I11") | pre("I13") | (rng("I", 20, 51) & !eq("I426")) |
+        rng("I", 60, 69) | rng("E", 10, 14)] <- "cardiometabolic"
+  out[rng("C", 0, 97)] <- "cancer"
+  out[rng("J", 40, 47)] <- "chronic_lower_respiratory_disease"
+  out[pre("K73") | pre("K74")] <- "chronic_liver_disease_other"
+  out[rng("V", 1, 99)] <- "transport_unintentional"
+  out[rng("W", 0, 31) | rng("W", 35, 99) | rng("X", 0, 39) | rng("X", 46, 59) |
+        pre("Y85") | pre("Y86")] <- "unintentional_injury_nontransport"
+  out[eq("U071")] <- "covid19"
+  out[!is.na(ucod) & is.na(out)] <- "all_remaining"
+
+  out
+}
+
+# Collapse the 24 atom causes to the 6 causes. Alcoholic cardiomyopathy is its
+# own atom so the NCHS alcohol-induced definition stays recoverable, but it
+# belongs with cardiovascular disease here.
+classify_cause_6_from_cause_atom <- function(cause_atom) {
+  cause_atom <- as.character(cause_atom)
+  out <- rep(NA_character_, length(cause_atom))
+
+  out[cause_atom %in% c("drug_poisoning_unintentional", "drug_poisoning_suicide",
+                        "drug_poisoning_undetermined", "drug_poisoning_homicide")] <-
+    "drug_poisoning"
+  out[cause_atom %in% c("firearm_suicide", "firearm_homicide", "firearm_other")] <-
     "firearm_deaths"
-  out[cause_15 == "covid19"] <- "covid19"
-  out[cause_15 %in% c("heart_disease", "cerebrovascular_disease", "diabetes_mellitus")] <-
+  out[cause_atom == "covid19"] <- "covid19"
+  out[cause_atom %in% c("alcoholic_cardiomyopathy", "cardiometabolic")] <-
     "cardiovascular_disease_and_diabetes"
-  out[cause_15 == "cancer"] <- "cancer"
-  out[!is.na(cause_15) & is.na(out)] <- "all_other_causes"
+  out[cause_atom == "cancer"] <- "cancer"
+  out[!is.na(cause_atom) & is.na(out)] <- "all_other_causes"
 
   out
 }
 
 # ---- Figure and table helpers ----
 #
-# The figure functions below are called with ggplot2, patchwork, scales and ragg
-# attached; nothing here loads a package. That matters because every draw stage
-# sources this file on the cluster, where the R environment carries only the
-# five packages recorded in batch_info (data.table, here, DemoKin, Matrix,
-# tidyselect). Function bodies are never evaluated there, so the figure-only
-# dependencies cost nothing, but a top-level call into one of them would break
-# every draw.
+# These need ggplot2, patchwork, scales and ragg attached by the caller; nothing
+# here loads a package. Do not call any of them at top level: the draw stages
+# source this file with only five packages available.
 
-# Presentation constants. Cause keys are spelled out rather than derived from
-# CAUSE_6_LEVELS, which is defined further down this file.
+# Presentation constants.
 
 FIGURE_FONT <- "Franklin Gothic Book"
 YEAR_BREAKS <- c(2010, 2015, 2020, 2024)
 
 # ggsci::pal_jama()(7) with the alpha byte dropped. Hard-coded because the
-# cluster R environment does not carry ggsci and every draw sources this file.
+# cluster environment does not carry ggsci.
 JAMA_COLOURS <- c(
   "#374E55", "#DF8F44", "#00A1D5", "#B24745", "#79AF97", "#6A6599", "#80796B"
 )
@@ -192,17 +275,14 @@ PARENT_LABELS <- c(mother = "Maternal death", father = "Paternal death")
 PARENT_WORDS <- c(mother = "maternal", father = "paternal")
 CAUSE_6_LABELS <- c(
   drug_poisoning = "Drug poisoning",
-  firearm_deaths = "Firearm-related deaths",
+  firearm_deaths = "Firearm deaths",
   covid19 = "COVID-19",
   cardiovascular_disease_and_diabetes = "Cardiovascular disease and diabetes",
   cancer = "Cancer",
   all_other_causes = "All other causes"
 )
-GAP_LABELS <- c(RD = "Absolute difference", RR = "Rate ratio")
 
 EDUC_PALETTE <- c(No_BA = JAMA_COLOURS[2], BA_plus = JAMA_COLOURS[3])
-RACE_PALETTE <- c(white = JAMA_COLOURS[1], black = JAMA_COLOURS[4],
-                  hispanic = JAMA_COLOURS[5])
 CAUSE_6_PALETTE <- c(
   covid19 = JAMA_COLOURS[6],
   drug_poisoning = JAMA_COLOURS[4],
@@ -282,9 +362,8 @@ theme_parent_loss <- function(
     )
 }
 
-# Legend inside the plotting area, boxed. The left inset is much smaller than
-# the top one because the panel row is far wider than it is tall, and equal
-# fractions would not look equal.
+# Legend inside the plotting area, boxed. The left and top insets differ
+# because the panel row is much wider than tall.
 inside_legend <- function(position = c("top", "bottom")) {
   position <- match.arg(position)
   theme(
@@ -334,7 +413,7 @@ compose_ab <- function(panel_a, panel_b) {
     )
 }
 
-# Six cause panels in a 3x2 grid under one shared y-axis title.
+# The 8 cause panels in a 4x2 grid under one shared y-axis title.
 compose_causes <- function(panels, y_label) {
   y_title <- patchwork::wrap_elements(full = grid::textGrob(
     y_label, rot = 90,
@@ -360,8 +439,7 @@ make_zero_based_axis_breaks <- function(max_value, target_intervals = 4L) {
 }
 
 # Axis for a stack that may run either side of zero. The step comes from the
-# whole span, and the limits are the slackened values themselves rather than
-# rounded outwards again, which would buy a whole empty step.
+# whole span; the limits are the slackened values themselves.
 make_stacked_axis <- function(min_value, max_value, target_intervals = 5L,
                               slack = 1.2) {
   lower <- min(min_value * slack, 0)
@@ -390,30 +468,355 @@ save_figure <- function(plot_obj, png_path, width = 10.5, height = 8.4, dpi = 32
   invisible(png_path)
 }
 
+# ---- Main-text figure panels ----
+#
+# Shared by 13_tables_figures_point_estimates.r and
+# 14_tables_figures_publication.r. Values arrive as `mid`, with the interval
+# bounds `lo` and `hi` present only where there is one to draw.
+
+RIBBON_ALPHA <- 0.16
+LINE_MAIN <- 0.75
+POINT_MAIN <- 2.1
+
+# TRUE where the frame carries interval bounds beside the point value.
+has_interval <- function(dt, prefix = "") {
+  all(paste0(prefix, c("lo", "hi")) %chin% names(dt))
+}
+
+label_common <- function(dt) {
+  dt[, `:=`(
+    race_label = factor(RACE_LABELS[race_eth], levels = RACE_LABELS[RACES_R3]),
+    parent_type_label = factor(PARENT_LABELS[parent_type],
+                               levels = PARENT_LABELS[PARENT_TYPE_LEVELS])
+  )]
+  if ("parent_educ2" %chin% names(dt)) {
+    dt[, parent_educ_label := factor(EDUC_LABELS[parent_educ2],
+                                     levels = EDUC_LABELS[EDUC_LEVELS])]
+  }
+  if ("cause_6" %chin% names(dt)) {
+    dt[, cause_6_label := factor(CAUSE_6_LABELS[cause_6],
+                                 levels = CAUSE_6_LABELS[CAUSE_6_LEVELS])]
+  }
+  dt[]
+}
+
+# A function, not a list: nothing in this file may call ggplot2 at load time.
+educ_scales <- function() {
+  list(
+    scale_color_manual(
+      values = setNames(EDUC_PALETTE[EDUC_LEVELS], EDUC_LABELS[EDUC_LEVELS]),
+      name = "Parent education"
+    ),
+    scale_fill_manual(
+      values = setNames(EDUC_PALETTE[EDUC_LEVELS], EDUC_LABELS[EDUC_LEVELS]),
+      guide = "none"
+    )
+  )
+}
+
+as_stack_factor <- function(dt) {
+  dt[, cause_6_label := factor(CAUSE_6_LABELS[cause_6],
+                               levels = CAUSE_6_LABELS[CAUSE_6_STACK_LEVELS])]
+  dt[]
+}
+
+incidence_total_panel <- function(dt, parent_type_value, tag, description,
+                                  y_breaks, y_labeler, y_label, show_x_title) {
+  ggplot(dt[parent_type == parent_type_value],
+         aes(x = year, y = mid, color = parent_educ_label,
+             fill = parent_educ_label, group = parent_educ_label)) +
+    (if (has_interval(dt)) {
+      geom_ribbon(aes(ymin = lo, ymax = hi), alpha = RIBBON_ALPHA,
+                  color = NA, show.legend = FALSE)
+    }) +
+    geom_line(linewidth = LINE_MAIN, lineend = "round") +
+    geom_point(size = POINT_MAIN, stroke = 0) +
+    facet_wrap(~race_label, nrow = 1) +
+    common_x_scale() +
+    scale_y_continuous(breaks = y_breaks, limits = c(0, max(y_breaks)),
+                       labels = y_labeler, expand = expansion(mult = c(0, 0.05))) +
+    educ_scales() +
+    labs(title = panel_title(tag, description),
+         x = if (show_x_title) "Year" else NULL, y = y_label) +
+    theme_parent_loss(axis_text_size = 7.8) +
+    (if (identical(tag, "A")) inside_legend("top") else theme(legend.position = "none"))
+}
+
+plot_total <- function(dt, describe, y_label, y_accuracy) {
+  upper <- if (has_interval(dt)) dt$hi else dt$mid
+  y_breaks <- make_zero_based_axis_breaks(max(upper, na.rm = TRUE))
+  y_labeler <- if (is.null(y_accuracy)) {
+    label_number(big.mark = ",")
+  } else {
+    label_number(accuracy = y_accuracy, big.mark = ",")
+  }
+  compose_ab(
+    incidence_total_panel(dt, "mother", "A", describe("maternal"),
+                          y_breaks, y_labeler, y_label, FALSE),
+    incidence_total_panel(dt, "father", "B", describe("paternal"),
+                          y_breaks, y_labeler, y_label, TRUE)
+  )
+}
+
+incidence_decomposition_panel <- function(part_dt, total_dt, tag, description, y_axis,
+                                          show_x_title, legend_here,
+                                          total_key_label) {
+  ggplot(part_dt, aes(x = year, y = rd_contribution_per_1000, fill = cause_6_label)) +
+    geom_col(width = 0.82, colour = NA) +
+    (if (has_interval(total_dt, "total_")) {
+      geom_linerange(data = total_dt,
+                     aes(x = year, ymin = total_lo, ymax = total_hi,
+                         colour = total_key_label),
+                     inherit.aes = FALSE, linewidth = 0.45)
+    }) +
+    geom_point(data = total_dt,
+               aes(x = year, y = total_mid, colour = total_key_label),
+               inherit.aes = FALSE, shape = 16, size = 1.5) +
+    scale_colour_manual(values = setNames("grey15", total_key_label), name = NULL) +
+    guides(colour = guide_legend(order = 1), fill = guide_legend(order = 2)) +
+    facet_wrap(~race_label, nrow = 1) +
+    common_x_scale(pad = 1.2) +
+    scale_y_continuous(breaks = y_axis$breaks, limits = y_axis$limits,
+                       labels = label_number(accuracy = 0.1),
+                       expand = expansion(mult = c(0, 0.02))) +
+    scale_fill_manual(
+      values = setNames(CAUSE_6_PALETTE[CAUSE_6_STACK_LEVELS],
+                        CAUSE_6_LABELS[CAUSE_6_STACK_LEVELS]),
+      name = "Cause of death"
+    ) +
+    labs(title = panel_title(tag, description),
+         x = if (show_x_title) "Year" else NULL, y = AXIS_RATE_DIFFERENCE) +
+    theme_parent_loss(axis_text_size = 7.8) +
+    (if (legend_here) {
+      inside_legend("top") + paired_legend_box()
+    } else {
+      theme(legend.position = "none")
+    })
+}
+
+plot_incidence_decomposition <- function(decomposition_dt, total_key_label) {
+  parts <- as_stack_factor(label_common(copy(decomposition_dt)))
+  total_cols <- intersect(c("total_mid", "total_lo", "total_hi"), names(decomposition_dt))
+  totals <- label_common(unique(
+    decomposition_dt[, c("year", "race_eth", "parent_type", total_cols), with = FALSE]
+  ))
+
+  stack_bounds <- parts[, .(
+    positive = sum(pmax(rd_contribution_per_1000, 0), na.rm = TRUE),
+    negative = sum(pmin(rd_contribution_per_1000, 0), na.rm = TRUE)
+  ), by = .(year, race_eth, parent_type)]
+  y_axis <- make_stacked_axis(
+    min(stack_bounds$negative, totals[[if (has_interval(totals, "total_")) "total_lo" else "total_mid"]], na.rm = TRUE),
+    max(stack_bounds$positive, totals[[if (has_interval(totals, "total_")) "total_hi" else "total_mid"]], na.rm = TRUE)
+  )
+
+  describe <- function(word) {
+    sprintf("Cause contributions to the educational gap in the incidence rate of children experiencing %s death",
+            word)
+  }
+  build <- function(parent_type_value, tag, is_last) {
+    incidence_decomposition_panel(
+      parts[parent_type == parent_type_value],
+      totals[parent_type == parent_type_value],
+      tag, describe(PARENT_WORDS[[parent_type_value]]), y_axis, is_last,
+      identical(parent_type_value, "mother"), total_key_label
+    )
+  }
+  compose_ab(build("mother", "A", FALSE), build("father", "B", TRUE))
+}
+
+mean_age_panel <- function(dt, parent_type_value, tag, description, y_limits,
+                           show_x_title) {
+  ggplot(dt[parent_type == parent_type_value],
+         aes(x = year, y = mid, color = parent_educ_label,
+             fill = parent_educ_label, group = parent_educ_label)) +
+    (if (has_interval(dt)) {
+      geom_ribbon(aes(ymin = lo, ymax = hi),
+                  alpha = RIBBON_ALPHA, color = NA, show.legend = FALSE)
+    }) +
+    geom_line(linewidth = LINE_MAIN, lineend = "round") +
+    geom_point(size = POINT_MAIN, stroke = 0) +
+    facet_wrap(~race_label, nrow = 1) +
+    common_x_scale() +
+    scale_y_continuous(limits = y_limits,
+                       breaks = seq(y_limits[1], y_limits[2], by = 0.5),
+                       labels = label_number(accuracy = 0.1),
+                       expand = expansion(mult = c(0.02, 0.02))) +
+    educ_scales() +
+    labs(title = panel_title(tag, description),
+         x = if (show_x_title) "Year" else NULL, y = AXIS_MEAN_AGE) +
+    theme_parent_loss(axis_text_size = 7.8) +
+    (if (identical(tag, "A")) inside_legend("top") else theme(legend.position = "none"))
+}
+
+plot_total_mean_age <- function(dt) {
+  dt <- dt[is.finite(mid)]
+  lower <- if (has_interval(dt)) dt$lo else dt$mid
+  upper <- if (has_interval(dt)) dt$hi else dt$mid
+  y_limits <- c(
+    min(9, floor(min(lower, na.rm = TRUE) * 2) / 2),
+    max(12, ceiling(max(upper, na.rm = TRUE) * 2) / 2)
+  )
+  describe <- function(word) {
+    sprintf("Mean age of children experiencing %s death, by %s education", word, word)
+  }
+  compose_ab(
+    mean_age_panel(dt, "mother", "A", describe("maternal"), y_limits, FALSE),
+    mean_age_panel(dt, "father", "B", describe("paternal"), y_limits, TRUE)
+  )
+}
+
+meanage_decomposition_panel <- function(part_dt, total_dt, tag, description, y_axis,
+                                        show_x_title, legend_here,
+                                          total_key_label) {
+  ggplot(part_dt, aes(x = year, y = shapley_contribution, fill = cause_6_label)) +
+    geom_col(width = 0.82, colour = NA) +
+    (if (has_interval(total_dt, "total_")) {
+      geom_linerange(data = total_dt,
+                     aes(x = year, ymin = total_lo, ymax = total_hi,
+                         colour = total_key_label),
+                     inherit.aes = FALSE, linewidth = 0.45)
+    }) +
+    geom_point(data = total_dt,
+               aes(x = year, y = total_mid, colour = total_key_label),
+               inherit.aes = FALSE, shape = 16, size = 1.5) +
+    scale_colour_manual(values = setNames("grey15", total_key_label), name = NULL) +
+    guides(colour = guide_legend(order = 1), fill = guide_legend(order = 2)) +
+    facet_wrap(~race_label, nrow = 1) +
+    common_x_scale(pad = 1.2) +
+    scale_y_continuous(breaks = y_axis$breaks, limits = y_axis$limits,
+                       labels = label_number(accuracy = 0.1),
+                       expand = expansion(mult = c(0, 0.02))) +
+    scale_fill_manual(
+      values = setNames(CAUSE_6_PALETTE[CAUSE_6_STACK_LEVELS],
+                        CAUSE_6_LABELS[CAUSE_6_STACK_LEVELS]),
+      name = "Cause of death"
+    ) +
+    labs(title = panel_title(tag, description),
+         x = if (show_x_title) "Year" else NULL, y = AXIS_MEAN_AGE_DIFFERENCE) +
+    theme_parent_loss(axis_text_size = 7.8) +
+    (if (legend_here) {
+      inside_legend("bottom") + paired_legend_box()
+    } else {
+      theme(legend.position = "none")
+    })
+}
+
+plot_meanage_decomposition <- function(decomposition_dt, total_key_label) {
+  parts <- as_stack_factor(label_common(copy(decomposition_dt)))
+  total_cols <- intersect(c("total_mid", "total_lo", "total_hi"), names(decomposition_dt))
+  totals <- label_common(unique(
+    decomposition_dt[, c("year", "race_eth", "parent_type", total_cols), with = FALSE]
+  ))
+
+  stack_bounds <- parts[, .(
+    positive = sum(pmax(shapley_contribution, 0), na.rm = TRUE),
+    negative = sum(pmin(shapley_contribution, 0), na.rm = TRUE)
+  ), by = .(year, race_eth, parent_type)]
+  y_axis <- make_stacked_axis(
+    min(stack_bounds$negative, totals[[if (has_interval(totals, "total_")) "total_lo" else "total_mid"]], na.rm = TRUE),
+    max(stack_bounds$positive, totals[[if (has_interval(totals, "total_")) "total_hi" else "total_mid"]], na.rm = TRUE),
+    target_intervals = 6L, slack = 1.5
+  )
+  # The inside legend sits at the bottom of panel A, where the bars reach
+  # furthest; without this the box overlaps them.
+  y_axis$limits[1] <- y_axis$limits[1] - 0.25
+
+  describe <- function(word) {
+    sprintf("Cause contributions to the educational gap in mean age of children experiencing %s death",
+            word)
+  }
+  build <- function(parent_type_value, tag, is_last) {
+    meanage_decomposition_panel(
+      parts[parent_type == parent_type_value],
+      totals[parent_type == parent_type_value],
+      tag, describe(PARENT_WORDS[[parent_type_value]]), y_axis, is_last,
+      identical(parent_type_value, "mother"), total_key_label
+    )
+  }
+  compose_ab(build("mother", "A", FALSE), build("father", "B", TRUE))
+}
+
+# ---- Main-text count table ----
+
+MAIN_TEXT_KEY_YEARS <- c(2010L, 2019L, 2021L, 2024L)
+MAIN_TEXT_COUNT_KEY <- c("period", "race_eth", "parent_type", "parent_educ2")
+MAIN_TEXT_PERIOD_LABEL <- "2010-2024"
+
+# Row and panel headings shared by the two figure scripts.
+PUBLICATION_RACE_LABELS <- c(
+  white = "NH White", black = "NH Black", hispanic = "Hispanic"
+)
+PUBLICATION_PANEL_LABELS <- c(
+  mother = "Panel A: maternal death",
+  father = "Panel B: paternal death"
+)
+
+build_bereaved_children_number_table <- function(incidence_total_dt) {
+  dt <- copy(as.data.table(incidence_total_dt))[
+    year %between% c(2010L, 2024L) &
+      parent_educ2 %chin% c("Total", "No_BA", "BA_plus"),
+    .(year, race_eth, parent_type, parent_educ2, n_children_losing_parent)
+  ]
+
+  annual <- dt[year %in% MAIN_TEXT_KEY_YEARS, .(
+    period = as.character(year), race_eth, parent_type, parent_educ2,
+    n_children_losing_parent
+  )]
+  full_period <- dt[, .(
+    n_children_losing_parent = sum(n_children_losing_parent)
+  ), by = .(race_eth, parent_type, parent_educ2)]
+  full_period[, period := MAIN_TEXT_PERIOD_LABEL]
+  setcolorder(full_period, names(annual))
+
+  out <- rbindlist(list(annual, full_period), use.names = TRUE)
+  totals <- out[parent_educ2 == "Total", .(
+    period, race_eth, parent_type,
+    total_n_children_losing_parent = n_children_losing_parent
+  )]
+  out <- merge(
+    out, totals,
+    by = c("period", "race_eth", "parent_type"),
+    all.x = TRUE,
+    sort = FALSE
+  )
+  if (any(!is.finite(out$total_n_children_losing_parent)) ||
+      any(out$total_n_children_losing_parent <= 0)) {
+    stop("Main-text number table has a missing or non-positive total.",
+         call. = FALSE)
+  }
+  out[, share_percent := fifelse(
+    parent_educ2 == "Total",
+    NA_real_,
+    100 * n_children_losing_parent / total_n_children_losing_parent
+  )]
+  out[, total_n_children_losing_parent := NULL]
+  out[, period_order := match(
+    period, c(as.character(MAIN_TEXT_KEY_YEARS), MAIN_TEXT_PERIOD_LABEL)
+  )]
+  out[, education_order := match(
+    parent_educ2, c("Total", "No_BA", "BA_plus")
+  )]
+  setorder(out, parent_type, race_eth, education_order, period_order)
+  out[, c("period_order", "education_order") := NULL]
+  out[]
+}
+
 # ---- Parent-loss endpoints ----
 
-# 3-cause all-cause partition, cause_6 grouping, parent types, and the education
-# levels the endpoint tables carry (the two BA legs plus a pooled Total).
-CAUSE_LEVELS <- c("drugs", "firearms", "other")
-CAUSE_6_LEVELS <- c(
-  "drug_poisoning",
-  "firearm_deaths",
-  "covid19",
-  "cardiovascular_disease_and_diabetes",
-  "cancer",
-  "all_other_causes"
-)
+# Parent types and the education levels the endpoint tables carry (the two BA
+# legs plus a pooled Total).
 PARENT_TYPE_LEVELS <- c("mother", "father")
 EDUC_TABLE_LEVELS <- c(EDUC_LEVELS, "Total")
 
-# All-cause incidence: sum the 3-cause partition; the denominator is the
-# cell-level alive-parent exposure (constant across cause), so first() recovers it.
+# All-cause incidence: sum the cause_6 partition over the cell-level
+# alive-parent exposure.
 build_total_incidence <- function(annual_dt, educ_levels) {
   dt <- as.data.table(annual_dt)[
     year %in% YEARS_REPORT &
       race_eth %chin% RACES_R3 &
       parent_educ2 %chin% educ_levels &
-      cause %chin% CAUSE_LEVELS &
+      cause_6 %chin% CAUSE_6_LEVELS &
       parent_type %chin% PARENT_TYPE_LEVELS
   ]
   out <- dt[
@@ -427,13 +830,14 @@ build_total_incidence <- function(annual_dt, educ_levels) {
   out[]
 }
 
-# Cause_6 incidence: roll the cause_15 panel up to the 6 categories (shared cell denominator).
-build_cause6_incidence <- function(cause_6_15_dt, educ_levels) {
-  dt <- as.data.table(cause_6_15_dt)[
+# Cause incidence at the requested grouping: `cause_col` is "cause_6" for the
+# point-estimate tables and "cause_atom" for the draw shards.
+build_cause_incidence <- function(cause_dt, educ_levels, cause_col, cause_levels) {
+  dt <- as.data.table(cause_dt)[
     year %in% YEARS_REPORT &
       race_eth %chin% RACES_R3 &
       parent_educ2 %chin% educ_levels &
-      cause_6 %chin% CAUSE_6_LEVELS &
+      get(cause_col) %chin% cause_levels &
       parent_type %chin% PARENT_TYPE_LEVELS
   ]
   out <- dt[
@@ -441,20 +845,19 @@ build_cause6_incidence <- function(cause_6_15_dt, educ_levels) {
       n_children_losing_parent = sum(n_children_losing_parent, na.rm = TRUE),
       n_children_with_alive_parent_under18 = first(n_children_with_alive_parent_under18)
     ),
-    by = .(year, race_eth, parent_educ2, cause_6, parent_type)
+    by = c("year", "race_eth", "parent_educ2", cause_col, "parent_type")
   ]
   out[, parental_loss_per_1000 := 1000 * n_children_losing_parent / n_children_with_alive_parent_under18]
   out[]
 }
 
-# All-cause event-weighted mean child age at loss: pool the 3-cause partition to
-# child-age loss counts, then take the event-weighted mean child age over 0-17.
+# All-cause event-weighted mean child age at loss, over ages 0-17.
 build_total_mean_age <- function(child_age_dt, educ_levels) {
   dt <- as.data.table(child_age_dt)[
     year %in% YEARS_REPORT &
       race_eth %chin% RACES_R3 &
       parent_educ2 %chin% educ_levels &
-      cause %chin% CAUSE_LEVELS &
+      cause_6 %chin% CAUSE_6_LEVELS &
       parent_type %chin% PARENT_TYPE_LEVELS &
       age_child %in% AGES_MINOR
   ]
@@ -474,20 +877,20 @@ build_total_mean_age <- function(child_age_dt, educ_levels) {
   ]
 }
 
-# Cause_6 mean age: same weighting within each cause_6; an undefined mean where a
-# cell has no events in that cause-year (e.g. COVID-19 before 2020) is left NA.
-build_cause6_mean_age <- function(child_age_dt, educ_levels) {
+# Cause mean age at the same grouping as build_cause_incidence; a cell with no
+# events in that cause-year is left NA.
+build_cause_mean_age <- function(child_age_dt, educ_levels, cause_col, cause_levels) {
   dt <- as.data.table(child_age_dt)[
     year %in% YEARS_REPORT &
       race_eth %chin% RACES_R3 &
       parent_educ2 %chin% educ_levels &
-      cause_6 %chin% CAUSE_6_LEVELS &
+      get(cause_col) %chin% cause_levels &
       parent_type %chin% PARENT_TYPE_LEVELS &
       age_child %in% AGES_MINOR
   ]
   by_age <- dt[
     , .(loss = sum(as.numeric(n_children_losing_parent_at_child_age), na.rm = TRUE)),
-    by = .(year, race_eth, parent_educ2, cause_6, parent_type, age_child)
+    by = c("year", "race_eth", "parent_educ2", cause_col, "parent_type", "age_child")
   ]
   by_age[
     , {
@@ -497,7 +900,7 @@ build_cause6_mean_age <- function(child_age_dt, educ_levels) {
         mean_age_at_loss = safe_divide(sum(age_child * loss, na.rm = TRUE), total_loss)
       )
     },
-    by = .(year, race_eth, parent_educ2, cause_6, parent_type)
+    by = c("year", "race_eth", "parent_educ2", cause_col, "parent_type")
   ]
 }
 
@@ -518,8 +921,7 @@ build_gap_data <- function(total_incidence_dt) {
   gap[]
 }
 
-# The gap meanage(No_BA) - meanage(BA_plus) is a difference of event-weighted
-# means, not an additive rate difference. The frame below carries each leg's
+# Frame for the mean-age gap meanage(No_BA) - meanage(BA_plus): each leg's
 # cause shares and cause-specific mean ages.
 build_meanage_gap_frame <- function(cause6_annual_dt) {
   dt <- copy(cause6_annual_dt)[
@@ -566,10 +968,9 @@ build_meanage_gap_frame <- function(cause6_annual_dt) {
   out[]
 }
 
-# Reference-free cause decomposition of the mean-age education gap. For
-# coalition S, causes in S take their No_BA (share, age) and the rest take
-# BA_plus; each cause's value averages its marginal effect over all orderings,
-# and the values sum to the total gap.
+# Reference-free cause decomposition of the mean-age education gap: each cause's
+# value averages its marginal effect over all coalition orderings, and the values
+# sum to the total gap.
 build_meanage_gap_shapley <- function(cause6_annual_dt) {
   n <- length(CAUSE_6_LEVELS)
   masks <- vapply(
@@ -655,17 +1056,50 @@ order_total <- function(dt) {
   dt[]
 }
 
-order_cause6 <- function(dt) {
+order_cause <- function(dt, cause_col, cause_levels) {
   dt <- copy(dt)
   dt[, `:=`(
     race_order = match(race_eth, RACES_R3),
     educ_order = match(parent_educ2, EDUC_TABLE_LEVELS),
-    cause_order = match(cause_6, CAUSE_6_LEVELS),
+    cause_order = match(get(cause_col), cause_levels),
     parent_order = match(parent_type, PARENT_TYPE_LEVELS)
   )]
   setorder(dt, race_order, educ_order, cause_order, parent_order, year)
   dt[, c("race_order", "educ_order", "cause_order", "parent_order") := NULL]
   dt[]
+}
+
+# Roll a shard's cause_atom endpoint table up to the 6 causes. Incidence sums
+# and re-derives the rate off the shared cell denominator; the mean age is
+# re-weighted by each atom cause's loss count.
+rollup_atoms_to_cause_6 <- function(dt) {
+  out <- as.data.table(dt)[, cause_6 := classify_cause_6_from_cause_atom(cause_atom)]
+  by_cols <- c("year", "race_eth", "parent_educ2", "cause_6", "parent_type")
+  if ("mean_age_at_loss" %chin% names(out)) {
+    out <- out[
+      , {
+        total_loss <- sum(n_children_losing_parent, na.rm = TRUE)
+        .(
+          n_children_losing_parent = total_loss,
+          mean_age_at_loss = safe_divide(
+            sum(mean_age_at_loss * n_children_losing_parent, na.rm = TRUE), total_loss
+          )
+        )
+      },
+      by = by_cols
+    ]
+  } else {
+    out <- out[
+      , .(
+        n_children_losing_parent = sum(n_children_losing_parent, na.rm = TRUE),
+        n_children_with_alive_parent_under18 = first(n_children_with_alive_parent_under18)
+      ),
+      by = by_cols
+    ]
+    out[, parental_loss_per_1000 :=
+          1000 * n_children_losing_parent / n_children_with_alive_parent_under18]
+  }
+  order_cause(out, "cause_6", CAUSE_6_LEVELS)
 }
 
 # ---- Uncertainty shards ----
@@ -677,27 +1111,27 @@ check_shard_tables <- function(tables) {
 
   n_cell <- length(YEARS_REPORT) * length(RACES_R3) *
     length(EDUC_TABLE_LEVELS) * length(PARENT_TYPE_LEVELS)
-  n_cause <- n_cell * length(CAUSE_6_LEVELS)
+  n_cause <- n_cell * length(CAUSE_ATOM_LEVELS)
   key_total <- c("year", "race_eth", "parent_educ2", "parent_type")
-  key_cause <- c(key_total, "cause_6")
+  key_cause <- c(key_total, "cause_atom")
 
   it <- tables$incidence_total
-  ic <- tables$incidence_cause6
+  ic <- tables$incidence_cause_atom
   mt <- tables$meanage_total
-  mc <- tables$meanage_cause6
+  mc <- tables$meanage_cause_atom
 
   # Row grid and key uniqueness.
   if (nrow(it) != n_cell) add(sprintf("incidence_total has %d rows, expected %d.", nrow(it), n_cell))
   if (nrow(mt) != n_cell) add(sprintf("meanage_total has %d rows, expected %d.", nrow(mt), n_cell))
-  if (nrow(ic) != n_cause) add(sprintf("incidence_cause6 has %d rows, expected %d.", nrow(ic), n_cause))
-  if (nrow(mc) != n_cause) add(sprintf("meanage_cause6 has %d rows, expected %d.", nrow(mc), n_cause))
+  if (nrow(ic) != n_cause) add(sprintf("incidence_cause_atom has %d rows, expected %d.", nrow(ic), n_cause))
+  if (nrow(mc) != n_cause) add(sprintf("meanage_cause_atom has %d rows, expected %d.", nrow(mc), n_cause))
   if (anyDuplicated(it, by = key_total)) add("incidence_total keys not unique.")
   if (anyDuplicated(mt, by = key_total)) add("meanage_total keys not unique.")
-  if (anyDuplicated(ic, by = key_cause)) add("incidence_cause6 keys not unique.")
-  if (anyDuplicated(mc, by = key_cause)) add("meanage_cause6 keys not unique.")
+  if (anyDuplicated(ic, by = key_cause)) add("incidence_cause_atom keys not unique.")
+  if (anyDuplicated(mc, by = key_cause)) add("meanage_cause_atom keys not unique.")
 
   # Incidence numeric domain: finite, non-negative, denominator strictly positive.
-  for (nm in c("incidence_total", "incidence_cause6")) {
+  for (nm in c("incidence_total", "incidence_cause_atom")) {
     d <- tables[[nm]]
     if (!all(is.finite(d$n_children_losing_parent) & d$n_children_losing_parent >= 0)) {
       add(sprintf("%s: n_children_losing_parent not finite and non-negative.", nm))
@@ -712,7 +1146,7 @@ check_shard_tables <- function(tables) {
 
   # Mean age: counts finite and non-negative; mean age NA only where the count is
   # 0, otherwise finite and within [0, oldest minor age].
-  for (nm in c("meanage_total", "meanage_cause6")) {
+  for (nm in c("meanage_total", "meanage_cause_atom")) {
     d <- tables[[nm]]
     if (!all(is.finite(d$n_children_losing_parent) & d$n_children_losing_parent >= 0)) {
       add(sprintf("%s: n_children_losing_parent not finite and non-negative.", nm))
@@ -725,20 +1159,20 @@ check_shard_tables <- function(tables) {
     }
   }
 
-  # Closure (1): cause_6 incidence denominator constant across cause within a cell.
+  # Closure (1): cause_atom incidence denominator constant across cause within a cell.
   denom_var <- ic[
     , .(u = uniqueN(round(n_children_with_alive_parent_under18, 6))), by = key_total
   ][u != 1L]
-  if (nrow(denom_var)) add("cause_6 incidence denominator varies across cause within a cell.")
+  if (nrow(denom_var)) add("cause_atom incidence denominator varies across cause within a cell.")
 
-  # Closure (2): the six cause loss counts sum to the all-cause loss.
+  # Closure (2): the 24 atom cause loss counts sum to the all-cause loss.
   chk2 <- merge(
-    ic[, .(loss6 = sum(n_children_losing_parent)), by = key_total],
+    ic[, .(loss_atom = sum(n_children_losing_parent)), by = key_total],
     it[, c(key_total, "n_children_losing_parent"), with = FALSE],
     by = key_total
   )
-  if (nrow(chk2) != n_cell || chk2[, max(abs(loss6 - n_children_losing_parent))] > 1e-6) {
-    add("cause_6 loss counts do not sum to the all-cause loss.")
+  if (nrow(chk2) != n_cell || chk2[, max(abs(loss_atom - n_children_losing_parent))] > 1e-6) {
+    add("cause_atom loss counts do not sum to the all-cause loss.")
   }
 
   # Closure (3): incidence and mean-age loss counts agree per cell (two panels).
@@ -756,10 +1190,10 @@ check_shard_tables <- function(tables) {
     by = key_cause, suffixes = c("_inc", "_age")
   )
   if (chk3c[, max(abs(n_children_losing_parent_inc - n_children_losing_parent_age))] > 1e-6) {
-    add("cause_6 incidence and mean-age loss counts disagree.")
+    add("cause_atom incidence and mean-age loss counts disagree.")
   }
 
-  # Closure (4): cause_6 mean ages weighted by loss close to the all-cause mean age.
+  # Closure (4): cause_atom mean ages weighted by loss close to the all-cause mean age.
   wt <- mc[
     n_children_losing_parent > 0 & is.finite(mean_age_at_loss),
     .(w_age = sum(n_children_losing_parent * mean_age_at_loss) / sum(n_children_losing_parent)),
@@ -767,23 +1201,15 @@ check_shard_tables <- function(tables) {
   ]
   chk4 <- merge(wt, mt[n_children_losing_parent > 0, c(key_total, "mean_age_at_loss"), with = FALSE], by = key_total)
   if (nrow(chk4) && chk4[, max(abs(w_age - mean_age_at_loss))] > 1e-6) {
-    add("cause_6 mean ages do not close to the all-cause mean age.")
+    add("cause_atom mean ages do not close to the all-cause mean age.")
   }
 
   errs
 }
 
-uncertainty_field <- function(object, name, default = NA) {
-  if (!is.list(object)) return(default)
-  value <- object[[name]]
-  if (is.null(value) || !length(value)) default else value[[1]]
-}
-
 # ---- ACS harmonisation ----
 
-# Locate the single IPUMS-USA DDI/XML companion file and its matching data file.
-# The caller refuses to guess fixed-width positions, so missing metadata is a
-# hard error.
+# Locate the IPUMS-USA DDI/XML companion file and its matching data file.
 find_acs_files <- function(raw_dir) {
   if (!dir.exists(raw_dir)) {
     stop("Raw ACS directory does not exist: ", raw_dir, call. = FALSE)
@@ -833,17 +1259,15 @@ harmonize_acs_sex <- function(sex_raw) {
   out
 }
 
-# IPUMS AGE is single-year and already top-coded by IPUMS; treat clearly
-# out-of-range values as missing.
+# IPUMS AGE is single-year and already top-coded; out-of-range values become NA.
 harmonize_acs_age <- function(age_raw) {
   age_num <- safe_integer(age_raw)
   age_num[!is.na(age_num) & (age_num < 0L | age_num > 120L)] <- NA_integer_
   age_num
 }
 
-# IPUMS-USA HISPAN [general version]: 0 = not Hispanic, 1-4 = Hispanic-origin
-# groups (Mexican / Puerto Rican / Cuban / other), 9 = not reported. Unreported
-# origin stays NA, matching the single-race death and birth numerators.
+# IPUMS-USA HISPAN [general]: 0 = not Hispanic, 1-4 = Hispanic-origin groups,
+# 9 = not reported and stays NA.
 acs_hispanic_flag <- function(hispanic_raw) {
   hisp_num <- safe_integer(hispanic_raw)
   out <- rep(NA, length(hisp_num))
@@ -852,12 +1276,9 @@ acs_hispanic_flag <- function(hispanic_raw) {
   out
 }
 
-# IPUMS-USA RACE [general version] single-race codes: 1 white, 2 black,
-# 3 American Indian/Alaska Native, 4-6 Asian or Pacific Islander
-# (Chinese / Japanese / other Asian or PI). Codes 7-9 (other race n.e.c., two or
-# three or more major races) have no single-race equivalent and become NA, so
-# multiracial respondents are dropped symmetrically with the single-race
-# death/birth numerators (Asian + Pacific Islander merged per Villaveces et al., 2025).
+# IPUMS-USA RACE [general] single-race codes: 1 white, 2 black, 3 AIAN,
+# 4-6 Asian or Pacific Islander (merged per Villaveces et al., 2025). Codes 7-9
+# (other, two or more races) become NA.
 acs_race_group <- function(race_raw) {
   race_num <- safe_integer(race_raw)
   out <- rep(NA_character_, length(race_num))
@@ -877,8 +1298,8 @@ harmonize_acs_race_eth <- function(race_raw, hispanic_raw) {
   out
 }
 
-# Mortality denominator: cap age at 85 to match the 85+ top-code in the death
-# numerator, then count by analysis cell.
+# Mortality denominator: cap age at 85 to match the death numerator top-code,
+# then count by analysis cell.
 derive_death_denominator <- function(panel_df) {
   if (!nrow(panel_df)) {
     return(data.frame(
@@ -903,8 +1324,8 @@ derive_death_denominator <- function(panel_df) {
   as.data.frame(out)
 }
 
-# Fertility denominator: women only, counted by analysis cell. Age is not capped
-# because the fertility rate layer works within the childbearing age window.
+# Fertility denominator: women only, counted by analysis cell; age is not
+# capped.
 derive_birth_denominator <- function(panel_df) {
   if (!nrow(panel_df)) {
     return(data.frame(
@@ -930,18 +1351,14 @@ derive_birth_denominator <- function(panel_df) {
 
 # ---- ACS replicate weights ----
 
-# The ACS variance design is successive-difference replication: 80 replicate
-# weights and the 4/80 scale (Census Bureau, ACS Design and Methodology ch. 12).
-# The uncertainty draw perturbs the population with a discrete Rademacher
-# multiplier on the replicate deviations. Replicate weights are published from
-# 2005 on, so earlier ACS years carry the
-# point weight unperturbed and contribute no population uncertainty.
+# ACS successive-difference replication: 80 replicate weights, scale 4/80
+# (Census Bureau, ACS Design and Methodology ch. 12). Replicate weights start in
+# 2005; earlier years carry the point weight unperturbed.
 ACS_REPLICATE_COUNT <- 80L
 ACS_SDR_SCALE <- 4 / 80
 ACS_REPLICATE_MIN_YEAR <- 2005L
 
-# A replicate count of zero would send the log below to -Inf. Half a weighted
-# person is far under any real cell and keeps the deviation finite.
+# Floor for a zero replicate count, which would send the log to -Inf.
 ACS_REPLICATE_ZERO_FLOOR <- 0.5
 
 # Column names carrying the replicate-weighted counts.
@@ -949,10 +1366,8 @@ acs_replicate_columns <- function(prefix = "n_persons_weighted_rep") {
   sprintf("%s%02d", prefix, seq_len(ACS_REPLICATE_COUNT))
 }
 
-# A population is a positive count, so the multiplier acts on the log scale and
-# keeps the draw inside the support; the linear form leaves it in cells the
-# replicate design cannot resolve. To first order the two agree, so the interval
-# changes only where the linear form was producing negative populations.
+# Replicate deviations on the log scale, keeping the perturbed population
+# inside the support of a positive count.
 acs_log_deviations <- function(point, replicate_matrix) {
   log(pmax(replicate_matrix, ACS_REPLICATE_ZERO_FLOOR)) -
     log(pmax(point, ACS_REPLICATE_ZERO_FLOOR))
@@ -964,8 +1379,7 @@ acs_log_deviations <- function(point, replicate_matrix) {
 DRAW_MASTER_SEED <- 20260725L
 DRAW_RNG_KIND <- "L'Ecuyer-CMRG"
 
-# Split one draw stream into fixed components so that changes in one
-# perturbation do not alter the others.
+# Split one draw stream into fixed components.
 draw_component_streams <- function(draw_stream) {
   death <- parallel::nextRNGSubStream(draw_stream)
   birth <- parallel::nextRNGSubStream(death)

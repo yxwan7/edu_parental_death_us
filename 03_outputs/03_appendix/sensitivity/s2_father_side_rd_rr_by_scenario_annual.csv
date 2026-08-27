@@ -1,361 +1,361 @@
 analysis,year,race_eth,scenario,scenario_label,leg,definition,gap_metric,BA_plus_rate_per_1000,No_BA_rate_per_1000,value
-father_education_missingness,2010,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.16171567310348,4.1421623687097,1.98044669560621
-father_education_missingness,2011,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.09284357434461,4.11375857369464,2.02091499935003
-father_education_missingness,2012,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.08201024358339,4.10320026522714,2.02119002164376
-father_education_missingness,2013,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.0495759838458,4.20568544219735,2.15610945835156
-father_education_missingness,2014,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.94090304431561,4.17144668449207,2.23054364017647
-father_education_missingness,2015,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.0320923980904,4.38609331435922,2.35400091626882
-father_education_missingness,2016,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.07818019249505,4.76499225471708,2.68681206222203
-father_education_missingness,2017,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.10045376287283,4.97362375607682,2.87316999320398
-father_education_missingness,2018,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.11975132981403,5.03158717786685,2.91183584805282
-father_education_missingness,2019,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.10974902217414,5.27440320762171,3.16465418544757
-father_education_missingness,2020,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.86304994754964,7.31547962128046,4.45242967373082
-father_education_missingness,2021,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.87406161096775,8.28241983831883,5.40835822735108
-father_education_missingness,2022,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.32630146750623,7.46065608378304,5.13435461627682
-father_education_missingness,2023,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.20266726114779,7.07154611052742,4.86887884937963
-father_education_missingness,2024,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.03993516599276,6.44635374364413,4.40641857765138
-father_education_missingness,2010,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.1623011853694,4.14213138864021,1.97983020327081
-father_education_missingness,2011,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.09342353926206,4.11370695768179,2.02028341841972
-father_education_missingness,2012,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.08243096692589,4.10320097463771,2.02077000771182
-father_education_missingness,2013,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.05005747412834,4.20561820353756,2.15556072940923
-father_education_missingness,2014,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.94120394325398,4.17145257451611,2.23024863126213
-father_education_missingness,2015,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.03235441350816,4.38612236044887,2.35376794694071
-father_education_missingness,2016,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.07830439262869,4.76509853471048,2.68679414208178
-father_education_missingness,2017,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.10058111138055,4.9737179380575,2.87313682667695
-father_education_missingness,2018,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.11990357562847,5.03167251275819,2.91176893712972
-father_education_missingness,2019,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.10997491974322,5.27447368843499,3.16449876869177
-father_education_missingness,2020,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.86337076269806,7.31554330437442,4.45217254167636
-father_education_missingness,2021,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.87455270271912,8.28246235515161,5.40790965243249
-father_education_missingness,2022,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.32677766997972,7.46064350769599,5.13386583771628
-father_education_missingness,2023,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.20329399711847,7.07147888840135,4.86818489128288
-father_education_missingness,2024,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.04069427601363,6.44624383612112,4.40554956010749
-father_education_missingness,2010,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.27430702833263,4.131163396473,1.85685636814037
-father_education_missingness,2011,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.19262469702473,4.10877386773341,1.91614917070869
-father_education_missingness,2012,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.17170878204534,4.0909642967698,1.91925551472446
-father_education_missingness,2013,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.13759212325771,4.18090488289841,2.0433127596407
-father_education_missingness,2014,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.02741782253713,4.13045938774682,2.1030415652097
-father_education_missingness,2015,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.14211873881734,4.32331206606227,2.18119332724493
-father_education_missingness,2016,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.21219429472585,4.68108732005468,2.46889302532883
-father_education_missingness,2017,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.25513383469126,4.86669251611692,2.61155868142566
-father_education_missingness,2018,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.29474723346802,4.90458097166318,2.60983373819516
-father_education_missingness,2019,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.30737903287315,5.13419153288457,2.82681250001142
-father_education_missingness,2020,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,3.16494776763233,7.1150302339541,3.95008246632176
-father_education_missingness,2021,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,3.19271091734336,8.06427248908487,4.87156157174151
-father_education_missingness,2022,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.59616915921996,7.2742732636843,4.67810410446433
-father_education_missingness,2023,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.48194914541999,6.89902177730687,4.41707263188689
-father_education_missingness,2024,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.31724626558833,6.28515699457346,3.96791072898513
-father_education_missingness,2010,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,2.11523357935053,4.14423569595478,2.02900211660425
-father_education_missingness,2011,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,2.05060822283807,4.11516346631311,2.06455524347504
-father_education_missingness,2012,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,2.04270924451396,4.10590622770264,2.06319698318867
-father_education_missingness,2013,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,2.01065486089115,4.21021542579772,2.19956056490657
-father_education_missingness,2014,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.90260132835317,4.17838751128375,2.27578618293058
-father_education_missingness,2015,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.98505988712946,4.39613783384613,2.41107794671666
-father_education_missingness,2016,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,2.02278208799588,4.77827628253476,2.75549419453888
-father_education_missingness,2017,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,2.03855968916952,4.99048806995244,2.95192838078292
-father_education_missingness,2018,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,2.0522305181508,5.05173447281734,2.99950395466654
-father_education_missingness,2019,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,2.03647360356543,5.2968044816797,3.26033087811428
-father_education_missingness,2020,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,2.75478425040565,7.34804502764679,4.59326077724115
-father_education_missingness,2021,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,2.76504264734599,8.31779960430441,5.55275695695842
-father_education_missingness,2022,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,2.23833199009477,7.49103890862488,5.25270691853011
-father_education_missingness,2023,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,2.11629272921047,7.09969698091252,4.98340425170204
-father_education_missingness,2024,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.95872276738811,6.47280716097655,4.51408439358844
-father_education_missingness,2010,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.16171567310348,4.1421623687097,1.91614578191172
-father_education_missingness,2011,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.09284357434461,4.11375857369464,1.96563117479189
-father_education_missingness,2012,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.08201024358339,4.10320026522714,1.97078774125772
-father_education_missingness,2013,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.0495759838458,4.20568544219735,2.05197829958266
-father_education_missingness,2014,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.94090304431561,4.17144668449207,2.14922981171529
-father_education_missingness,2015,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.0320923980904,4.38609331435922,2.1584123431006
-father_education_missingness,2016,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.07818019249505,4.76499225471708,2.29286770797111
-father_education_missingness,2017,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.10045376287283,4.97362375607682,2.36788061893555
-father_education_missingness,2018,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.11975132981403,5.03158717786685,2.37366860305652
-father_education_missingness,2019,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.10974902217414,5.27440320762171,2.5000145288307
-father_education_missingness,2020,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.86304994754964,7.31547962128046,2.55513517238547
-father_education_missingness,2021,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.87406161096775,8.28241983831883,2.88178228563792
-father_education_missingness,2022,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.32630146750623,7.46065608378304,3.20708910173229
-father_education_missingness,2023,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.20266726114779,7.07154611052742,3.21044682293162
-father_education_missingness,2024,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.03993516599276,6.44635374364413,3.16007775693545
-father_education_missingness,2010,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.1623011853694,4.14213138864021,1.91561259674035
-father_education_missingness,2011,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.09342353926206,4.11370695768179,1.96506195737718
-father_education_missingness,2012,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.08243096692589,4.10320097463771,1.97038991438689
-father_education_missingness,2013,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.05005747412834,4.20561820353756,2.05146355973544
-father_education_missingness,2014,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.94120394325398,4.17145257451611,2.14889970165815
-father_education_missingness,2015,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.03235441350816,4.38612236044887,2.1581483678714
-father_education_missingness,2016,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.07830439262869,4.76509853471048,2.2927818233033
-father_education_missingness,2017,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.10058111138055,4.9737179380575,2.36778190145138
-father_education_missingness,2018,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.11990357562847,5.03167251275819,2.3735383866535
-father_education_missingness,2019,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.10997491974322,5.27447368843499,2.49978027657167
-father_education_missingness,2020,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.86337076269806,7.31554330437442,2.55487113288858
-father_education_missingness,2021,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.87455270271912,8.28246235515161,2.88130474954138
-father_education_missingness,2022,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.32677766997972,7.46064350769599,3.20642732821182
-father_education_missingness,2023,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.20329399711847,7.07147888840135,3.20950308839839
-father_education_missingness,2024,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.04069427601363,6.44624383612112,3.15884839384832
-father_education_missingness,2010,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.27430702833263,4.131163396473,1.81644929422818
-father_education_missingness,2011,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.19262469702473,4.10877386773341,1.8739065893533
-father_education_missingness,2012,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.17170878204534,4.0909642967698,1.88375362783075
-father_education_missingness,2013,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.13759212325771,4.18090488289841,1.95589459626501
-father_education_missingness,2014,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.02741782253713,4.13045938774682,2.03730052179276
-father_education_missingness,2015,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.14211873881734,4.32331206606227,2.01824109360491
-father_education_missingness,2016,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.21219429472585,4.68108732005468,2.11603805832742
-father_education_missingness,2017,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.25513383469126,4.86669251611692,2.15805041867202
-father_education_missingness,2018,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.29474723346802,4.90458097166318,2.13730771743908
-father_education_missingness,2019,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.30737903287315,5.13419153288457,2.22511839612735
-father_education_missingness,2020,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,3.16494776763233,7.1150302339541,2.24807192924918
-father_education_missingness,2021,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,3.19271091734336,8.06427248908487,2.525838604829
-father_education_missingness,2022,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.59616915921996,7.2742732636843,2.80192576737561
-father_education_missingness,2023,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.48194914541999,6.89902177730687,2.77967894307498
-father_education_missingness,2024,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.31724626558833,6.28515699457346,2.71233881694387
-father_education_missingness,2010,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,2.11523357935053,4.14423569595478,1.95923312508458
-father_education_missingness,2011,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,2.05060822283807,4.11516346631311,2.00680140676393
-father_education_missingness,2012,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,2.04270924451396,4.10590622770264,2.01002968911495
-father_education_missingness,2013,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,2.01065486089115,4.21021542579772,2.09395232751766
-father_education_missingness,2014,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.90260132835317,4.17838751128375,2.19614453591307
-father_education_missingness,2015,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.98505988712946,4.39613783384613,2.21461219500196
-father_education_missingness,2016,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,2.02278208799588,4.77827628253476,2.36222987680742
-father_education_missingness,2017,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,2.03855968916952,4.99048806995244,2.44804608688475
-father_education_missingness,2018,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,2.0522305181508,5.05173447281734,2.46158237495137
-father_education_missingness,2019,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,2.03647360356543,5.2968044816797,2.60096888680813
-father_education_missingness,2020,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,2.75478425040565,7.34804502764679,2.66737586675428
-father_education_missingness,2021,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,2.76504264734599,8.31779960430441,3.00819938972305
-father_education_missingness,2022,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,2.23833199009477,7.49103890862488,3.34670591394609
-father_education_missingness,2023,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,2.11629272921047,7.09969698091252,3.35478021679979
-father_education_missingness,2024,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.95872276738811,6.47280716097655,3.30460607736123
-father_education_missingness,2010,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.05531702126215,1.85052246793538,0.795205446673231
-father_education_missingness,2011,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.04829702941477,1.83098542575372,0.78268839633895
-father_education_missingness,2012,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.09589333737459,1.83262857059912,0.736735233224529
-father_education_missingness,2013,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.08581620155311,1.83447302545408,0.748656823900966
-father_education_missingness,2014,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.09448194787495,1.89165862513948,0.797176677264526
-father_education_missingness,2015,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.12404982252988,1.97959523529225,0.855545412762361
-father_education_missingness,2016,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.11806994350335,2.10890104934651,0.99083110584316
-father_education_missingness,2017,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.10576206959969,2.17979517593606,1.07403310633637
-father_education_missingness,2018,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.03176782698318,2.23638544804554,1.20461762106236
-father_education_missingness,2019,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,0.998724997847291,2.37198414388932,1.37325914604203
-father_education_missingness,2020,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.29215379352049,3.6170865201305,2.32493272661002
-father_education_missingness,2021,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.44977278884957,4.09686732703388,2.64709453818431
-father_education_missingness,2022,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.13409563680801,3.48885782697949,2.35476219017148
-father_education_missingness,2023,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.02250122154625,3.29124358177518,2.26874236022893
-father_education_missingness,2024,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,0.968859975947239,2.99525806661748,2.02639809067024
-father_education_missingness,2010,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.07583311485543,1.8488055144673,0.772972399611877
-father_education_missingness,2011,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.06817197577864,1.82910105995023,0.760929084171589
-father_education_missingness,2012,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.11692521425872,1.8306879445623,0.713762730303582
-father_education_missingness,2013,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.10566215214379,1.83242043708397,0.726758284940178
-father_education_missingness,2014,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.11475067167931,1.88961844924472,0.774867777565407
-father_education_missingness,2015,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.14757777971519,1.97764920443199,0.830071424716795
-father_education_missingness,2016,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.13928792252562,2.107112253735,0.967824331209384
-father_education_missingness,2017,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.12769970733526,2.17808727636484,1.05038756902958
-father_education_missingness,2018,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.05581553233006,2.23481167356143,1.17899614123138
-father_education_missingness,2019,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.02198283015533,2.37069549705678,1.34871266690144
-father_education_missingness,2020,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.32963253397916,3.61525989364776,2.2856273596686
-father_education_missingness,2021,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.48840030653145,4.09544299628066,2.60704268974921
-father_education_missingness,2022,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.16588333781779,3.4874467843349,2.32156344651711
-father_education_missingness,2023,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.05324782485924,3.28946828573992,2.23622046088069
-father_education_missingness,2024,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.0004588399926,2.99301274722328,1.99255390723068
-father_education_missingness,2010,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.160769047834,1.80524689469626,0.64447784686226
-father_education_missingness,2011,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.14583945635108,1.78505110933746,0.639211652986377
-father_education_missingness,2012,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.1955455098828,1.78403667778583,0.588491167903031
-father_education_missingness,2013,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.17835007972837,1.7805122602788,0.602162180550425
-father_education_missingness,2014,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.18999767284168,1.83351494107551,0.643517268233835
-father_education_missingness,2015,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.2448976986785,1.91831754303605,0.673419844357556
-father_education_missingness,2016,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.23375331274272,2.04487529258822,0.811121979845496
-father_education_missingness,2017,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.23269118297422,2.10869336946814,0.876002186493922
-father_education_missingness,2018,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.18529083308161,2.15980042891116,0.974509595829555
-father_education_missingness,2019,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.16000075667317,2.29431502860321,1.13431427193004
-father_education_missingness,2020,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.57268274684368,3.48232070572859,1.90963795888491
-father_education_missingness,2021,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.75344912287902,3.95910376389523,2.20565464101621
-father_education_missingness,2022,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.39968567029821,3.36913062328707,1.96944495298885
-father_education_missingness,2023,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.2905027360118,3.16690723391582,1.87640449790402
-father_education_missingness,2024,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.25636675593759,2.85552127245459,1.599154516517
-father_education_missingness,2010,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,0.984409751431263,1.85416303378778,0.869753282356516
-father_education_missingness,2011,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,0.980470458583105,1.83477466807045,0.854304209487343
-father_education_missingness,2012,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.02280356024731,1.83666710075637,0.813863540509056
-father_education_missingness,2013,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.01592704848811,1.83884060243511,0.822913553946994
-father_education_missingness,2014,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.02173019938389,1.8961835216085,0.874453322224605
-father_education_missingness,2015,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.03936618659391,1.9840743398869,0.944708153292991
-father_education_missingness,2016,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.04074636746244,2.11326722918388,1.07252086172143
-father_education_missingness,2017,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.02438254128137,2.18425192316478,1.15986938188341
-father_education_missingness,2018,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,0.94305213245119,2.24083936055449,1.2977872281033
-father_education_missingness,2019,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,0.913265392750463,2.37607604260477,1.4628106498543
-father_education_missingness,2020,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.16005258603942,3.62359665701179,2.46354407097237
-father_education_missingness,2021,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.3130430723254,4.10295411505326,2.78991104272786
-father_education_missingness,2022,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.02937195343836,3.49359373006158,2.46422177662322
-father_education_missingness,2023,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,0.926897596938789,3.29614310712053,2.36924551018174
-father_education_missingness,2024,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,0.87613679492055,3.00077315273489,2.12463635781434
-father_education_missingness,2010,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.05531702126215,1.85052246793538,1.75352280940392
-father_education_missingness,2011,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.04829702941477,1.83098542575372,1.7466284596608
-father_education_missingness,2012,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.09589333737459,1.83262857059912,1.67226910512068
-father_education_missingness,2013,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.08581620155311,1.83447302545408,1.68948761570339
-father_education_missingness,2014,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.09448194787495,1.89165862513948,1.72835982248252
-father_education_missingness,2015,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.12404982252988,1.97959523529225,1.76112766143835
-father_education_missingness,2016,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.11806994350335,2.10890104934651,1.88619778360064
-father_education_missingness,2017,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.10576206959969,2.17979517593606,1.97130579521976
-father_education_missingness,2018,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.03176782698318,2.23638544804554,2.16752779991655
-father_education_missingness,2019,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,0.998724997847291,2.37198414388932,2.37501228967136
-father_education_missingness,2020,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.29215379352049,3.6170865201305,2.79926935808138
-father_education_missingness,2021,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.44977278884957,4.09686732703388,2.82586854888126
-father_education_missingness,2022,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.13409563680801,3.48885782697949,3.07633475850336
-father_education_missingness,2023,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.02250122154625,3.29124358177518,3.21881628346427
-father_education_missingness,2024,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,0.968859975947239,2.99525806661748,3.09152833327547
-father_education_missingness,2010,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.07583311485543,1.8488055144673,1.71848727180679
-father_education_missingness,2011,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.06817197577864,1.82910105995023,1.71236570648365
-father_education_missingness,2012,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.11692521425872,1.8306879445623,1.6390425439337
-father_education_missingness,2013,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.10566215214379,1.83242043708397,1.65730592616474
-father_education_missingness,2014,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.11475067167931,1.88961844924472,1.69510411363835
-father_education_missingness,2015,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.14757777971519,1.97764920443199,1.72332476228566
-father_education_missingness,2016,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.13928792252562,2.107112253735,1.84949933381535
-father_education_missingness,2017,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.12769970733526,2.17808727636484,1.9314426191629
-father_education_missingness,2018,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.05581553233006,2.23481167356143,2.11666868418717
-father_education_missingness,2019,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.02198283015533,2.37069549705678,2.31970188451841
-father_education_missingness,2020,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.32963253397916,3.61525989364776,2.71899175242686
-father_education_missingness,2021,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.48840030653145,4.09544299628066,2.75157360443215
-father_education_missingness,2022,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.16588333781779,3.4874467843349,2.99124849906718
-father_education_missingness,2023,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.05324782485924,3.28946828573992,3.1231664648152
-father_education_missingness,2024,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.0004588399926,2.99301274722328,2.99164006311885
-father_education_missingness,2010,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.160769047834,1.80524689469626,1.5552162577602
-father_education_missingness,2011,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.14583945635108,1.78505110933746,1.55785446158569
-father_education_missingness,2012,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.1955455098828,1.78403667778583,1.49223652553446
-father_education_missingness,2013,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.17835007972837,1.7805122602788,1.51102146205076
-father_education_missingness,2014,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.18999767284168,1.83351494107551,1.54077187117277
-father_education_missingness,2015,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.2448976986785,1.91831754303605,1.54094392259895
-father_education_missingness,2016,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.23375331274272,2.04487529258822,1.6574425952643
-father_education_missingness,2017,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.23269118297422,2.10869336946814,1.7106420477352
-father_education_missingness,2018,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.18529083308161,2.15980042891116,1.82216918298098
-father_education_missingness,2019,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.16000075667317,2.29431502860321,1.97785649311402
-father_education_missingness,2020,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.57268274684368,3.48232070572859,2.21425504458385
-father_education_missingness,2021,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.75344912287902,3.95910376389523,2.25789486118349
-father_education_missingness,2022,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.39968567029821,3.36913062328707,2.40706231033232
-father_education_missingness,2023,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.2905027360118,3.16690723391582,2.45401047633801
-father_education_missingness,2024,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.25636675593759,2.85552127245459,2.27284052125655
-father_education_missingness,2010,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,0.984409751431263,1.85416303378778,1.88352769879814
-father_education_missingness,2011,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,0.980470458583105,1.83477466807045,1.87132070324884
-father_education_missingness,2012,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.02280356024731,1.83666710075637,1.79571832963924
-father_education_missingness,2013,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.01592704848811,1.83884060243511,1.81001244643662
-father_education_missingness,2014,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.02173019938389,1.8961835216085,1.85585541344663
-father_education_missingness,2015,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.03936618659391,1.9840743398869,1.90892715722154
-father_education_missingness,2016,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.04074636746244,2.11326722918388,2.0305304877849
-father_education_missingness,2017,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.02438254128137,2.18425192316478,2.13226195795232
-father_education_missingness,2018,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,0.94305213245119,2.24083936055449,2.37615640052696
-father_education_missingness,2019,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,0.913265392750463,2.37607604260477,2.60173664902465
-father_education_missingness,2020,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.16005258603942,3.62359665701179,3.12364861784692
-father_education_missingness,2021,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.3130430723254,4.10295411505326,3.12476734505513
-father_education_missingness,2022,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.02937195343836,3.49359373006158,3.39390802167487
-father_education_missingness,2023,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,0.926897596938789,3.29614310712053,3.55610276475687
-father_education_missingness,2024,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,0.87613679492055,3.00077315273489,3.42500528471357
-father_education_missingness,2010,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.38125471073717,3.09695390093736,1.71569919020019
-father_education_missingness,2011,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.37981834695255,3.16513375964678,1.78531541269422
-father_education_missingness,2012,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.33479952273328,3.18351183922976,1.84871231649649
-father_education_missingness,2013,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.33794560458252,3.2222195511171,1.88427394653458
-father_education_missingness,2014,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.34173343131746,3.33519116455373,1.99345773323626
-father_education_missingness,2015,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.33436738109582,3.51290151428764,2.17853413319182
-father_education_missingness,2016,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.36335627024295,3.8239060958804,2.46054982563745
-father_education_missingness,2017,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.37106952920242,3.97271456141875,2.60164503221633
-father_education_missingness,2018,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.36386199730443,3.94429842390555,2.58043642660112
-father_education_missingness,2019,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.34899032498655,4.01689427511913,2.66790395013258
-father_education_missingness,2020,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.48663390068456,4.99496317927485,3.50832927859029
-father_education_missingness,2021,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.66643543495428,5.70156924102323,4.03513380606895
-father_education_missingness,2022,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.48295223698982,5.20183893956821,3.7188867025784
-father_education_missingness,2023,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.38789564503918,4.86245419130639,3.47455854626722
-father_education_missingness,2024,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.33966043023266,4.39802040813509,3.05835997790243
-father_education_missingness,2010,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.38519286718525,3.09703505395689,1.71184218677165
-father_education_missingness,2011,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.38357005170971,3.1653893175624,1.78181926585269
-father_education_missingness,2012,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.33837734013663,3.18374869127072,1.84537135113409
-father_education_missingness,2013,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.3415704818133,3.22223252480758,1.88066204299428
-father_education_missingness,2014,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.34553594474841,3.33491386937722,1.98937792462882
-father_education_missingness,2015,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.3385328927276,3.51185483979408,2.17332194706648
-father_education_missingness,2016,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.36765085782544,3.82224941207792,2.45459855425248
-father_education_missingness,2017,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.37588016435294,3.97040054304572,2.59452037869278
-father_education_missingness,2018,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.36906124749972,3.94133363316711,2.5722723856674
-father_education_missingness,2019,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.35444479303659,4.01328821172802,2.65884341869143
-father_education_missingness,2020,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.49304566698796,4.99023255583624,3.49718688884827
-father_education_missingness,2021,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.67359095992215,5.69557929797151,4.02198833804935
-father_education_missingness,2022,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.48941570123646,5.19626649869985,3.70685079746339
-father_education_missingness,2023,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.39396338819216,4.85708643419269,3.46312304600053
-father_education_missingness,2024,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.34542042788066,4.39271474637358,3.04729431849292
-father_education_missingness,2010,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.42944235053914,3.098167300416,1.66872494987686
-father_education_missingness,2011,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.42411033864516,3.17252886045449,1.74841852180934
-father_education_missingness,2012,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.37809245278628,3.18830345357406,1.81021100078778
-father_education_missingness,2013,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.38236239620792,3.22187245871867,1.83951006251074
-father_education_missingness,2014,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.38925965378919,3.32789360600637,1.93863395221717
-father_education_missingness,2015,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.38711699851731,3.49120185503595,2.10408485651864
-father_education_missingness,2016,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.41847588338118,3.79069739704977,2.37222151366859
-father_education_missingness,2017,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.43330840471915,3.9282602149874,2.49495181026825
-father_education_missingness,2018,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.43174255222308,3.88871537304125,2.45697282081817
-father_education_missingness,2019,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.42084389670244,3.95063720021464,2.5297933035122
-father_education_missingness,2020,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.57172962531003,4.90940259863973,3.33767297332971
-father_education_missingness,2021,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.76219788568526,5.59445122932437,3.83225334363911
-father_education_missingness,2022,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.57039567650904,5.10327318777043,3.53287751126139
-father_education_missingness,2023,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.47086186345481,4.76854106274859,3.29767919929378
-father_education_missingness,2024,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.41901588554891,4.30636157170005,2.88734568615114
-father_education_missingness,2010,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.34869615443754,3.09637091799046,1.74767476355293
-father_education_missingness,2011,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.3496711539815,3.16235509297062,1.81268393898912
-father_education_missingness,2012,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.30529503710939,3.18175382010613,1.87645878299674
-father_education_missingness,2013,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.30779681555525,3.22223398457043,1.91443716901518
-father_education_missingness,2014,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.30967613900844,3.33770483964708,2.02802870063864
-father_education_missingness,2015,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.29935259264877,3.52073676457755,2.22138417192878
-father_education_missingness,2016,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.32729283353695,3.83614022166493,2.50884738812798
-father_education_missingness,2017,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.33107604401285,3.98939437220151,2.65831832818866
-father_education_missingness,2018,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.32096933637856,3.96553769077857,2.64456835440001
-father_education_missingness,2019,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.30436104298594,4.0426517426675,2.73829069968157
-father_education_missingness,2020,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.43465656894308,5.02872656417507,3.59406999523199
-father_education_missingness,2021,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.60878651431368,5.74441210970862,4.13562559539494
-father_education_missingness,2022,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.43138519667562,5.24179976313837,3.81041456646276
-father_education_missingness,2023,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.33992771055187,4.90105564790512,3.56112793735325
-father_education_missingness,2024,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.29462746471909,4.43617524145902,3.14154777673992
-father_education_missingness,2010,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.38125471073717,3.09695390093736,2.24213092405276
-father_education_missingness,2011,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.37981834695255,3.16513375964678,2.29387713726031
-father_education_missingness,2012,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.33479952273328,3.18351183922976,2.38501122079431
-father_education_missingness,2013,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.33794560458252,3.2222195511171,2.40833374696315
-father_education_missingness,2014,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.34173343131746,3.33519116455373,2.48573307238746
-father_education_missingness,2015,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.33436738109582,3.51290151428764,2.63263443340674
-father_education_missingness,2016,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.36335627024295,3.8239060958804,2.80477390931645
-father_education_missingness,2017,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.37106952920242,3.97271456141875,2.89752961232372
-father_education_missingness,2018,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.36386199730443,3.94429842390555,2.89200698582493
-father_education_missingness,2019,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.34899032498655,4.01689427511913,2.97770428795269
-father_education_missingness,2020,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.48663390068456,4.99496317927485,3.35991475572755
-father_education_missingness,2021,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.66643543495428,5.70156924102323,3.42141622857393
-father_education_missingness,2022,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.48295223698982,5.20183893956821,3.50775892157337
-father_education_missingness,2023,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.38789564503918,4.86245419130639,3.50347247553266
-father_education_missingness,2024,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.33966043023266,4.39802040813509,3.28293671208254
-father_education_missingness,2010,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.38519286718525,3.09703505395689,2.2358150459222
-father_education_missingness,2011,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.38357005170971,3.1653893175624,2.28784174220225
-father_education_missingness,2012,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.33837734013663,3.18374869127072,2.37881245878363
-father_education_missingness,2013,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.3415704818133,3.22223252480758,2.40183618265985
-father_education_missingness,2014,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.34553594474841,3.33491386937722,2.47850225212735
-father_education_missingness,2015,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.3385328927276,3.51185483979408,2.6236597239219
-father_education_missingness,2016,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.36765085782544,3.82224941207792,2.79475524780885
-father_education_missingness,2017,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.37588016435294,3.97040054304572,2.88571682760828
-father_education_missingness,2018,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.36906124749972,3.94133363316711,2.87885851737099
-father_education_missingness,2019,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.35444479303659,4.01328821172802,2.963050419154
-father_education_missingness,2020,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.49304566698796,4.99023255583624,3.34231742951535
-father_education_missingness,2021,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.67359095992215,5.69557929797151,3.40320868979624
-father_education_missingness,2022,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.48941570123646,5.19626649869985,3.4887953003222
-father_education_missingness,2023,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.39396338819216,4.85708643419269,3.48437159493254
-father_education_missingness,2024,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.34542042788066,4.39271474637358,3.26493834592142
-father_education_missingness,2010,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.42944235053914,3.098167300416,2.16739576748056
-father_education_missingness,2011,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.42411033864516,3.17252886045449,2.22772686523203
-father_education_missingness,2012,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.37809245278628,3.18830345357406,2.31356281440176
-father_education_missingness,2013,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.38236239620792,3.22187245871867,2.33070030518543
-father_education_missingness,2014,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.38925965378919,3.32789360600637,2.39544393082285
-father_education_missingness,2015,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.38711699851731,3.49120185503595,2.51687626838089
-father_education_missingness,2016,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.41847588338118,3.79069739704977,2.67237352531788
-father_education_missingness,2017,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.43330840471915,3.9282602149874,2.74069432792947
-father_education_missingness,2018,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.43174255222308,3.88871537304125,2.71607166176852
-father_education_missingness,2019,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.42084389670244,3.95063720021464,2.7804864484997
-father_education_missingness,2020,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.57172962531003,4.90940259863973,3.12356687790456
-father_education_missingness,2021,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.76219788568526,5.59445122932437,3.17470090888735
-father_education_missingness,2022,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.57039567650904,5.10327318777043,3.24967348300074
-father_education_missingness,2023,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.47086186345481,4.76854106274859,3.24200469209805
-father_education_missingness,2024,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.41901588554891,4.30636157170005,3.03475219379538
-father_education_missingness,2010,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.34869615443754,3.09637091799046,2.29582542205867
-father_education_missingness,2011,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.3496711539815,3.16235509297062,2.34305599822723
-father_education_missingness,2012,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.30529503710939,3.18175382010613,2.43757444075801
-father_education_missingness,2013,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.30779681555525,3.22223398457043,2.46386437575348
-father_education_missingness,2014,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.30967613900844,3.33770483964708,2.5484963345015
-father_education_missingness,2015,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.29935259264877,3.52073676457755,2.70960845000542
-father_education_missingness,2016,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.32729283353695,3.83614022166493,2.89019885042432
-father_education_missingness,2017,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.33107604401285,3.98939437220151,2.99711980404555
-father_education_missingness,2018,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.32096933637856,3.96553769077857,3.00199072118517
-father_education_missingness,2019,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.30436104298594,4.0426517426675,3.09933493062096
-father_education_missingness,2020,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.43465656894308,5.02872656417507,3.50517794504628
-father_education_missingness,2021,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.60878651431368,5.74441210970862,3.57064909395964
-father_education_missingness,2022,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.43138519667562,5.24179976313837,3.66204692860624
-father_education_missingness,2023,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.33992771055187,4.90105564790512,3.65770153815727
-father_education_missingness,2024,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.29462746471909,4.43617524145902,3.42660368511614
+father_education_missingness,2010,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.17418388903326,3.96831357096739,1.79412968193413
+father_education_missingness,2011,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.10394610973545,3.95168854070332,1.84774243096787
+father_education_missingness,2012,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.10285267378144,3.94564742383583,1.84279475005439
+father_education_missingness,2013,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.07497166016955,4.0507291535725,1.97575749340296
+father_education_missingness,2014,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.96845290122949,4.02339448911809,2.0549415878886
+father_education_missingness,2015,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.05504106165264,4.25565481351418,2.20061375186154
+father_education_missingness,2016,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.10077368521841,4.63919717655277,2.53842349133436
+father_education_missingness,2017,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.11958029235051,4.84708481200635,2.72750451965584
+father_education_missingness,2018,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.1429674833098,4.90265418023493,2.75968669692513
+father_education_missingness,2019,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.13095774571501,5.15209905366696,3.02114130795195
+father_education_missingness,2020,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.91323698556044,7.16904216736645,4.25580518180601
+father_education_missingness,2021,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.91618795794405,8.11399527729902,5.19780731935496
+father_education_missingness,2022,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.37899036809719,7.31989695073105,4.94090658263387
+father_education_missingness,2023,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.2449757705631,6.9487317746304,4.7037560040673
+father_education_missingness,2024,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,2.08946589054089,6.3325503703515,4.24308447981061
+father_education_missingness,2010,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.20729403370963,3.96764729068039,1.76035325697076
+father_education_missingness,2011,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.13614684304386,3.95055784188461,1.81441099884075
+father_education_missingness,2012,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.13284933780916,3.94420907325571,1.81135973544655
+father_education_missingness,2013,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.10340400430068,4.04907452912275,1.94567052482207
+father_education_missingness,2014,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.99405205633652,4.02166929409079,2.02761723775428
+father_education_missingness,2015,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.08123739140354,4.25421747838377,2.17298008698024
+father_education_missingness,2016,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.12797127697938,4.63783018236168,2.5098589053823
+father_education_missingness,2017,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.14675410007087,4.84554138213251,2.69878728206164
+father_education_missingness,2018,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.17043850000088,4.90102261236301,2.73058411236213
+father_education_missingness,2019,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.16038086018356,5.15025601655125,2.98987515636769
+father_education_missingness,2020,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.95477067535159,7.16594555866363,4.21117488331204
+father_education_missingness,2021,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.95961994752231,8.1108101395012,5.15119019197889
+father_education_missingness,2022,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.41437878801883,7.31688744774765,4.90250865972882
+father_education_missingness,2023,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.28105573630301,6.9457447338853,4.66468899758229
+father_education_missingness,2024,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,2.12632946117961,6.32952575820139,4.20319629702178
+father_education_missingness,2010,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.42963045421183,3.95477925324021,1.52514879902838
+father_education_missingness,2011,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.34209875736131,3.94153459448657,1.59943583712525
+father_education_missingness,2012,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.31925236943134,3.9248866186268,1.60563424919546
+father_education_missingness,2013,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.27951187474922,4.01649793972323,1.736986064974
+father_education_missingness,2014,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.15610846289704,3.97038700103747,1.81427853814043
+father_education_missingness,2015,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.25976389365926,4.18056374416194,1.92079985050268
+father_education_missingness,2016,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.32652233514143,4.53779264188255,2.21127030674112
+father_education_missingness,2017,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.35616450458266,4.71412163826598,2.35795713368332
+father_education_missingness,2018,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.39311773916922,4.744626616358,2.35150887718878
+father_education_missingness,2019,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.40524640491403,4.97262748946369,2.56738108454966
+father_education_missingness,2020,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,3.31061714547911,6.90588182741284,3.59526468193373
+father_education_missingness,2021,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,3.33546174357256,7.82025489164645,4.48479314807389
+father_education_missingness,2022,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.72892854657068,7.05570888904671,4.32678034247603
+father_education_missingness,2023,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.60506966958481,6.69347164559307,4.08840197600826
+father_education_missingness,2024,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,2.45785733182066,6.08633754095446,3.6284802091338
+father_education_missingness,2010,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,2.02540594155107,3.97031971256764,1.94491377101657
+father_education_missingness,2011,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.96214377644561,3.95354661636382,1.99140283991821
+father_education_missingness,2012,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.96763844390418,3.94911677109976,1.98147832719558
+father_education_missingness,2013,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.94329306106639,4.05584094291782,2.11254788185143
+father_education_missingness,2014,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.84451401306103,4.03063115502271,2.18611714196167
+father_education_missingness,2015,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.91837161480448,4.26538881994561,2.34701720514113
+father_education_missingness,2016,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.9510386416486,4.65185988626982,2.70082124462121
+father_education_missingness,2017,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.96291130098671,4.8631160790643,2.9002047780776
+father_education_missingness,2018,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.98008607603412,4.92148533347099,2.94139925743688
+father_education_missingness,2019,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.95944982491339,5.17324559957278,3.21379577465939
+father_education_missingness,2020,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,2.66779395164176,7.20017316592997,4.53237921428821
+father_education_missingness,2021,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,2.67261470357167,8.14786905471038,5.47525435113871
+father_education_missingness,2022,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,2.18539120622333,7.34955883855006,5.16416763232673
+father_education_missingness,2023,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,2.05856122656802,6.97653551211551,4.91797428554749
+father_education_missingness,2024,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.91153558756542,6.35879716634477,4.44726157877935
+father_education_missingness,2010,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.17418388903326,3.96831357096739,1.82519684327708
+father_education_missingness,2011,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.10394610973545,3.95168854070332,1.87822707170014
+father_education_missingness,2012,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.10285267378144,3.94564742383583,1.87633088757502
+father_education_missingness,2013,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.07497166016955,4.0507291535725,1.95218529068562
+father_education_missingness,2014,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.96845290122949,4.02339448911809,2.04393739195136
+father_education_missingness,2015,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.05504106165264,4.25565481351418,2.07083687665678
+father_education_missingness,2016,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.10077368521841,4.63919717655277,2.20832791708854
+father_education_missingness,2017,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.11958029235051,4.84708481200635,2.28681349298223
+father_education_missingness,2018,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.1429674833098,4.90265418023493,2.2877874808734
+father_education_missingness,2019,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.13095774571501,5.15209905366696,2.41773872054805
+father_education_missingness,2020,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.91323698556044,7.16904216736645,2.46085100625183
+father_education_missingness,2021,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.91618795794405,8.11399527729902,2.78239790929645
+father_education_missingness,2022,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.37899036809719,7.31989695073105,3.07689221818321
+father_education_missingness,2023,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.2449757705631,6.9487317746304,3.09523686880927
+father_education_missingness,2024,black,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,2.08946589054089,6.3325503703515,3.03070291743897
+father_education_missingness,2010,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.20729403370963,3.96764729068039,1.79751642965857
+father_education_missingness,2011,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.13614684304386,3.95055784188461,1.84938495906739
+father_education_missingness,2012,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.13284933780916,3.94420907325571,1.84926755178458
+father_education_missingness,2013,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.10340400430068,4.04907452912275,1.92501037406218
+father_education_missingness,2014,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.99405205633652,4.02166929409079,2.01683265053743
+father_education_missingness,2015,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.08123739140354,4.25421747838377,2.04408084150114
+father_education_missingness,2016,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.12797127697938,4.63783018236168,2.179460894296
+father_education_missingness,2017,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.14675410007087,4.84554138213251,2.25714784099983
+father_education_missingness,2018,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.17043850000088,4.90102261236301,2.25807946751821
+father_education_missingness,2019,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.16038086018356,5.15025601655125,2.38395743615024
+father_education_missingness,2020,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.95477067535159,7.16594555866363,2.42521208784196
+father_education_missingness,2021,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.95961994752231,8.1108101395012,2.74049042894554
+father_education_missingness,2022,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.41437878801883,7.31688744774765,3.03054660853431
+father_education_missingness,2023,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.28105573630301,6.9457447338853,3.04496931983894
+father_education_missingness,2024,black,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,2.12632946117961,6.32952575820139,2.97673802379147
+father_education_missingness,2010,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.42963045421183,3.95477925324021,1.62772871338705
+father_education_missingness,2011,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.34209875736131,3.94153459448657,1.68290708583409
+father_education_missingness,2012,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.31925236943134,3.9248866186268,1.69230682713031
+father_education_missingness,2013,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.27951187474922,4.01649793972323,1.76199912982032
+father_education_missingness,2014,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.15610846289704,3.97038700103747,1.84145977317982
+father_education_missingness,2015,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.25976389365926,4.18056374416194,1.85000023935789
+father_education_missingness,2016,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.32652233514143,4.53779264188255,1.95046167119934
+father_education_missingness,2017,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.35616450458266,4.71412163826598,2.00076082510248
+father_education_missingness,2018,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.39311773916922,4.744626616358,1.98261311539361
+father_education_missingness,2019,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.40524640491403,4.97262748946369,2.06740876082566
+father_education_missingness,2020,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,3.31061714547911,6.90588182741284,2.08598020367391
+father_education_missingness,2021,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,3.33546174357256,7.82025489164645,2.34457939945379
+father_education_missingness,2022,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.72892854657068,7.05570888904671,2.58552350075758
+father_education_missingness,2023,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.60506966958481,6.69347164559307,2.56940216368948
+father_education_missingness,2024,black,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,2.45785733182066,6.08633754095446,2.47627779780285
+father_education_missingness,2010,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,2.02540594155107,3.97031971256764,1.96025874671186
+father_education_missingness,2011,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.96214377644561,3.95354661636382,2.01491178364391
+father_education_missingness,2012,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.96763844390418,3.94911677109976,2.00703375324582
+father_education_missingness,2013,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.94329306106639,4.05584094291782,2.08709690997001
+father_education_missingness,2014,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.84451401306103,4.03063115502271,2.18519953032709
+father_education_missingness,2015,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.91837161480448,4.26538881994561,2.22344241701071
+father_education_missingness,2016,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.9510386416486,4.65185988626982,2.38429920708236
+father_education_missingness,2017,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.96291130098671,4.8631160790643,2.47750169690283
+father_education_missingness,2018,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.98008607603412,4.92148533347099,2.48549060217027
+father_education_missingness,2019,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.95944982491339,5.17324559957278,2.64015211504661
+father_education_missingness,2020,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,2.66779395164176,7.20017316592997,2.69892401603916
+father_education_missingness,2021,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,2.67261470357167,8.14786905471038,3.04865083763163
+father_education_missingness,2022,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,2.18539120622333,7.34955883855006,3.36304036440742
+father_education_missingness,2023,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,2.05856122656802,6.97653551211551,3.38903474041751
+father_education_missingness,2024,black,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.91153558756542,6.35879716634477,3.32653873027993
+father_education_missingness,2010,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.14446223289654,1.84220732958063,0.69774509668409
+father_education_missingness,2011,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.13223735410566,1.82022523068521,0.687987876579549
+father_education_missingness,2012,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.18369797435189,1.82493102505847,0.641233050706583
+father_education_missingness,2013,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.1714445360375,1.82183057269922,0.650386036661722
+father_education_missingness,2014,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.1732987476442,1.87628586738788,0.702987119743684
+father_education_missingness,2015,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.1926794903101,1.96739067930135,0.774711188991247
+father_education_missingness,2016,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.18912135371717,2.09762350975208,0.908502156034909
+father_education_missingness,2017,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.16852337443606,2.15950034937087,0.990976974934819
+father_education_missingness,2018,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.08359698686971,2.20969245005292,1.12609546318322
+father_education_missingness,2019,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.04523029935232,2.33909078719455,1.29386048784223
+father_education_missingness,2020,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.34138823218742,3.54650822609321,2.2051199939058
+father_education_missingness,2021,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.49134277688661,4.00260390780749,2.51126113092088
+father_education_missingness,2022,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.16569672557664,3.42425373796498,2.25855701238835
+father_education_missingness,2023,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.05173867223543,3.22785139756857,2.17611272533314
+father_education_missingness,2024,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,0.992079787164174,2.92334311931002,1.93126333214584
+father_education_missingness,2010,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.15644022411783,1.841391625089,0.68495140097117
+father_education_missingness,2011,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.14373065900406,1.8193794967476,0.675648837743538
+father_education_missingness,2012,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.19588745105163,1.82408985183066,0.628202400779027
+father_education_missingness,2013,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.18329401419975,1.8209141166269,0.637620102427146
+father_education_missingness,2014,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.18575187187702,1.87530971602824,0.689557844151216
+father_education_missingness,2015,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.20685817184204,1.96647819164953,0.759620019807499
+father_education_missingness,2016,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.20224803997699,2.0967771215911,0.894529081614111
+father_education_missingness,2017,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.18199927509468,2.15868999503378,0.976690719939103
+father_education_missingness,2018,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.09810360993659,2.2089526775388,1.11084906760221
+father_education_missingness,2019,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.05925080483561,2.33848348423711,1.2792326794015
+father_education_missingness,2020,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.36313215259672,3.54562265587345,2.18249050327673
+father_education_missingness,2021,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.51340568186541,4.00189519426909,2.48848951240369
+father_education_missingness,2022,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.18186915326254,3.42394067107564,2.2420715178131
+father_education_missingness,2023,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.0660300331942,3.22763397840413,2.16160394520992
+father_education_missingness,2024,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.00549314240497,2.92319784898089,1.91770470657592
+father_education_missingness,2010,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.27381060405121,1.81428796799902,0.540477363947813
+father_education_missingness,2011,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.25290782728803,1.79315926125815,0.540251433970115
+father_education_missingness,2012,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.31178334366509,1.7965309341542,0.484747590489111
+father_education_missingness,2013,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.29501876605565,1.79050992527029,0.49549115921464
+father_education_missingness,2014,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.30400173338928,1.84235021725471,0.538348483865431
+father_education_missingness,2015,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.35355129595902,1.93128274603636,0.577731450077338
+father_education_missingness,2016,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.34818337076042,2.05906338715087,0.710880016390452
+father_education_missingness,2017,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.34318955636499,2.1166563939567,0.773466837591701
+father_education_missingness,2018,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.28692736200835,2.16371454453638,0.876787182528028
+father_education_missingness,2019,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.25600599708847,2.29269603215777,1.0366900350693
+father_education_missingness,2020,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.6865512958932,3.46622639892618,1.77967510303298
+father_education_missingness,2021,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.85754012064075,3.92021518138125,2.06267506074051
+father_education_missingness,2022,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.45200574058362,3.36621570746837,1.91420996688475
+father_education_missingness,2023,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.31655731923846,3.17625990917159,1.85970258993313
+father_education_missingness,2024,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.2500345380574,2.87129442733291,1.62125988927551
+father_education_missingness,2010,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.10580629241916,1.8443061547245,0.738499862305344
+father_education_missingness,2011,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.09538418580518,1.82233933339299,0.726955147587809
+father_education_missingness,2012,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.14370396598858,1.82717609604333,0.68347213005475
+father_education_missingness,2013,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.13296201039177,1.82419602291774,0.691234012525975
+father_education_missingness,2014,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.13362432366784,1.87868576206262,0.745061438394772
+father_education_missingness,2015,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.14621881109799,1.96986624997729,0.823647438879301
+father_education_missingness,2016,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.14485169149685,2.10017430241729,0.955322610920438
+father_education_missingness,2017,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.12172723791265,2.16223073751581,1.04050349960317
+father_education_missingness,2018,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.03247131105127,2.21254054229952,1.18006923124825
+father_education_missingness,2019,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,0.995468381709305,2.34183475609771,1.3463663743884
+father_education_missingness,2020,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.26637809738323,3.55106829630706,2.28469019892383
+father_education_missingness,2021,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.41438537574042,4.00712743657786,2.59274206083744
+father_education_missingness,2022,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.10925914589807,3.4272928543509,2.31803370845284
+father_education_missingness,2023,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.0019808056075,3.23047860890512,2.22849780329762
+father_education_missingness,2024,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,0.945979125777329,2.92589553132422,1.97991640554689
+father_education_missingness,2010,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.14446223289654,1.84220732958063,1.60967070526928
+father_education_missingness,2011,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.13223735410566,1.82022523068521,1.60763573475544
+father_education_missingness,2012,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.18369797435189,1.82493102505847,1.54172015547942
+father_education_missingness,2013,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.1714445360375,1.82183057269922,1.55520002582598
+father_education_missingness,2014,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.1732987476442,1.87628586738788,1.59915441072035
+father_education_missingness,2015,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.1926794903101,1.96739067930135,1.64955522022922
+father_education_missingness,2016,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.18912135371717,2.09762350975208,1.76401130397243
+father_education_missingness,2017,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.16852337443606,2.15950034937087,1.84805918017094
+father_education_missingness,2018,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.08359698686971,2.20969245005292,2.03921981772604
+father_education_missingness,2019,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.04523029935232,2.33909078719455,2.23787120278084
+father_education_missingness,2020,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.34138823218742,3.54650822609321,2.64390885576049
+father_education_missingness,2021,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.49134277688661,4.00260390780749,2.68389264348972
+father_education_missingness,2022,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.16569672557664,3.42425373796498,2.93751681962656
+father_education_missingness,2023,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.05173867223543,3.22785139756857,3.06906219461141
+father_education_missingness,2024,hispanic,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,0.992079787164174,2.92334311931002,2.9466814636616
+father_education_missingness,2010,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.15644022411783,1.841391625089,1.59229295789471
+father_education_missingness,2011,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.14373065900406,1.8193794967476,1.59074121378532
+father_education_missingness,2012,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.19588745105163,1.82408985183066,1.52530227675406
+father_education_missingness,2013,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.18329401419975,1.8209141166269,1.538851794039
+father_education_missingness,2014,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.18575187187702,1.87530971602824,1.58153637409795
+father_education_missingness,2015,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.20685817184204,1.96647819164953,1.62941946082039
+father_education_missingness,2016,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.20224803997699,2.0967771215911,1.74404702845782
+father_education_missingness,2017,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.18199927509468,2.15868999503378,1.82630399232764
+father_education_missingness,2018,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.09810360993659,2.2089526775388,2.01160678969661
+father_education_missingness,2019,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.05925080483561,2.33848348423711,2.2076768538307
+father_education_missingness,2020,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.36313215259672,3.54562265587345,2.60108504455652
+father_education_missingness,2021,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.51340568186541,4.00189519426909,2.64429772018326
+father_education_missingness,2022,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.18186915326254,3.42394067107564,2.89705561874077
+father_education_missingness,2023,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.0660300331942,3.22763397840413,3.02771392728307
+father_education_missingness,2024,hispanic,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.00549314240497,2.92319784898089,2.90722803140069
+father_education_missingness,2010,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.27381060405121,1.81428796799902,1.42429962682748
+father_education_missingness,2011,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.25290782728803,1.79315926125815,1.43119806757015
+father_education_missingness,2012,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.31178334366509,1.7965309341542,1.36953327150407
+father_education_missingness,2013,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.29501876605565,1.79050992527029,1.38261311125537
+father_education_missingness,2014,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.30400173338928,1.84235021725471,1.41284338055762
+father_education_missingness,2015,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.35355129595902,1.93128274603636,1.42682641714587
+father_education_missingness,2016,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.34818337076042,2.05906338715087,1.52728733480038
+father_education_missingness,2017,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.34318955636499,2.1166563939567,1.57584339747615
+father_education_missingness,2018,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.28692736200835,2.16371454453638,1.68130277466456
+father_education_missingness,2019,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.25600599708847,2.29269603215777,1.8253862142955
+father_education_missingness,2020,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.6865512958932,3.46622639892618,2.05521552019588
+father_education_missingness,2021,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.85754012064075,3.92021518138125,2.11043365245268
+father_education_missingness,2022,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.45200574058362,3.36621570746837,2.31832121139917
+father_education_missingness,2023,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.31655731923846,3.17625990917159,2.41254965716862
+father_education_missingness,2024,hispanic,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.2500345380574,2.87129442733291,2.29697207550362
+father_education_missingness,2010,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.10580629241916,1.8443061547245,1.66783836135508
+father_education_missingness,2011,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.09538418580518,1.82233933339299,1.66365313376644
+father_education_missingness,2012,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.14370396598858,1.82717609604333,1.59759531345507
+father_education_missingness,2013,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.13296201039177,1.82419602291774,1.61011225988677
+father_education_missingness,2014,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.13362432366784,1.87868576206262,1.65723840150512
+father_education_missingness,2015,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.14621881109799,1.96986624997729,1.71857784125032
+father_education_missingness,2016,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.14485169149685,2.10017430241729,1.83445097562933
+father_education_missingness,2017,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.12172723791265,2.16223073751581,1.92759047336621
+father_education_missingness,2018,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.03247131105127,2.21254054229952,2.1429559529811
+father_education_missingness,2019,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,0.995468381709305,2.34183475609771,2.35249536713218
+father_education_missingness,2020,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.26637809738323,3.55106829630706,2.80411379796032
+father_education_missingness,2021,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.41438537574042,4.00712743657786,2.83312278627044
+father_education_missingness,2022,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.10925914589807,3.4272928543509,3.0897134064882
+father_education_missingness,2023,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.0019808056075,3.23047860890512,3.22409230878078
+father_education_missingness,2024,hispanic,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,0.945979125777329,2.92589553132422,3.09298107283283
+father_education_missingness,2010,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.33612429128654,3.1385087237421,1.80238443245555
+father_education_missingness,2011,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.33608913186395,3.20523965877475,1.8691505269108
+father_education_missingness,2012,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.29040957626818,3.22085885951647,1.93044928324829
+father_education_missingness,2013,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.29464579898615,3.25917920207346,1.96453340308732
+father_education_missingness,2014,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.29870689522756,3.36960856749396,2.0709016722664
+father_education_missingness,2015,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.29303803382128,3.54252926183587,2.24949122801459
+father_education_missingness,2016,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.32275763315544,3.85215141006241,2.52939377690697
+father_education_missingness,2017,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.3316893267174,3.99808312402527,2.66639379730787
+father_education_missingness,2018,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.3261557074436,3.96704632986196,2.64089062241836
+father_education_missingness,2019,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.31206090306379,4.03902128841178,2.72696038534799
+father_education_missingness,2020,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.44751218090173,5.02016443769002,3.57265225678829
+father_education_missingness,2021,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.62743754995418,5.73499687931125,4.10755932935707
+father_education_missingness,2022,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.44581059075513,5.22319990917247,3.77738931841734
+father_education_missingness,2023,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.35265406870845,4.87711835055352,3.52446428184507
+father_education_missingness,2024,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rd_per_1000,1.30487468809397,4.40044031448155,3.09556562638758
+father_education_missingness,2010,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.34619252496475,3.13871899455021,1.79252646958546
+father_education_missingness,2011,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.34602361365709,3.20539117818407,1.85936756452698
+father_education_missingness,2012,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.29974803362186,3.22106150281128,1.92131346918942
+father_education_missingness,2013,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.30373493303651,3.25927116288324,1.95553622984673
+father_education_missingness,2014,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.30785363717828,3.36948764108572,2.06163400390745
+father_education_missingness,2015,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.30210047111849,3.54184658635436,2.23974611523587
+father_education_missingness,2016,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.33149168061259,3.85093984624285,2.51944816563027
+father_education_missingness,2017,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.34100514332962,3.99629047965109,2.65528533632147
+father_education_missingness,2018,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.33584082918756,3.96466218544105,2.62882135625348
+father_education_missingness,2019,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.32194942455566,4.03602444503582,2.71407502048015
+father_education_missingness,2020,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.45923141858298,5.01602778088692,3.55679636230394
+father_education_missingness,2021,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.64022345415123,5.72986946193539,4.08964600778416
+father_education_missingness,2022,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.4573622364058,5.21848094203648,3.76111870563068
+father_education_missingness,2023,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.36364515744011,4.87238049796978,3.50873534052967
+father_education_missingness,2024,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rd_per_1000,1.31568768079305,4.395447163475,3.07975948268194
+father_education_missingness,2010,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.39400577985222,3.14010361668396,1.74609783683175
+father_education_missingness,2011,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.39044989306359,3.2128894321425,1.8224395390789
+father_education_missingness,2012,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.34263659238039,3.22583378813097,1.88319719575058
+father_education_missingness,2013,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.34701277749122,3.25882300320824,1.91181022571702
+father_education_missingness,2014,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.35351047764449,3.36173053142512,2.00822005378062
+father_education_missingness,2015,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.35122073514393,3.51954927988252,2.16832854473859
+father_education_missingness,2016,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.38183786626285,3.81646970148228,2.43463183521943
+father_education_missingness,2017,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.3974753077025,3.95007117927969,2.55259587157719
+father_education_missingness,2018,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.39725342938256,3.90622293300734,2.50896950362478
+father_education_missingness,2019,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.3869963054138,3.96560178465209,2.57860547923829
+father_education_missingness,2020,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.53695214643262,4.92397036527691,3.38701821884429
+father_education_missingness,2021,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.72789358074754,5.61301400624191,3.88512042549437
+father_education_missingness,2022,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.53802044368792,5.11001062724098,3.57199018355306
+father_education_missingness,2023,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.44123688929332,4.76707952332998,3.32584263403666
+father_education_missingness,2024,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rd_per_1000,1.39140359266132,4.29022000839947,2.89881641573816
+father_education_missingness,2010,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.29914867011248,3.13788620951933,1.83873753940685
+father_education_missingness,2011,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.30167731209884,3.20255673225336,1.90087942015452
+father_education_missingness,2012,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.25703774281888,3.21920263046739,1.96216488764852
+father_education_missingness,2013,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.26083554235914,3.2592340826136,1.99839854025446
+father_education_missingness,2014,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.26299051555521,3.37209658552682,2.10910606997161
+father_education_missingness,2015,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.25459809237491,3.55007071649161,2.2954726241167
+father_education_missingness,2016,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.28354623936932,3.86397327153735,2.58042703216803
+father_education_missingness,2017,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.28826588381455,4.01410119547865,2.72583531166411
+father_education_missingness,2018,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.27951875456674,3.98758730214885,2.70806854758211
+father_education_missingness,2019,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.26341223932184,4.0641041618221,2.80069192250026
+father_education_missingness,2020,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.3904864386026,5.0533104987758,3.66282406017319
+father_education_missingness,2021,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.56393665516868,5.77754652291414,4.21360986774546
+father_education_missingness,2022,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.38892365620343,5.26291553274185,3.87399187653842
+father_education_missingness,2023,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.2993599434345,4.91584165189228,3.61648170845779
+father_education_missingness,2024,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rd_per_1000,1.25428684666087,4.43928278938493,3.18499594272407
+father_education_missingness,2010,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.33612429128654,3.1385087237421,2.34896464663482
+father_education_missingness,2011,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.33608913186395,3.20523965877475,2.39897143261931
+father_education_missingness,2012,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.29040957626818,3.22085885951647,2.49599733197198
+father_education_missingness,2013,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.29464579898615,3.25917920207346,2.51742924947176
+father_education_missingness,2014,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.29870689522756,3.36960856749396,2.59458741604936
+father_education_missingness,2015,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.29303803382128,3.54252926183587,2.73969455590314
+father_education_missingness,2016,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.32275763315544,3.85215141006241,2.91221257281511
+father_education_missingness,2017,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.3316893267174,3.99808312402527,3.00226414961251
+father_education_missingness,2018,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.3261557074436,3.96704632986196,2.99138804560827
+father_education_missingness,2019,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.31206090306379,4.03902128841178,3.07837942505587
+father_education_missingness,2020,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.44751218090173,5.02016443769002,3.46813277561693
+father_education_missingness,2021,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.62743754995418,5.73499687931125,3.52394282623793
+father_education_missingness,2022,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.44581059075513,5.22319990917247,3.61264465938408
+father_education_missingness,2023,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.35265406870845,4.87711835055352,3.60559174986279
+father_education_missingness,2024,white,S1,S1: Primary,primary,Missing paternal education allocated under MAR,rr,1.30487468809397,4.40044031448155,3.37230873940031
+father_education_missingness,2010,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.34619252496475,3.13871899455021,2.33155283240961
+father_education_missingness,2011,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.34602361365709,3.20539117818407,2.38137811674429
+father_education_missingness,2012,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.29974803362186,3.22106150281128,2.4782199468581
+father_education_missingness,2013,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.30373493303651,3.25927116288324,2.499949246042
+father_education_missingness,2014,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.30785363717828,3.36948764108572,2.5763491764686
+father_education_missingness,2015,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.30210047111849,3.54184658635436,2.720102376825
+father_education_missingness,2016,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.33149168061259,3.85093984624285,2.89219970527426
+father_education_missingness,2017,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.34100514332962,3.99629047965109,2.98007095612518
+father_education_missingness,2018,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.33584082918756,3.96466218544105,2.96791511294971
+father_education_missingness,2019,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.32194942455566,4.03602444503582,3.05308536776467
+father_education_missingness,2020,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.45923141858298,5.01602778088692,3.43744502551751
+father_education_missingness,2021,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.64022345415123,5.72986946193539,3.49334686529065
+father_education_missingness,2022,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.4573622364058,5.21848094203648,3.58077134954895
+father_education_missingness,2023,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.36364515744011,4.87238049796978,3.57305598995885
+father_education_missingness,2024,white,S2,S2: Complete case,complete_case,Births missing paternal education are excluded,rr,1.31568768079305,4.395447163475,3.34079829707424
+father_education_missingness,2010,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.39400577985222,3.14010361668396,2.25257575116859
+father_education_missingness,2011,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.39044989306359,3.2128894321425,2.31068336095413
+father_education_missingness,2012,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.34263659238039,3.22583378813097,2.40261125492776
+father_education_missingness,2013,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.34701277749122,3.25882300320824,2.41929628112194
+father_education_missingness,2014,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.35351047764449,3.36173053142512,2.48371223344759
+father_education_missingness,2015,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.35122073514393,3.51954927988252,2.60471822874123
+father_education_missingness,2016,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.38183786626285,3.81646970148228,2.76187951905228
+father_education_missingness,2017,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.3974753077025,3.95007117927969,2.82657672554784
+father_education_missingness,2018,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.39725342938256,3.90622293300734,2.79564383301136
+father_education_missingness,2019,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.3869963054138,3.96560178465209,2.85912930638196
+father_education_missingness,2020,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.53695214643262,4.92397036527691,3.2037239264123
+father_education_missingness,2021,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.72789358074754,5.61301400624191,3.24847205220448
+father_education_missingness,2022,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.53802044368792,5.11001062724098,3.32245949539398
+father_education_missingness,2023,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.44123688929332,4.76707952332998,3.30763079875608
+father_education_missingness,2024,white,S3,S3: All missing to BA,mnar_all_ba,All missing paternal education is assigned to BA+,rr,1.39140359266132,4.29022000839947,3.08337568698787
+father_education_missingness,2010,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.29914867011248,3.13788620951933,2.41534035457824
+father_education_missingness,2011,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.30167731209884,3.20255673225336,2.4603307613079
+father_education_missingness,2012,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.25703774281888,3.21920263046739,2.56094349502061
+father_education_missingness,2013,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.26083554235914,3.2592340826136,2.58497954183246
+father_education_missingness,2014,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.26299051555521,3.37209658552682,2.66993025204504
+father_education_missingness,2015,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.25459809237491,3.55007071649161,2.82964778766039
+father_education_missingness,2016,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.28354623936932,3.86397327153735,3.01038883759726
+father_education_missingness,2017,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.28826588381455,4.01410119547865,3.11589497627068
+father_education_missingness,2018,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.27951875456674,3.98758730214885,3.11647428997561
+father_education_missingness,2019,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.26341223932184,4.0641041618221,3.21676807880506
+father_education_missingness,2020,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.3904864386026,5.0533104987758,3.63420336832211
+father_education_missingness,2021,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.56393665516868,5.77754652291414,3.69423307767603
+father_education_missingness,2022,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.38892365620343,5.26291553274185,3.78920433044379
+father_education_missingness,2023,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.2993599434345,4.91584165189228,3.78327935744935
+father_education_missingness,2024,white,S4,S4: All missing to No BA,mnar_all_noba,All missing paternal education is assigned to No BA,rr,1.25428684666087,4.43928278938493,3.53928832244641

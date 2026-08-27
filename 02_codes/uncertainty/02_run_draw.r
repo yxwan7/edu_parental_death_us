@@ -1,5 +1,5 @@
 # ==============================================================================
-# 14_run_draw.r
+# 02_run_draw.r
 #
 # Generate one uncertainty draw in a temporary project and save its four
 # endpoint tables to the shard directory.
@@ -13,7 +13,7 @@ suppressPackageStartupMessages({
   library(splines)
 })
 
-here::i_am("02_codes/14_run_draw.r")
+here::i_am("02_codes/uncertainty/02_run_draw.r")
 source(here::here("02_codes", "00_functions.r"))
 repo_root <- here::here()
 
@@ -75,7 +75,7 @@ STAGES <- c(
   "05_mortality_rates.r",
   "06_mortality_rates_by_cause.r",
   "07_fertility_rates.r",
-  "08_male_fertility_proxy.r",
+  "08_male_fertility_rates.r",
   "09_education_transitions.r",
   "10_kinship_model.r",
   "11_parental_death.r"
@@ -155,12 +155,6 @@ invisible(file.copy(
   overwrite = TRUE
 ))
 
-hfc_parts <- c("01_data", "01_raw", "external", "hfc", "m_ASFR_USA.txt")
-dir.create(dirname(draw_path(hfc_parts)), recursive = TRUE, showWarnings = FALSE)
-invisible(file.copy(
-  repository_path(hfc_parts), draw_path(hfc_parts), overwrite = TRUE
-))
-
 # ---- Seeds and the perturbations a draw applies ----
 
 use_rng_stream <- function(stream) {
@@ -171,10 +165,9 @@ use_rng_stream <- function(stream) {
 
 # Poisson bootstrap of an event count panel, applied row by row: independent
 # Poisson draws sum to a Poisson of the summed rate, so the result matches a draw
-# taken on any coarser grid the downstream scripts aggregate to. Drawing both
-# parents' events in one pass preserves the mother/father covariance that 07 and
-# 08 take different marginals of. The intensity multiplier scales the mean here,
-# so both stages happen in one rpois call.
+# taken on any coarser grid downstream. Both parents' events are drawn in one
+# pass, which preserves their covariance, and the intensity multiplier scales the
+# mean in the same rpois call.
 poisson_resample_counts <- function(counts, multiplier = 1) {
   observed <- as.numeric(counts) * as.numeric(multiplier)
   if (anyNA(observed) || any(observed < 0)) {
@@ -325,16 +318,10 @@ draw_acs_epsilon <- function(years) {
   setNames(epsilon, as.character(perturbed_years))
 }
 
-# theta* for one draw. epsilon is that year's Rademacher vector, shared across
-# every cell of the year; epsilon = 0 returns the point estimate exactly.
-acs_perturb_population <- function(point, log_deviations, epsilon) {
-  point * exp(sqrt(ACS_SDR_SCALE) * as.vector(log_deviations %*% epsilon))
-}
-
 # theta* as a per-cell multiplier, so it can be applied to the finer
-# point-estimate panel. That keeps 04's schema and its raw code columns intact
-# and leaves n_persons_unweighted untouched, while the whole ACS bundle derives
-# from one theta*.
+# point-estimate panel. That keeps the 04_process_population.r schema and its
+# raw code columns intact and leaves n_persons_unweighted untouched, while the
+# whole ACS bundle derives from one theta*.
 acs_draw_factors <- function(replicate_panel, epsilon_by_year,
                              replicate_columns = acs_replicate_columns()) {
   point <- replicate_panel$n_persons_weighted
@@ -345,7 +332,10 @@ acs_draw_factors <- function(replicate_panel, epsilon_by_year,
     rows <- which(replicate_panel$year == as.integer(year_label))
     if (!length(rows)) next
     log_deviations <- acs_log_deviations(point[rows], replicate_matrix[rows, , drop = FALSE])
-    factors[rows] <- acs_perturb_population(1, log_deviations, epsilon_by_year[[year_label]])
+    factors[rows] <- exp(
+      sqrt(ACS_SDR_SCALE) *
+        as.vector(log_deviations %*% epsilon_by_year[[year_label]])
+    )
   }
   factors
 }
@@ -381,6 +371,7 @@ write_random_inputs <- function(streams) {
 
   # Deaths: calibrate on the unperturbed panel, then draw intensity x Poisson.
   death_panel <- as.data.table(readRDS(repository_path(PERTURBED_INPUTS[[1]])))
+  death_panel[, cause_6 := classify_cause_6_from_cause_atom(cause_atom)]
   death_calibration <- calibrate_death_intensity(death_panel)
   use_rng_stream(streams$death)
   multiplier_years <- sort(unique(death_panel[!is.na(cause_6), year]))
@@ -396,7 +387,7 @@ write_random_inputs <- function(streams) {
     intensity_m_max = max(multipliers$m)
   )
   count_totals[["n_deaths_total"]] <- sum(as.numeric(death_panel[["n_deaths"]]))
-  set(death_panel, j = "m", value = NULL)
+  set(death_panel, j = c("m", "cause_6"), value = NULL)
   dst <- draw_path(PERTURBED_INPUTS[[1]])
   dir.create(dirname(dst), recursive = TRUE, showWarnings = FALSE)
   saveRDS(as.data.frame(death_panel), dst)
@@ -507,21 +498,27 @@ build_shard_tables <- function() {
   endpoint_dir <- analysis_path("01_data", "02_processed", "edu_parent_loss")
   list(
     incidence_total = order_total(build_total_incidence(
-      readRDS(file.path(endpoint_dir, "03b_parent_loss_by_3_cause_annual.rds")),
+      readRDS(file.path(endpoint_dir, "02_parent_loss_by_cause_atom_annual.rds")),
       EDUC_TABLE_LEVELS
     )),
-    incidence_cause6 = order_cause6(build_cause6_incidence(
-      readRDS(file.path(endpoint_dir, "04b_parent_loss_by_6_15_cause_annual.rds")),
-      EDUC_TABLE_LEVELS
-    )),
+    incidence_cause_atom = order_cause(
+      build_cause_incidence(
+        readRDS(file.path(endpoint_dir, "02_parent_loss_by_cause_atom_annual.rds")),
+        EDUC_TABLE_LEVELS, "cause_atom", CAUSE_ATOM_LEVELS
+      ),
+      "cause_atom", CAUSE_ATOM_LEVELS
+    ),
     meanage_total = order_total(build_total_mean_age(
-      readRDS(file.path(endpoint_dir, "03c_parent_loss_by_3_cause_child_age.rds")),
+      readRDS(file.path(endpoint_dir, "03_parent_loss_by_cause_atom_child_age.rds")),
       EDUC_TABLE_LEVELS
     )),
-    meanage_cause6 = order_cause6(build_cause6_mean_age(
-      readRDS(file.path(endpoint_dir, "04c_parent_loss_by_6_15_cause_child_age.rds")),
-      EDUC_TABLE_LEVELS
-    ))
+    meanage_cause_atom = order_cause(
+      build_cause_mean_age(
+        readRDS(file.path(endpoint_dir, "03_parent_loss_by_cause_atom_child_age.rds")),
+        EDUC_TABLE_LEVELS, "cause_atom", CAUSE_ATOM_LEVELS
+      ),
+      "cause_atom", CAUSE_ATOM_LEVELS
+    )
   )
 }
 

@@ -1,5 +1,5 @@
 # ==============================================================================
-# 15_aggregate_draws.r
+# 03_aggregate_draws.r
 #
 # Aggregate a verified draw batch into point estimates, confidence intervals
 # and MCSE estimates. The reported point estimate is the draw median; the
@@ -13,7 +13,7 @@ suppressPackageStartupMessages({
   library(here)
 })
 
-here::i_am("02_codes/15_aggregate_draws.r")
+here::i_am("02_codes/uncertainty/03_aggregate_draws.r")
 source(here::here("02_codes", "00_functions.r"))
 setDTthreads(1L)
 
@@ -35,9 +35,6 @@ ALLOW_PARTIAL <- nzchar(Sys.getenv("EDU_PARENT_LOSS_ALLOW_PARTIAL", unset = ""))
 # ---- Interval definitions ----
 
 CI_PROBS <- c(0.025, 0.975)
-# The reported point estimate is the draw median. The deterministic tables are
-# still joined in below, so every output keeps the deterministic value beside
-# the median for comparison.
 MEDIAN_PROB <- 0.5
 MCSE_SEED <- 20260720L
 MCSE_BOOTSTRAP_B <- 2000L
@@ -51,18 +48,15 @@ CI_VALUE_COLUMNS <- list(
 )
 
 KEY_TOTAL <- c("year", "race_eth", "parent_educ2", "parent_type")
-KEY_CAUSE6 <- c(KEY_TOTAL, "cause_6")
+KEY_CAUSE_6 <- c(KEY_TOTAL, "cause_6")
 KEY_GAP <- c("year", "race_eth", "parent_type", "gap_metric")
 KEY_MEANAGE_GAP <- c("year", "race_eth", "parent_type")
-MAIN_TEXT_KEY_YEARS <- c(2010L, 2019L, 2021L, 2024L)
-MAIN_TEXT_PERIOD_LABEL <- "2010-2024"
-MAIN_TEXT_COUNT_KEY <- c("period", "race_eth", "parent_type", "parent_educ2")
 
 SHARD_KEYS <- list(
   incidence_total = KEY_TOTAL,
-  incidence_cause6 = KEY_CAUSE6,
+  incidence_cause6 = KEY_CAUSE_6,
   meanage_total = KEY_TOTAL,
-  meanage_cause6 = KEY_CAUSE6
+  meanage_cause6 = KEY_CAUSE_6
 )
 
 point_estimate_dir <- here("01_data", "02_processed", "edu_parent_loss")
@@ -79,10 +73,15 @@ if (any(!file.exists(point_estimate_paths))) {
 # ---- Draw shards ----
 
 # One row per shard, carrying the metadata the audit trail and the batch gate
-# below both read. 14 validates the endpoint tables before it writes a shard.
+# below both read. 02_run_draw.r validates the endpoint tables before it writes
+# a shard.
 audit_row <- function(shard, path) {
   meta <- shard$meta
-  field <- function(name, default) uncertainty_field(meta, name, default)
+  field <- function(name, default) {
+    if (!is.list(meta)) return(default)
+    value <- meta[[name]]
+    if (is.null(value) || !length(value)) default else value[[1]]
+  }
   data.table(
     file = basename(path),
     draw_id = as.character(field("draw_id", NA_character_)),
@@ -141,7 +140,23 @@ if (!is_final && !ALLOW_PARTIAL) {
 }
 
 order_ids <- ledger_positions
-shard_tables <- lapply(shards[as.character(order_ids)], `[[`, "tables")
+
+# Shards carry the cause endpoints at the 24 atom causes; roll them up to the
+# 6 causes on the way in, so the keys, point-estimate joins and output tables
+# below are unchanged. Every atom cause in a reported group shares one intensity
+# multiplier, so this reproduces a group-level draw exactly.
+rollup_shard_tables <- function(tables) {
+  tables$incidence_cause6 <- rollup_atoms_to_cause_6(tables$incidence_cause_atom)
+  tables$meanage_cause6 <- rollup_atoms_to_cause_6(tables$meanage_cause_atom)
+  tables$incidence_cause_atom <- NULL
+  tables$meanage_cause_atom <- NULL
+  tables
+}
+
+shard_tables <- lapply(
+  lapply(shards[as.character(order_ids)], `[[`, "tables"),
+  rollup_shard_tables
+)
 n_complete <- length(shard_tables)
 
 # ---- Endpoint functions ----
@@ -242,10 +257,9 @@ summarise_complete_endpoint <- function(values, label) {
   )
 }
 
-# `point_estimate` is the deterministic mean age. It no longer supplies the
-# reported value -- the median does -- but it still gates which cells are
-# summarised at all: a cell the deterministic run leaves undefined has no
-# events to average, so the median and the interval are both withheld.
+# `point_estimate` is the deterministic mean age. It gates which cells are
+# summarised at all: a cell the deterministic run leaves undefined has no events
+# to average, so the median and the interval are both withheld.
 summarise_meanage_endpoint <- function(values, point_estimate, n_complete) {
   out <- data.table(
     median = rep(NA_real_, nrow(values)),
@@ -280,8 +294,7 @@ summarise_meanage_endpoint <- function(values, point_estimate, n_complete) {
 }
 
 # Both gap tables carry their point estimate in a column called `value`, so the
-# median is named to match rather than left as a bare `median`, which would
-# shadow stats::median wherever the table is read downstream.
+# median is named to match rather than left as a bare `median`.
 summarise_gap_endpoint <- function(values, label) {
   out <- summarise_complete_endpoint(values, label)
   setnames(out, "median", "value_median")
@@ -324,56 +337,6 @@ derive_meanage_gap_draws <- function(tables) {
     per_draw, function(dt) as.numeric(dt$value), numeric(nrow(reference))
   )
   list(key = reference, values = matrix(values, nrow = nrow(reference)))
-}
-
-build_bereaved_children_number_table <- function(incidence_total_dt) {
-  dt <- copy(as.data.table(incidence_total_dt))[
-    year %between% c(2010L, 2024L) &
-      parent_educ2 %chin% c("Total", "No_BA", "BA_plus"),
-    .(year, race_eth, parent_type, parent_educ2, n_children_losing_parent)
-  ]
-
-  annual <- dt[year %in% MAIN_TEXT_KEY_YEARS, .(
-    period = as.character(year), race_eth, parent_type, parent_educ2,
-    n_children_losing_parent
-  )]
-  full_period <- dt[, .(
-    n_children_losing_parent = sum(n_children_losing_parent)
-  ), by = .(race_eth, parent_type, parent_educ2)]
-  full_period[, period := MAIN_TEXT_PERIOD_LABEL]
-  setcolorder(full_period, names(annual))
-
-  out <- rbindlist(list(annual, full_period), use.names = TRUE)
-  totals <- out[parent_educ2 == "Total", .(
-    period, race_eth, parent_type,
-    total_n_children_losing_parent = n_children_losing_parent
-  )]
-  out <- merge(
-    out, totals,
-    by = c("period", "race_eth", "parent_type"),
-    all.x = TRUE,
-    sort = FALSE
-  )
-  if (any(!is.finite(out$total_n_children_losing_parent)) ||
-      any(out$total_n_children_losing_parent <= 0)) {
-    stop("Main-text number table has a missing or non-positive total.",
-         call. = FALSE)
-  }
-  out[, share_percent := fifelse(
-    parent_educ2 == "Total",
-    NA_real_,
-    100 * n_children_losing_parent / total_n_children_losing_parent
-  )]
-  out[, total_n_children_losing_parent := NULL]
-  out[, period_order := match(
-    period, c(as.character(MAIN_TEXT_KEY_YEARS), MAIN_TEXT_PERIOD_LABEL)
-  )]
-  out[, education_order := match(
-    parent_educ2, c("Total", "No_BA", "BA_plus")
-  )]
-  setorder(out, parent_type, race_eth, education_order, period_order)
-  out[, c("period_order", "education_order") := NULL]
-  out[]
 }
 
 derive_bereaved_children_number_draws <- function(tables) {

@@ -1,5 +1,5 @@
 # ==============================================================================
-# 13_replicate_weights.r
+# 01_replicate_weights.r
 #
 # Build the analysis-cell population panel with the ACS point weight and 80
 # replicate weights.
@@ -7,16 +7,14 @@
 
 # ---- Packages ----
 
-# tidyselect is named explicitly because the variable selection below calls
-# all_of(): relying on ipumsr to re-export it makes this script depend on another
-# package's export list.
+# tidyselect is named explicitly: the variable selection below calls all_of().
 suppressPackageStartupMessages({
   library(here)
   library(data.table)
   library(ipumsr)
 })
 
-here::i_am("02_codes/13_replicate_weights.r")
+here::i_am("02_codes/uncertainty/01_replicate_weights.r")
 
 # Use the same ACS recodes as the point-weight panel.
 source(here::here("02_codes", "00_functions.r"))
@@ -24,16 +22,15 @@ source(here::here("02_codes", "00_functions.r"))
 # ---- Replicate-panel definitions ----
 
 # The extract is a 54 GB fixed-width file read in chunks; only the chunk size is
-# tunable from the shell. The year window is fixed because a replicate panel
-# covering less than the full window cannot serve the draws.
+# tunable from the shell. The year window is fixed.
 chunk_size <- {
   raw_value <- Sys.getenv("IPUMS_POP_CHUNK_SIZE", unset = "100000")
   parsed <- suppressWarnings(as.integer(raw_value))
   if (is.na(parsed) || parsed <= 0L) 100000L else parsed
 }
 
-# Mirrors the ACS window in 04; a divergence would surface immediately as cells
-# present in one panel and absent from the other in the equivalence gate.
+# Mirrors the ACS window in 04_process_population.r; the equivalence gate below
+# checks that.
 ACS_MIN_YEAR <- 2000L
 ACS_MAX_YEAR <- 2024L
 REQUESTED_YEARS <- ACS_MIN_YEAR:ACS_MAX_YEAR
@@ -46,16 +43,12 @@ REPLICATE_VARS <- sprintf("repwtp%d", seq_len(ACS_REPLICATE_COUNT))
 REPLICATE_COLUMNS <- acs_replicate_columns()
 WEIGHT_COLUMNS <- c("n_persons_weighted", REPLICATE_COLUMNS)
 
-# The panel is reduced onto this fixed key, so the accumulator stays bounded at
-# the number of analysis cells (about 90k rows) no matter how long the file is.
+# The panel is reduced onto this fixed key: about 90k analysis cells.
 ANALYSIS_KEY <- c("source", "year", "sex", "age_years", "race_eth", "educ2")
 
-# Chunk aggregates buffered before each collapse into the accumulator. Larger
-# values re-aggregate less often; the buffer is what bounds peak memory, so it
-# stays small enough that the pending list cannot outgrow the accumulator.
+# Chunk aggregates buffered before each collapse into the accumulator. This
+# buffer is what bounds peak memory.
 CHUNKS_PER_FLUSH <- 10L
-
-# Analysis age spans are defined in 00_functions.r.
 
 # Point-weight equivalence is expected to be exact; the tolerance only keeps a
 # last-bit difference in summation order from failing the gate, and the observed
@@ -115,7 +108,8 @@ prepare_replicate_chunk <- function(chunk_df) {
     )
   }
 
-  # A missing weight contributes nothing to its cell, as in 04.
+  # A missing weight contributes nothing to its cell, as in
+  # 04_process_population.r.
   for (weight_col in WEIGHT_COLUMNS) {
     missing_weight <- which(is.na(chunk_dt[[weight_col]]))
     if (length(missing_weight)) set(chunk_dt, i = missing_weight, j = weight_col, value = 0)
@@ -149,9 +143,10 @@ flush_pending_chunks <- function() {
   invisible(NULL)
 }
 
-# Equivalence gate: aggregating 04's panel onto the reference key must reproduce
-# this panel's point-weight columns cell for cell. A difference means the two
-# extraction passes disagree about who is in the population.
+# Equivalence gate: aggregating the 04_process_population.r panel onto the
+# reference key must reproduce this panel's point-weight columns cell for cell.
+# A difference means the two extraction passes disagree about who is in the
+# population.
 compare_point_weights <- function(replicate_panel, main_panel) {
   reference <- as.data.table(main_panel)[
     ,
@@ -189,9 +184,9 @@ compare_point_weights <- function(replicate_panel, main_panel) {
   )
 }
 
-# The two derived bases the rate scripts consume: 05 works off the age-capped
-# denominator, 07 off women only, and both bridge child Unknown education into
-# No_BA before dividing.
+# The two derived bases the rate scripts consume: 05_mortality_rates.r works off
+# the age-capped denominator, 07_fertility_rates.r off women only, and both
+# bridge child Unknown education into No_BA before dividing.
 build_death_basis <- function(panel) {
   capped <- copy(panel)
   capped[!is.na(age_years) & age_years > max(AGES_MODEL), age_years := max(AGES_MODEL)]
@@ -203,11 +198,11 @@ build_birth_basis <- function(panel) {
 }
 
 # Every denominator used by the rate layers, stated as an aggregate of panel
-# cells. Each target uses the age span of its analysis: 09 estimates shares
-# over ages 0-97 and stops on a missing q12, so its target spans 0-97
-# even though 10 reads only AGES_MODEL. The two summed-over-education exposures
-# carry all five race groups because 05 and 07 hard-stop on them while
-# allocating Unknown-education events, not because the endpoints use them.
+# cells. Each target uses the age span of its analysis: the
+# 09_education_transitions.r target spans 0-97 even though 10_kinship_model.r
+# reads only AGES_MODEL. The two summed-over-education exposures carry all five
+# race groups, which 05_mortality_rates.r and 07_fertility_rates.r hard-stop on
+# while allocating Unknown-education events.
 SUPPORT_TARGETS <- list(
   list(
     id = "death_exposure_cell",
@@ -309,10 +304,9 @@ evaluate_support_target <- function(target, panel) {
   point <- aggregated$n_persons_weighted
   replicate_matrix <- as.matrix(aggregated[, REPLICATE_COLUMNS, with = FALSE])
 
-  # theta* = theta_0 * exp(...) is positive whenever theta_0 is, so a strictly
-  # positive point estimate is necessary and sufficient for the draw to stay in
-  # support. The signs are shared within a year, so an aggregated cell is
-  # perturbed as one quantity and has to be aggregated before it is judged.
+  # The perturbation is positive whenever the point estimate is, so a strictly
+  # positive point estimate keeps the draw in support. Signs are shared within a
+  # year, so a cell has to be aggregated before it is judged.
   log_deviations <- acs_log_deviations(point, replicate_matrix)
   sigma <- sqrt(ACS_SDR_SCALE * rowSums(log_deviations^2))
   is_perturbed <- aggregated$year >= ACS_REPLICATE_MIN_YEAR
@@ -383,13 +377,13 @@ setorderv(replicate_panel, ANALYSIS_KEY)
 
 # ---- Build the panel (written to a temporary name until both checks pass) ----
 
-# Written to a temporary name first: 14 reads this panel directly and checks
-# nothing itself, so a panel that fails the checks below must not be left where a
-# draw can pick it up. Same rename-into-place as the draw shards.
+# Written to a temporary name first: 02_run_draw.r reads this panel directly and
+# checks nothing itself, so a panel that fails the checks below must not be left
+# where a draw can pick it up. Same rename-into-place as the draw shards.
 replicate_panel_tmp <- paste0(replicate_panel_rds, ".tmp")
 saveRDS(replicate_panel, file = replicate_panel_tmp)
 
-# ---- Check 1: the point weights reproduce 04's panel ----
+# ---- Check 1: the point weights reproduce the ACS main panel ----
 
 equivalence <- compare_point_weights(replicate_panel, readRDS(main_panel_rds))
 equivalence_passed <-
@@ -416,9 +410,9 @@ if (!equivalence_passed) {
   )
 }
 
-# theta* keeps the sign of theta_0, so an empty required cell is what can still
-# put a draw outside the support. Collapsing cells or reseeding would change the
-# estimand, so this stops instead of repairing the panel.
+# An empty required cell is what can still put a draw outside the support.
+# Collapsing cells or reseeding would change the estimand, so this stops instead
+# of repairing the panel.
 if (!support_passed) {
   stop(
     sprintf(

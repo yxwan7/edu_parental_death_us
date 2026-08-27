@@ -36,8 +36,7 @@ save_minimal_extracts <- {
   raw_value %in% c("true", "t", "1", "yes", "y")
 }
 
-# Formal runs rebuild every year by default. Set this to false only to resume an
-# interrupted run without changing the code or raw files.
+# Formal runs rebuild every year. Set false only to resume an interrupted run.
 force_reprocess <- {
   raw_value <- tolower(trimws(Sys.getenv("NCHS_DEATH_FORCE_REPROCESS", unset = "true")))
   raw_value %in% c("true", "t", "1", "yes", "y")
@@ -158,9 +157,8 @@ extract_zip_member_to_temp <- function(zip_path) {
 
   dir.create(temp_dir, recursive = TRUE, showWarnings = FALSE)
 
-  # `utils::unzip()` works for most years but intermittently fails on the very
-  # large 2020 public-use archive. Fall back to PowerShell/.NET extraction so
-  # the downstream field parsing logic does not need a year-specific branch.
+  # `utils::unzip()` intermittently fails on the very large 2020 public-use
+  # archive; fall back to PowerShell/.NET extraction.
   extracted_path <- tryCatch(
     suppressWarnings(
       utils::unzip(
@@ -419,233 +417,8 @@ get_optional_field <- function(raw_df, field_name, default = NA_character_) {
   }
 }
 
-extract_record_axis_codes_icd10 <- function(record_axis_block_raw) {
-  block <- record_axis_block_raw
-  block[is.na(block)] <- ""
-  block <- sprintf("%-100s", block)
-  starts <- seq.int(1L, 96L, by = 5L)
-
-  codes <- lapply(
-    starts,
-    function(start) {
-      trimws(substr(block, start, start + 3L))
-    }
-  )
-
-  as.data.frame(
-    setNames(codes, paste0("record_axis_code_", seq_along(codes))),
-    stringsAsFactors = FALSE
-  )
-}
-
-flag_drug_death_icd10 <- function(ucod_raw, record_axis_block_raw) {
-  # Drug-overdose deaths: poisoning UCOD plus a contributory drug T-code, as in
-  # Schlüter et al., 2024 (narcan definition). The T36-T59 contributory range
-  # reproduces published CDC drug-overdose totals (validated to <0.02%).
-  ucod <- toupper(trimws(ucod_raw))
-  overdose_ucod <- rep.int(0L, length(ucod))
-  overdose_ucod[grepl("^(X4[0-4]|X6[0-4]|X85|Y1[0-4])$", ucod)] <- 1L
-  overdose_ucod[is.na(ucod_raw)] <- NA_integer_
-
-  record_axis_codes <- extract_record_axis_codes_icd10(record_axis_block_raw)
-  has_drug_t_code <- Reduce(
-    f = `|`,
-    x = lapply(record_axis_codes, function(x) grepl("^T(3[6-9]|4[0-9]|5[0-9])", x)),
-    init = rep(FALSE, nrow(record_axis_codes))
-  )
-
-  out <- ifelse(overdose_ucod == 1L & has_drug_t_code, 1L, 0L)
-  out[is.na(overdose_ucod)] <- NA_integer_
-  as.integer(out)
-}
-
-flag_firearm_death_icd10 <- function(ucod_raw) {
-  ucod <- toupper(trimws(ucod_raw))
-  out <- rep.int(0L, length(ucod))
-  out[grepl("^(W3[234]|X7[234]|X9[345]|Y2[234]|Y350|U014)$", ucod)] <- 1L
-  out[is.na(ucod_raw)] <- NA_integer_
-  out
-}
-
-flag_opioid_death_icd10 <- function(ucod_raw, record_axis_block_raw) {
-  drug_death <- flag_drug_death_icd10(
-    ucod_raw = ucod_raw,
-    record_axis_block_raw = record_axis_block_raw
-  )
-  record_axis_codes <- extract_record_axis_codes_icd10(record_axis_block_raw)
-  opioid_targets <- c("T400", "T401", "T402", "T403", "T404", "T406")
-  has_opioid_code <- Reduce(
-    f = `|`,
-    x = lapply(record_axis_codes, function(x) x %in% opioid_targets),
-    init = rep(FALSE, nrow(record_axis_codes))
-  )
-
-  out <- ifelse(drug_death == 1L & has_opioid_code, 1L, 0L)
-  out[is.na(drug_death)] <- NA_integer_
-  as.integer(out)
-}
-
-# Mutually exclusive ICD-10 cause classification. cause_15 is assigned in priority
-# order (the first matching predicate wins); cause_6 is derived from
-# cause_15.
-normalize_icd10_ucod <- function(ucod_raw) {
-  ucod <- toupper(trimws(as.character(ucod_raw)))
-  ucod <- gsub("[^A-Z0-9]", "", ucod)
-  ucod[ucod == ""] <- NA_character_
-  ucod
-}
-
-icd_prefix_number <- function(ucod) {
-  suppressWarnings(as.integer(substr(ucod, 2L, 3L)))
-}
-
-icd_letter <- function(ucod) {
-  substr(ucod, 1L, 1L)
-}
-
-icd_in_letter_number_range <- function(ucod, letter, lower, upper) {
-  !is.na(ucod) &
-    icd_letter(ucod) == letter &
-    !is.na(icd_prefix_number(ucod)) &
-    icd_prefix_number(ucod) >= lower &
-    icd_prefix_number(ucod) <= upper
-}
-
-icd_starts_with_any <- function(ucod, prefixes) {
-  Reduce(
-    f = `|`,
-    x = lapply(prefixes, function(prefix) startsWith(ucod, prefix)),
-    init = rep(FALSE, length(ucod))
-  )
-}
-
-is_drug_poisoning_overdose_icd10 <- function(ucod) {
-  icd_in_letter_number_range(ucod, "X", 40L, 44L) |
-    icd_in_letter_number_range(ucod, "X", 60L, 64L) |
-    startsWith(ucod, "X85") |
-    icd_in_letter_number_range(ucod, "Y", 10L, 14L)
-}
-
-is_firearm_homicide_icd10 <- function(ucod) {
-  startsWith(ucod, "U014") |
-    icd_in_letter_number_range(ucod, "X", 93L, 95L)
-}
-
-is_firearm_suicide_icd10 <- function(ucod) {
-  icd_in_letter_number_range(ucod, "X", 72L, 74L)
-}
-
-is_other_firearm_deaths_icd10 <- function(ucod) {
-  icd_in_letter_number_range(ucod, "W", 32L, 34L) |
-    icd_in_letter_number_range(ucod, "Y", 22L, 24L) |
-    startsWith(ucod, "Y350")
-}
-
-is_covid19_icd10 <- function(ucod) {
-  startsWith(ucod, "U071")
-}
-
-is_heart_disease_icd10 <- function(ucod) {
-  icd_in_letter_number_range(ucod, "I", 0L, 9L) |
-    startsWith(ucod, "I11") |
-    startsWith(ucod, "I13") |
-    icd_in_letter_number_range(ucod, "I", 20L, 51L)
-}
-
-is_cerebrovascular_disease_icd10 <- function(ucod) {
-  icd_in_letter_number_range(ucod, "I", 60L, 69L)
-}
-
-is_diabetes_mellitus_icd10 <- function(ucod) {
-  icd_in_letter_number_range(ucod, "E", 10L, 14L)
-}
-
-is_cancer_icd10 <- function(ucod) {
-  icd_in_letter_number_range(ucod, "C", 0L, 97L)
-}
-
-is_chronic_lower_respiratory_disease_icd10 <- function(ucod) {
-  icd_in_letter_number_range(ucod, "J", 40L, 47L)
-}
-
-is_alcohol_attributable_icd10 <- function(ucod) {
-  icd_starts_with_any(
-    ucod,
-    c(
-      "F10", "G312", "G621", "G721", "I426", "K292", "K852",
-      "K860", "P043", "Q860", "X45", "X65", "Y15"
-    )
-  ) |
-    grepl("^K70([0-4]|9)?$", ucod)
-}
-
-is_nonfirearm_suicide_icd10 <- function(ucod) {
-  startsWith(ucod, "U03") |
-    icd_in_letter_number_range(ucod, "X", 60L, 84L) |
-    startsWith(ucod, "Y870")
-}
-
-is_nonfirearm_homicide_icd10 <- function(ucod) {
-  startsWith(ucod, "U01") |
-    startsWith(ucod, "U02") |
-    icd_in_letter_number_range(ucod, "X", 85L, 99L) |
-    icd_in_letter_number_range(ucod, "Y", 0L, 9L) |
-    startsWith(ucod, "Y871")
-}
-
-is_other_unintentional_injuries_icd10 <- function(ucod) {
-  icd_in_letter_number_range(ucod, "V", 1L, 99L) |
-    icd_in_letter_number_range(ucod, "W", 0L, 99L) |
-    icd_in_letter_number_range(ucod, "X", 0L, 59L) |
-    startsWith(ucod, "Y85") |
-    startsWith(ucod, "Y86")
-}
-
-classify_cause_15_icd10 <- function(ucod_raw) {
-  ucod <- normalize_icd10_ucod(ucod_raw)
-  out <- rep(NA_character_, length(ucod))
-  valid <- !is.na(ucod)
-
-  out[valid & is_drug_poisoning_overdose_icd10(ucod)] <- "drug_poisoning_overdose"
-  out[valid & is.na(out) & is_firearm_homicide_icd10(ucod)] <- "firearm_homicide"
-  out[valid & is.na(out) & is_firearm_suicide_icd10(ucod)] <- "firearm_suicide"
-  out[valid & is.na(out) & is_other_firearm_deaths_icd10(ucod)] <- "other_firearm_deaths"
-  out[valid & is.na(out) & is_covid19_icd10(ucod)] <- "covid19"
-  out[valid & is.na(out) & is_heart_disease_icd10(ucod)] <- "heart_disease"
-  out[valid & is.na(out) & is_cerebrovascular_disease_icd10(ucod)] <- "cerebrovascular_disease"
-  out[valid & is.na(out) & is_diabetes_mellitus_icd10(ucod)] <- "diabetes_mellitus"
-  out[valid & is.na(out) & is_cancer_icd10(ucod)] <- "cancer"
-  out[valid & is.na(out) & is_chronic_lower_respiratory_disease_icd10(ucod)] <-
-    "chronic_lower_respiratory_disease"
-  out[valid & is.na(out) & is_alcohol_attributable_icd10(ucod)] <- "alcohol_attributable"
-  out[valid & is.na(out) & is_nonfirearm_suicide_icd10(ucod)] <- "nonfirearm_suicide"
-  out[valid & is.na(out) & is_nonfirearm_homicide_icd10(ucod)] <- "nonfirearm_homicide"
-  out[valid & is.na(out) & is_other_unintentional_injuries_icd10(ucod)] <-
-    "other_unintentional_injuries"
-  out[valid & is.na(out)] <- "all_remaining_causes"
-
-  out
-}
-
-topcode_age_years_reference <- function(age_years) {
-  out <- age_years
-  out[!is.na(out) & out > 85L] <- 85L
-  out
-}
-
-flag_us_resident <- function(resident_status_raw) {
-  # Resident status 1-3 are U.S. residents; 4 is a foreign resident. This coding
-  # is stable across all supported mortality years.
-  resident_status_raw %in% c("1", "2", "3")
-}
-
-get_icd_revision <- function(year) {
-  ifelse(year <= 1998L, "ICD9", "ICD10")
-}
-
 derive_mortality_fields <- function(raw_df, year, file_name, member_name) {
-  # Keep raw and harmonized fields per record so education, race, age, and UCOD
-  # can be re-audited without re-reading the fixed-width file.
+  # Each harmonized field keeps its raw source column.
   if (!year %in% 1990L:2024L) {
     stop("No field-derivation logic has been implemented for year ", year, call. = FALSE)
   }
@@ -653,8 +426,7 @@ derive_mortality_fields <- function(raw_df, year, file_name, member_name) {
   drug_death <- rep.int(NA_integer_, nrow(raw_df))
   opioid_death <- rep.int(NA_integer_, nrow(raw_df))
   firearm_death <- rep.int(NA_integer_, nrow(raw_df))
-  cause_15 <- rep.int(NA_character_, nrow(raw_df))
-  cause_6 <- rep.int(NA_character_, nrow(raw_df))
+  cause_atom <- rep.int(NA_character_, nrow(raw_df))
   age_years <- rep.int(NA_integer_, nrow(raw_df))
 
   educ_1989_raw <- get_optional_field(raw_df, "educ_1989_raw")
@@ -711,17 +483,7 @@ derive_mortality_fields <- function(raw_df, year, file_name, member_name) {
   }
 
   if (year >= 1999L) {
-    drug_death <- flag_drug_death_icd10(
-      ucod_raw = raw_df$ucod_raw,
-      record_axis_block_raw = raw_df$record_axis_block_raw
-    )
-    opioid_death <- flag_opioid_death_icd10(
-      ucod_raw = raw_df$ucod_raw,
-      record_axis_block_raw = raw_df$record_axis_block_raw
-    )
-    firearm_death <- flag_firearm_death_icd10(raw_df$ucod_raw)
-    cause_15 <- classify_cause_15_icd10(raw_df$ucod_raw)
-    cause_6 <- classify_cause_6_from_cause_15(cause_15)
+    cause_atom <- classify_cause_atom_icd10(raw_df$ucod_raw)
   }
 
   data.frame(
@@ -729,12 +491,12 @@ derive_mortality_fields <- function(raw_df, year, file_name, member_name) {
     file_name = rep.int(file_name, nrow(raw_df)),
     member_name = rep.int(member_name, nrow(raw_df)),
     resident_status_raw = raw_df$resident_status_raw,
-    is_us_resident = flag_us_resident(raw_df$resident_status_raw),
+    # Resident status 1-3 are U.S. residents; 4 is a foreign resident. This
+    # coding is stable across all supported mortality years.
+    is_us_resident = raw_df$resident_status_raw %in% c("1", "2", "3"),
     sex_raw = raw_df$sex_raw,
     sex = harmonize_sex(raw_df$sex_raw),
     age_raw = raw_df$age_raw,
-    # Retained for later comparison with published age recodes if detailed age
-    # handling needs to change.
     age_recode_12_raw = age_recode_12_raw,
     age_recode_27_raw = age_recode_27_raw,
     age_years = age_years,
@@ -759,13 +521,8 @@ derive_mortality_fields <- function(raw_df, year, file_name, member_name) {
     educ_system = educ_meta$educ_system,
     educ2 = educ_meta$educ2,
     ucod_raw = raw_df$ucod_raw,
-    icd_revision = rep.int(get_icd_revision(year), nrow(raw_df)),
-    cause_group = rep.int("all_cause", nrow(raw_df)),
-    drug_death = drug_death,
-    opioid_death = opioid_death,
-    firearm_death = firearm_death,
-    cause_15 = cause_15,
-    cause_6 = cause_6,
+    icd_revision = rep.int(ifelse(year <= 1998L, "ICD9", "ICD10"), nrow(raw_df)),
+    cause_atom = cause_atom,
     record_weight = rep.int(1L, nrow(raw_df)),
     stringsAsFactors = FALSE
   )
@@ -803,12 +560,7 @@ get_main_panel_group_vars <- function() {
     "educ2",
     "ucod_raw",
     "icd_revision",
-    "cause_group",
-    "drug_death",
-    "opioid_death",
-    "firearm_death",
-    "cause_15",
-    "cause_6"
+    "cause_atom"
   )
 }
 
@@ -821,11 +573,10 @@ prepare_main_panel_input <- function(chunk_df) {
   )]
 
   agg_df$sex[agg_df$sex == ""] <- NA_character_
-  agg_df$age_years <- topcode_age_years_reference(agg_df$age_years)
+  agg_df$age_years[!is.na(agg_df$age_years) & agg_df$age_years > 85L] <- 85L
   agg_df$race_bridged[agg_df$race_bridged == ""] <- NA_character_
   agg_df$race_eth[agg_df$race_eth == ""] <- NA_character_
   agg_df$educ2[is.na(agg_df$educ2) | agg_df$educ2 == ""] <- "Unknown"
-  agg_df$cause_group[is.na(agg_df$cause_group) | agg_df$cause_group == ""] <- "all_cause"
 
   agg_df
 }
@@ -884,8 +635,8 @@ process_mortality_zip <- function(zip_path, layout_registry, chunk_size, save_mi
 
   year_layout <- layout_registry[[as.character(year)]]
   extraction_target <- extract_zip_member_to_temp(zip_path)
-  # Read the extracted text member sequentially so we can stream very large raw
-  # files without holding the entire microdata file in memory.
+  # Read the extracted text member sequentially, so no raw file is held whole
+  # in memory.
   file_con <- file(extraction_target$extracted_path, open = "rb")
 
   on.exit(close(file_con), add = TRUE)
@@ -954,8 +705,7 @@ process_mortality_zip <- function(zip_path, layout_registry, chunk_size, save_mi
   minimal_extract_path <- NA_character_
 
   if (isTRUE(save_minimal_extracts)) {
-    # Row-level extract so layout work can be re-audited without re-reading
-    # the fixed-width file.
+    # Row-level extract, for re-auditing the layout work.
     minimal_extract <- do.call(rbind, minimal_chunks)
     rownames(minimal_extract) <- NULL
 
@@ -1002,10 +752,9 @@ process_mortality_zip <- function(zip_path, layout_registry, chunk_size, save_mi
 
 # ---- Layout registry ----
 
-# Fixed-width field positions for the audited death-numerator fields: residency,
-# sex, detailed age, race / Hispanic recodes, education, and UCOD. The mortality
-# file layout changes across ICD and certificate eras, so extend this registry
-# only after verifying the year-block record layout documentation.
+# Fixed-width field positions for the death-numerator fields: residency, sex,
+# detailed age, race / Hispanic recodes, education, and UCOD. The layout changes
+# across ICD and certificate eras; verify a year block before extending it.
 layout_registry <- list(
   `1990` = list(
     record_length = 440L,
@@ -1044,11 +793,10 @@ layout_registry <- list(
         "age_recode_12_raw",
         "hispanic_raw",
         "hispanic_race_recode_raw",
-        "ucod_raw",
-        "record_axis_block_raw"
+        "ucod_raw"
       ),
-      start = c(20L, 52L, 54L, 59L, 60L, 62L, 63L, 64L, 71L, 80L, 82L, 142L, 341L),
-      end = c(20L, 53L, 54L, 59L, 61L, 62L, 63L, 66L, 72L, 81L, 82L, 145L, 440L),
+      start = c(20L, 52L, 54L, 59L, 60L, 62L, 63L, 64L, 71L, 80L, 82L, 142L),
+      end = c(20L, 53L, 54L, 59L, 61L, 62L, 63L, 66L, 72L, 81L, 82L, 145L),
       stringsAsFactors = FALSE
     )
   ),
@@ -1064,7 +812,6 @@ layout_registry <- list(
         "age_raw",
         "age_recode_27_raw",
         "ucod_raw",
-        "record_axis_block_raw",
         "race_raw",
         "race_bridged_flag_raw",
         "race_imputation_flag_raw",
@@ -1073,8 +820,8 @@ layout_registry <- list(
         "hispanic_raw",
         "hispanic_race_recode_raw"
       ),
-      start = c(20L, 61L, 63L, 64L, 69L, 70L, 77L, 146L, 344L, 445L, 447L, 448L, 449L, 450L, 484L, 488L),
-      end = c(20L, 62L, 63L, 64L, 69L, 73L, 78L, 149L, 443L, 446L, 447L, 448L, 449L, 450L, 486L, 488L),
+      start = c(20L, 61L, 63L, 64L, 69L, 70L, 77L, 146L, 445L, 447L, 448L, 449L, 450L, 484L, 488L),
+      end = c(20L, 62L, 63L, 64L, 69L, 73L, 78L, 149L, 446L, 447L, 448L, 449L, 450L, 486L, 488L),
       stringsAsFactors = FALSE
     )
   ),
@@ -1090,7 +837,6 @@ layout_registry <- list(
         "age_raw",
         "age_recode_27_raw",
         "ucod_raw",
-        "record_axis_block_raw",
         "race_raw",
         "race_bridged_flag_raw",
         "race_imputation_flag_raw",
@@ -1099,8 +845,8 @@ layout_registry <- list(
         "hispanic_raw",
         "hispanic_race_recode_raw"
       ),
-      start = c(20L, 61L, 63L, 64L, 69L, 70L, 77L, 146L, 344L, 445L, 447L, 448L, 449L, 450L, 484L, 488L),
-      end = c(20L, 62L, 63L, 64L, 69L, 73L, 78L, 149L, 443L, 446L, 447L, 448L, 449L, 450L, 486L, 488L),
+      start = c(20L, 61L, 63L, 64L, 69L, 70L, 77L, 146L, 445L, 447L, 448L, 449L, 450L, 484L, 488L),
+      end = c(20L, 62L, 63L, 64L, 69L, 73L, 78L, 149L, 446L, 447L, 448L, 449L, 450L, 486L, 488L),
       stringsAsFactors = FALSE
     )
   ),
@@ -1116,7 +862,6 @@ layout_registry <- list(
         "age_raw",
         "age_recode_27_raw",
         "ucod_raw",
-        "record_axis_block_raw",
         "race_raw",
         "race_bridged_flag_raw",
         "race_imputation_flag_raw",
@@ -1125,8 +870,8 @@ layout_registry <- list(
         "hispanic_raw",
         "hispanic_race_recode_raw"
       ),
-      start = c(20L, 61L, 63L, 64L, 69L, 70L, 77L, 146L, 344L, 445L, 447L, 448L, 449L, 450L, 484L, 488L),
-      end = c(20L, 62L, 63L, 64L, 69L, 73L, 78L, 149L, 443L, 446L, 447L, 448L, 449L, 450L, 486L, 488L),
+      start = c(20L, 61L, 63L, 64L, 69L, 70L, 77L, 146L, 445L, 447L, 448L, 449L, 450L, 484L, 488L),
+      end = c(20L, 62L, 63L, 64L, 69L, 73L, 78L, 149L, 446L, 447L, 448L, 449L, 450L, 486L, 488L),
       stringsAsFactors = FALSE
     )
   ),
@@ -1142,7 +887,6 @@ layout_registry <- list(
         "age_raw",
         "age_recode_27_raw",
         "ucod_raw",
-        "record_axis_block_raw",
         "race_raw",
         "race_bridged_flag_raw",
         "race_imputation_flag_raw",
@@ -1151,8 +895,8 @@ layout_registry <- list(
         "hispanic_raw",
         "hispanic_race_recode_raw"
       ),
-      start = c(20L, 61L, 63L, 64L, 69L, 70L, 77L, 146L, 344L, 445L, 447L, 448L, 449L, 450L, 484L, 488L),
-      end = c(20L, 62L, 63L, 64L, 69L, 73L, 78L, 149L, 443L, 446L, 447L, 448L, 449L, 450L, 486L, 488L),
+      start = c(20L, 61L, 63L, 64L, 69L, 70L, 77L, 146L, 445L, 447L, 448L, 449L, 450L, 484L, 488L),
+      end = c(20L, 62L, 63L, 64L, 69L, 73L, 78L, 149L, 446L, 447L, 448L, 449L, 450L, 486L, 488L),
       stringsAsFactors = FALSE
     )
   ),
@@ -1168,12 +912,11 @@ layout_registry <- list(
         "age_raw",
         "age_recode_27_raw",
         "ucod_raw",
-        "record_axis_block_raw",
         "hispanic_raw",
         "race_recode_40_raw"
       ),
-      start = c(20L, 61L, 63L, 64L, 69L, 70L, 77L, 146L, 344L, 484L, 489L),
-      end = c(20L, 62L, 63L, 64L, 69L, 73L, 78L, 149L, 443L, 486L, 490L),
+      start = c(20L, 61L, 63L, 64L, 69L, 70L, 77L, 146L, 484L, 489L),
+      end = c(20L, 62L, 63L, 64L, 69L, 73L, 78L, 149L, 486L, 490L),
       stringsAsFactors = FALSE
     )
   ),
@@ -1188,15 +931,14 @@ layout_registry <- list(
         "age_raw",
         "age_recode_27_raw",
         "ucod_raw",
-        "record_axis_block_raw",
         "race_imputation_flag_raw",
         "race_recode_6_raw",
         "hispanic_raw",
         "hispanic_race_recode_2022_raw",
         "race_recode_40_raw"
       ),
-      start = c(20L, 63L, 64L, 69L, 70L, 77L, 146L, 344L, 448L, 450L, 484L, 487L, 489L),
-      end = c(20L, 63L, 64L, 69L, 73L, 78L, 149L, 443L, 448L, 450L, 486L, 488L, 490L),
+      start = c(20L, 63L, 64L, 69L, 70L, 77L, 146L, 448L, 450L, 484L, 487L, 489L),
+      end = c(20L, 63L, 64L, 69L, 73L, 78L, 149L, 448L, 450L, 486L, 488L, 490L),
       stringsAsFactors = FALSE
     )
   ),
@@ -1211,15 +953,14 @@ layout_registry <- list(
         "age_raw",
         "age_recode_27_raw",
         "ucod_raw",
-        "record_axis_block_raw",
         "race_imputation_flag_raw",
         "race_recode_6_raw",
         "hispanic_raw",
         "hispanic_race_recode_2022_raw",
         "race_recode_40_raw"
       ),
-      start = c(20L, 63L, 64L, 69L, 70L, 77L, 146L, 344L, 448L, 450L, 484L, 487L, 489L),
-      end = c(20L, 63L, 64L, 69L, 73L, 78L, 149L, 443L, 448L, 450L, 486L, 488L, 490L),
+      start = c(20L, 63L, 64L, 69L, 70L, 77L, 146L, 448L, 450L, 484L, 487L, 489L),
+      end = c(20L, 63L, 64L, 69L, 73L, 78L, 149L, 448L, 450L, 486L, 488L, 490L),
       stringsAsFactors = FALSE
     )
   ),
@@ -1234,23 +975,22 @@ layout_registry <- list(
         "age_raw",
         "age_recode_27_raw",
         "ucod_raw",
-        "record_axis_block_raw",
         "race_imputation_flag_raw",
         "race_recode_6_raw",
         "hispanic_raw",
         "hispanic_race_recode_2022_raw",
         "race_recode_40_raw"
       ),
-      start = c(20L, 63L, 64L, 69L, 70L, 77L, 146L, 344L, 448L, 450L, 484L, 487L, 489L),
-      end = c(20L, 63L, 64L, 69L, 73L, 78L, 149L, 443L, 448L, 450L, 486L, 488L, 490L),
+      start = c(20L, 63L, 64L, 69L, 70L, 77L, 146L, 448L, 450L, 484L, 487L, 489L),
+      end = c(20L, 63L, 64L, 69L, 73L, 78L, 149L, 448L, 450L, 486L, 488L, 490L),
       stringsAsFactors = FALSE
     )
   )
 )
 
-# Expand the validated anchor-year layouts to the remaining years that share
-# the same fixed-width structure. The era boundaries are determined by record
-# length and certificate / recode changes validated against the raw files.
+# Expand the anchor-year layouts to the remaining years sharing the same
+# fixed-width structure. Era boundaries follow record length and the certificate
+# and recode changes.
 for (year in 1991:1998) {
   layout_registry[[as.character(year)]] <- layout_registry[["1990"]]
 }
@@ -1304,9 +1044,8 @@ if (length(duplicate_years)) {
 
 mortality_files <- mortality_files[order(file_years, basename(mortality_files))]
 
-# Each year is processed independently and cached under per_year/, so an
-# interrupted run may explicitly reuse years already on disk by setting
-# NCHS_DEATH_FORCE_REPROCESS=false.
+# Each year is processed independently and cached under per_year/. Setting
+# NCHS_DEATH_FORCE_REPROCESS=false reuses the years already on disk.
 main_panel_results <- list()
 
 for (zip_path in mortality_files) {

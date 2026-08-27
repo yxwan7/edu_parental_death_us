@@ -1,0 +1,19 @@
+panel,race,parental_education,2010,2019,2021,2024,2010-2024
+Panel A: maternal death,NH White,Total,"44,877","51,552","68,852","50,832","781,844"
+Panel A: maternal death,NH White,No BA,71.4%,77.4%,79.8%,77.9%,76.3%
+Panel A: maternal death,NH White,BA or higher,28.6%,22.6%,20.2%,22.1%,23.7%
+Panel A: maternal death,NH Black,Total,"16,355","18,270","28,310","20,700","286,750"
+Panel A: maternal death,NH Black,No BA,80.0%,85.6%,87.8%,87.7%,84.8%
+Panel A: maternal death,NH Black,BA or higher,20.0%,14.4%,12.2%,12.3%,15.2%
+Panel A: maternal death,Hispanic,Total,"10,845","15,086","24,296","18,938","229,220"
+Panel A: maternal death,Hispanic,No BA,85.2%,88.8%,91.4%,91.2%,89.0%
+Panel A: maternal death,Hispanic,BA or higher,14.8%,11.2%,8.6%,8.8%,11.0%
+Panel B: paternal death,NH White,Total,"92,873","104,111","138,557","102,235","1,575,720"
+Panel B: paternal death,NH White,No BA,76.5%,81.2%,83.1%,82.4%,80.6%
+Panel B: paternal death,NH White,BA or higher,23.5%,18.8%,16.9%,17.6%,19.4%
+Panel B: paternal death,NH Black,Total,"35,035","41,808","62,109","46,910","639,674"
+Panel B: paternal death,NH Black,No BA,82.7%,88.4%,90.0%,91.1%,87.7%
+Panel B: paternal death,NH Black,BA or higher,17.3%,11.6%,10.0%,8.9%,12.3%
+Panel B: paternal death,Hispanic,Total,"29,261","39,514","67,439","50,696","620,325"
+Panel B: paternal death,Hispanic,No BA,89.0%,92.9%,94.0%,94.4%,92.3%
+Panel B: paternal death,Hispanic,BA or higher,11.0%,7.1%,6.0%,5.6%,7.7%

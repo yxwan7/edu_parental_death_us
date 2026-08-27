@@ -1,7 +1,8 @@
 # ==============================================================================
-# 16_tables_figures.r
+# 14_tables_figures_publication.r
 #
-# Build the reported tables and figures from the aggregated draws written by 15.
+# Build the reported tables and figures from the aggregated draws written by
+# uncertainty/03_aggregate_draws.r.
 # Reported values are draw medians with 95% confidence intervals; the
 # deterministic values travel alongside as comparison columns.
 # ==============================================================================
@@ -17,7 +18,7 @@ suppressPackageStartupMessages({
   library(ragg)
 })
 
-here::i_am("02_codes/16_tables_figures.r")
+here::i_am("02_codes/14_tables_figures_publication.r")
 
 source(here::here("02_codes", "00_functions.r"))
 
@@ -55,14 +56,11 @@ meanage_cause6 <- read_ci("15_ci_meanage_cause6.rds")
 meanage_gap <- read_ci("15_ci_meanage_gap.rds")
 main_number <- read_ci("15_ci_bereaved_children_number_table.rds")
 
-# ==============================================================================
-# Cause decompositions on the draw-median scale
-# ==============================================================================
+# ---- Cause decompositions on the draw-median scale ----
 
-# Every input is a draw median, so the coloured bands and the total come from
-# one set of numbers and close exactly. That total therefore differs slightly
-# from value_median in the gap table -- a median is not additive -- which is why
-# the marker and its interval are drawn as a separate layer.
+# Every input is a draw median, so the bands and the total close exactly. That
+# total differs slightly from value_median in the gap table -- a median is not
+# additive -- so the marker and its interval are drawn as a separate layer.
 
 incidence_decomposition <- local({
   wide <- dcast(
@@ -77,9 +75,9 @@ incidence_decomposition <- local({
   out <- merge(
     out,
     incidence_gap[gap_metric == "RD", .(year, race_eth, parent_type,
-                                        total_rd_median = value_median,
-                                        total_rd_lower_ci = lower_ci,
-                                        total_rd_upper_ci = upper_ci)],
+                                        total_mid = value_median,
+                                        total_lo = lower_ci,
+                                        total_hi = upper_ci)],
     by = c("year", "race_eth", "parent_type"), sort = FALSE
   )
   setnames(out, c("No_BA", "BA_plus"),
@@ -112,101 +110,33 @@ meanage_decomposition <- local({
   merge(
     out,
     meanage_gap[, .(year, race_eth, parent_type,
-                    total_gap_median = value_median,
-                    total_gap_lower_ci = lower_ci,
-                    total_gap_upper_ci = upper_ci)],
+                    total_mid = value_median,
+                    total_lo = lower_ci,
+                    total_hi = upper_ci)],
     by = c("year", "race_eth", "parent_type"), sort = FALSE
   )
 })
 
-# ==============================================================================
-# Shared plotting pieces
-# ==============================================================================
+# ---- Shared plotting pieces ----
 
-RIBBON_ALPHA <- 0.16
-LINE_MAIN <- 0.75
-POINT_MAIN <- 2.1
 TOTAL_KEY_LABEL <- "Total gaps and 95% CIs"
 CAUSE_TAGS <- c("A", "B", "C", "D", "E", "F")
 
-label_common <- function(dt) {
-  dt[, `:=`(
-    race_label = factor(RACE_LABELS[race_eth], levels = RACE_LABELS[RACES_R3]),
-    parent_type_label = factor(PARENT_LABELS[parent_type],
-                               levels = PARENT_LABELS[PARENT_TYPE_LEVELS])
-  )]
-  if ("parent_educ2" %chin% names(dt)) {
-    dt[, parent_educ_label := factor(EDUC_LABELS[parent_educ2],
-                                     levels = EDUC_LABELS[EDUC_LEVELS])]
-  }
-  if ("cause_6" %chin% names(dt)) {
-    dt[, cause_6_label := factor(CAUSE_6_LABELS[cause_6],
-                                 levels = CAUSE_6_LABELS[CAUSE_6_LEVELS])]
-  }
-  dt[]
-}
-
-educ_scales <- list(
-  scale_color_manual(
-    values = setNames(EDUC_PALETTE[EDUC_LEVELS], EDUC_LABELS[EDUC_LEVELS]),
-    name = "Parent education"
-  ),
-  scale_fill_manual(
-    values = setNames(EDUC_PALETTE[EDUC_LEVELS], EDUC_LABELS[EDUC_LEVELS]),
-    guide = "none"
-  )
-)
-
-as_stack_factor <- function(dt) {
-  dt[, cause_6_label := factor(CAUSE_6_LABELS[cause_6],
-                               levels = CAUSE_6_LABELS[CAUSE_6_STACK_LEVELS])]
-  dt[]
-}
-
-# ==============================================================================
-# Incidence figures
-# ==============================================================================
-
-incidence_total_panel <- function(dt, parent_type_value, tag, description,
-                                  y_breaks, y_labeler, y_label, show_x_title) {
-  ggplot(dt[parent_type == parent_type_value],
-         aes(x = year, y = mid, color = parent_educ_label,
-             fill = parent_educ_label, group = parent_educ_label)) +
-    geom_ribbon(aes(ymin = lo, ymax = hi), alpha = RIBBON_ALPHA,
-                color = NA, show.legend = FALSE) +
-    geom_line(linewidth = LINE_MAIN, lineend = "round") +
-    geom_point(size = POINT_MAIN, stroke = 0) +
-    facet_wrap(~race_label, nrow = 1) +
-    common_x_scale() +
-    scale_y_continuous(breaks = y_breaks, limits = c(0, max(y_breaks)),
-                       labels = y_labeler, expand = expansion(mult = c(0, 0.05))) +
-    educ_scales +
-    labs(title = panel_title(tag, description),
-         x = if (show_x_title) "Year" else NULL, y = y_label) +
-    theme_parent_loss(axis_text_size = 7.8) +
-    (if (identical(tag, "A")) inside_legend("top") else theme(legend.position = "none"))
-}
-
-plot_total <- function(value_stem, describe, y_label, y_accuracy) {
+# One incidence level frame per reported value, for Figure 1 and Figure S1.
+total_figure_data <- function(value_stem) {
   dt <- label_common(copy(incidence_total[parent_educ2 %chin% EDUC_LEVELS]))
   dt[, `:=`(
     mid = as.numeric(get(paste0(value_stem, "_median"))),
     lo = as.numeric(get(paste0(value_stem, "_lower_ci"))),
     hi = as.numeric(get(paste0(value_stem, "_upper_ci")))
   )]
-  y_breaks <- make_zero_based_axis_breaks(dt[, max(hi, na.rm = TRUE)])
-  y_labeler <- if (is.null(y_accuracy)) {
-    label_number(big.mark = ",")
-  } else {
-    label_number(accuracy = y_accuracy, big.mark = ",")
-  }
-  compose_ab(
-    incidence_total_panel(dt, "mother", "A", describe("maternal"),
-                          y_breaks, y_labeler, y_label, FALSE),
-    incidence_total_panel(dt, "father", "B", describe("paternal"),
-                          y_breaks, y_labeler, y_label, TRUE)
-  )
+  dt[]
 }
+
+
+
+
+# ---- Incidence figures ----
 
 plot_cause6 <- function(parent_type_value, metric) {
   value_stem <- if (identical(metric, "rate")) {
@@ -251,7 +181,7 @@ plot_cause6 <- function(parent_type_value, metric) {
         labels = y_labeler,
         expand = expansion(mult = c(0.05, if (identical(tag, "A")) 0.34 else 0.14))
       ) +
-      educ_scales +
+      educ_scales() +
       labs(title = panel_title(tag, CAUSE_6_LABELS[[cause_value]]),
            x = if (is_last) "Year" else NULL, y = NULL) +
       theme_parent_loss(axis_text_size = 7.8) +
@@ -261,111 +191,7 @@ plot_cause6 <- function(parent_type_value, metric) {
   compose_causes(panels, y_label)
 }
 
-incidence_decomposition_panel <- function(part_dt, total_dt, tag, description, y_axis,
-                                          show_x_title, legend_here) {
-  ggplot(part_dt, aes(x = year, y = rd_contribution_per_1000, fill = cause_6_label)) +
-    geom_col(width = 0.82, colour = NA) +
-    geom_linerange(data = total_dt,
-                   aes(x = year, ymin = total_rd_lower_ci, ymax = total_rd_upper_ci,
-                       colour = TOTAL_KEY_LABEL),
-                   inherit.aes = FALSE, linewidth = 0.45) +
-    geom_point(data = total_dt,
-               aes(x = year, y = total_rd_median, colour = TOTAL_KEY_LABEL),
-               inherit.aes = FALSE, shape = 16, size = 1.5) +
-    scale_colour_manual(values = setNames("grey15", TOTAL_KEY_LABEL), name = NULL) +
-    guides(colour = guide_legend(order = 1), fill = guide_legend(order = 2)) +
-    facet_wrap(~race_label, nrow = 1) +
-    common_x_scale(pad = 1.2) +
-    scale_y_continuous(breaks = y_axis$breaks, limits = y_axis$limits,
-                       labels = label_number(accuracy = 0.1),
-                       expand = expansion(mult = c(0, 0.02))) +
-    scale_fill_manual(
-      values = setNames(CAUSE_6_PALETTE[CAUSE_6_STACK_LEVELS],
-                        CAUSE_6_LABELS[CAUSE_6_STACK_LEVELS]),
-      name = "Cause of death"
-    ) +
-    labs(title = panel_title(tag, description),
-         x = if (show_x_title) "Year" else NULL, y = AXIS_RATE_DIFFERENCE) +
-    theme_parent_loss(axis_text_size = 7.8) +
-    (if (legend_here) {
-      inside_legend("top") + paired_legend_box()
-    } else {
-      theme(legend.position = "none")
-    })
-}
-
-plot_incidence_decomposition <- function() {
-  parts <- as_stack_factor(label_common(copy(incidence_decomposition)))
-  totals <- label_common(unique(incidence_decomposition[, .(
-    year, race_eth, parent_type,
-    total_rd_median, total_rd_lower_ci, total_rd_upper_ci
-  )]))
-
-  stack_bounds <- parts[, .(
-    positive = sum(pmax(rd_contribution_per_1000, 0), na.rm = TRUE),
-    negative = sum(pmin(rd_contribution_per_1000, 0), na.rm = TRUE)
-  ), by = .(year, race_eth, parent_type)]
-  y_axis <- make_stacked_axis(
-    min(stack_bounds$negative, totals$total_rd_lower_ci, na.rm = TRUE),
-    max(stack_bounds$positive, totals$total_rd_upper_ci, na.rm = TRUE)
-  )
-
-  describe <- function(word) {
-    sprintf("Cause contributions to the educational gap in the incidence rate of children experiencing %s death",
-            word)
-  }
-  build <- function(parent_type_value, tag, is_last) {
-    incidence_decomposition_panel(
-      parts[parent_type == parent_type_value],
-      totals[parent_type == parent_type_value],
-      tag, describe(PARENT_WORDS[[parent_type_value]]), y_axis, is_last,
-      identical(parent_type_value, "mother")
-    )
-  }
-  compose_ab(build("mother", "A", FALSE), build("father", "B", TRUE))
-}
-
-# ==============================================================================
-# Mean-age figures
-# ==============================================================================
-
-mean_age_panel <- function(dt, parent_type_value, tag, description, y_limits,
-                           show_x_title) {
-  ggplot(dt[parent_type == parent_type_value],
-         aes(x = year, y = mean_age_at_loss_median, color = parent_educ_label,
-             fill = parent_educ_label, group = parent_educ_label)) +
-    geom_ribbon(aes(ymin = mean_age_at_loss_lower_ci, ymax = mean_age_at_loss_upper_ci),
-                alpha = RIBBON_ALPHA, color = NA, show.legend = FALSE) +
-    geom_line(linewidth = LINE_MAIN, lineend = "round") +
-    geom_point(size = POINT_MAIN, stroke = 0) +
-    facet_wrap(~race_label, nrow = 1) +
-    common_x_scale() +
-    scale_y_continuous(limits = y_limits,
-                       breaks = seq(y_limits[1], y_limits[2], by = 0.5),
-                       labels = label_number(accuracy = 0.1),
-                       expand = expansion(mult = c(0.02, 0.02))) +
-    educ_scales +
-    labs(title = panel_title(tag, description),
-         x = if (show_x_title) "Year" else NULL, y = AXIS_MEAN_AGE) +
-    theme_parent_loss(axis_text_size = 7.8) +
-    (if (identical(tag, "A")) inside_legend("top") else theme(legend.position = "none"))
-}
-
-plot_total_mean_age <- function() {
-  dt <- label_common(copy(meanage_total[parent_educ2 %chin% EDUC_LEVELS]))
-  dt <- dt[is.finite(mean_age_at_loss_median)]
-  y_limits <- c(
-    min(9, floor(dt[, min(mean_age_at_loss_lower_ci, na.rm = TRUE)] * 2) / 2),
-    max(12, ceiling(dt[, max(mean_age_at_loss_upper_ci, na.rm = TRUE)] * 2) / 2)
-  )
-  describe <- function(word) {
-    sprintf("Mean age of children experiencing %s death, by %s education", word, word)
-  }
-  compose_ab(
-    mean_age_panel(dt, "mother", "A", describe("maternal"), y_limits, FALSE),
-    mean_age_panel(dt, "father", "B", describe("paternal"), y_limits, TRUE)
-  )
-}
+# ---- Mean-age figures ----
 
 plot_cause6_mean_age <- function(parent_type_value) {
   dt <- label_common(copy(meanage_cause6[
@@ -393,7 +219,7 @@ plot_cause6_mean_age <- function(parent_type_value) {
         labels = label_number(accuracy = 0.1),
         expand = expansion(mult = c(0.08, if (identical(tag, "A")) 0.36 else 0.16))
       ) +
-      educ_scales +
+      educ_scales() +
       labs(title = panel_title(tag, CAUSE_6_LABELS[[cause_value]]),
            x = if (is_last) "Year" else NULL, y = NULL) +
       theme_parent_loss(axis_text_size = 7.8) +
@@ -403,112 +229,148 @@ plot_cause6_mean_age <- function(parent_type_value) {
   compose_causes(panels, AXIS_MEAN_AGE)
 }
 
-meanage_decomposition_panel <- function(part_dt, total_dt, tag, description, y_axis,
-                                        show_x_title, legend_here) {
-  ggplot(part_dt, aes(x = year, y = shapley_contribution, fill = cause_6_label)) +
-    geom_col(width = 0.82, colour = NA) +
-    geom_linerange(data = total_dt,
-                   aes(x = year, ymin = total_gap_lower_ci, ymax = total_gap_upper_ci,
-                       colour = TOTAL_KEY_LABEL),
-                   inherit.aes = FALSE, linewidth = 0.45) +
-    geom_point(data = total_dt,
-               aes(x = year, y = total_gap_median, colour = TOTAL_KEY_LABEL),
-               inherit.aes = FALSE, shape = 16, size = 1.5) +
-    scale_colour_manual(values = setNames("grey15", TOTAL_KEY_LABEL), name = NULL) +
-    guides(colour = guide_legend(order = 1), fill = guide_legend(order = 2)) +
-    facet_wrap(~race_label, nrow = 1) +
-    common_x_scale(pad = 1.2) +
-    scale_y_continuous(breaks = y_axis$breaks, limits = y_axis$limits,
-                       labels = label_number(accuracy = 0.1),
-                       expand = expansion(mult = c(0, 0.02))) +
-    scale_fill_manual(
-      values = setNames(CAUSE_6_PALETTE[CAUSE_6_STACK_LEVELS],
-                        CAUSE_6_LABELS[CAUSE_6_STACK_LEVELS]),
-      name = "Cause of death"
-    ) +
-    labs(title = panel_title(tag, description),
-         x = if (show_x_title) "Year" else NULL, y = AXIS_MEAN_AGE_DIFFERENCE) +
-    theme_parent_loss(axis_text_size = 7.8) +
-    (if (legend_here) {
-      inside_legend("bottom") + paired_legend_box()
-    } else {
-      theme(legend.position = "none")
-    })
-}
+# ---- Write figures ----
 
-plot_meanage_decomposition <- function() {
-  parts <- as_stack_factor(label_common(copy(meanage_decomposition)))
-  totals <- label_common(unique(meanage_decomposition[, .(
-    year, race_eth, parent_type,
-    total_gap_median, total_gap_lower_ci, total_gap_upper_ci
-  )]))
+# ---- Figure 1: incidence rate by race, education and parent ----
 
-  stack_bounds <- parts[, .(
-    positive = sum(pmax(shapley_contribution, 0), na.rm = TRUE),
-    negative = sum(pmin(shapley_contribution, 0), na.rm = TRUE)
-  ), by = .(year, race_eth, parent_type)]
-  y_axis <- make_stacked_axis(
-    min(stack_bounds$negative, totals$total_gap_lower_ci, na.rm = TRUE),
-    max(stack_bounds$positive, totals$total_gap_upper_ci, na.rm = TRUE),
-    target_intervals = 6L, slack = 1.5
-  )
-
-  describe <- function(word) {
-    sprintf("Cause contributions to the educational gap in mean age of children experiencing %s death",
-            word)
-  }
-  build <- function(parent_type_value, tag, is_last) {
-    meanage_decomposition_panel(
-      parts[parent_type == parent_type_value],
-      totals[parent_type == parent_type_value],
-      tag, describe(PARENT_WORDS[[parent_type_value]]), y_axis, is_last,
-      identical(parent_type_value, "mother")
-    )
-  }
-  compose_ab(build("mother", "A", FALSE), build("father", "B", TRUE))
-}
-
-# ==============================================================================
-# Write figures
-# ==============================================================================
-
-figures <- list(
-  list(figure_dir, "Fig_1_incidence_rates_by_race_education_parent.png", 10.5, 8.4,
-       plot_total("parental_loss_per_1000",
-                  function(w) sprintf("Incidence rate of children experiencing %s death, by %s education", w, w),
-                  AXIS_RATE, 0.1)),
-  list(figure_dir, "Fig_2_incidence_rate_education_gap_by_race_parent_cause.png", 10.5, 8.4,
-       plot_incidence_decomposition()),
-  list(figure_dir, "Fig_3_mean_age_by_race_education_parent.png", 10.5, 8.4,
-       plot_total_mean_age()),
-  list(figure_dir, "Fig_4_mean_age_education_gap_by_race_parent_cause.png", 10.5, 8.4,
-       plot_meanage_decomposition()),
-  list(appendix_figure_dir, "Fig_S1_bereaved_children_number_by_race_education_parent.png", 10.5, 8.4,
-       plot_total("n_children_losing_parent",
-                  function(w) sprintf("Number of children experiencing %s death, by %s education", w, w),
-                  AXIS_NUMBER, NULL)),
-  list(appendix_figure_dir, "Fig_S2_bereaved_children_number_maternal_by_race_education_cause.png", 14, 10.5,
-       plot_cause6("mother", "count")),
-  list(appendix_figure_dir, "Fig_S3_bereaved_children_number_paternal_by_race_education_cause.png", 14, 10.5,
-       plot_cause6("father", "count")),
-  list(appendix_figure_dir, "Fig_S4_incidence_rates_maternal_by_race_education_cause.png", 14, 10.5,
-       plot_cause6("mother", "rate")),
-  list(appendix_figure_dir, "Fig_S5_incidence_rates_paternal_by_race_education_cause.png", 14, 10.5,
-       plot_cause6("father", "rate")),
-  list(appendix_figure_dir, "Fig_S6_mean_age_maternal_by_race_education_cause.png", 14, 10.5,
-       plot_cause6_mean_age("mother")),
-  list(appendix_figure_dir, "Fig_S7_mean_age_paternal_by_race_education_cause.png", 14, 10.5,
-       plot_cause6_mean_age("father"))
+save_figure(
+  plot_total(total_figure_data("parental_loss_per_1000"),
+             function(w) sprintf("Incidence rate of children experiencing %s death, by %s education", w, w),
+             AXIS_RATE, 0.1),
+  file.path(figure_dir, "Fig_1_incidence_rates_by_race_education_parent.png"),
+  width = 10.5, height = 8.4
 )
 
-for (entry in figures) {
-  save_figure(entry[[5]], file.path(entry[[1]], entry[[2]]),
-              width = entry[[3]], height = entry[[4]])
+# ---- Figure 2: education gap in the incidence rate, by cause ----
+
+save_figure(
+  plot_incidence_decomposition(incidence_decomposition, TOTAL_KEY_LABEL),
+  file.path(figure_dir, "Fig_2_incidence_rate_education_gap_by_race_parent_cause.png"),
+  width = 10.5, height = 8.4
+)
+
+# ---- Figure 3: mean age at loss by race, education and parent ----
+
+meanage_total_figure <- label_common(copy(meanage_total[parent_educ2 %chin% EDUC_LEVELS]))
+meanage_total_figure[, `:=`(
+  mid = mean_age_at_loss_median,
+  lo = mean_age_at_loss_lower_ci,
+  hi = mean_age_at_loss_upper_ci
+)]
+
+save_figure(
+  plot_total_mean_age(meanage_total_figure),
+  file.path(figure_dir, "Fig_3_mean_age_by_race_education_parent.png"),
+  width = 10.5, height = 8.4
+)
+
+# ---- Figure 4: education gap in mean age at loss, by cause ----
+
+save_figure(
+  plot_meanage_decomposition(meanage_decomposition, TOTAL_KEY_LABEL),
+  file.path(figure_dir, "Fig_4_mean_age_education_gap_by_race_parent_cause.png"),
+  width = 10.5, height = 8.4
+)
+
+# ---- Figure S1: number of bereaved children ----
+
+save_figure(
+  plot_total(total_figure_data("n_children_losing_parent"),
+             function(w) sprintf("Number of children experiencing %s death, by %s education", w, w),
+             AXIS_NUMBER, NULL),
+  file.path(appendix_figure_dir, "Fig_S1_bereaved_children_number_by_race_education_parent.png"),
+  width = 10.5, height = 8.4
+)
+
+# ---- Figure S2: maternal deaths by cause, number of children ----
+
+save_figure(
+  plot_cause6("mother", "count"),
+  file.path(appendix_figure_dir, "Fig_S2_bereaved_children_number_maternal_by_race_education_cause.png"),
+  width = 14, height = 10.5
+)
+
+# ---- Figure S3: paternal deaths by cause, number of children ----
+
+save_figure(
+  plot_cause6("father", "count"),
+  file.path(appendix_figure_dir, "Fig_S3_bereaved_children_number_paternal_by_race_education_cause.png"),
+  width = 14, height = 10.5
+)
+
+# ---- Figure S4: maternal deaths by cause, incidence rate ----
+
+save_figure(
+  plot_cause6("mother", "rate"),
+  file.path(appendix_figure_dir, "Fig_S4_incidence_rates_maternal_by_race_education_cause.png"),
+  width = 14, height = 10.5
+)
+
+# ---- Figure S5: paternal deaths by cause, incidence rate ----
+
+save_figure(
+  plot_cause6("father", "rate"),
+  file.path(appendix_figure_dir, "Fig_S5_incidence_rates_paternal_by_race_education_cause.png"),
+  width = 14, height = 10.5
+)
+
+# ---- Figure S6: maternal deaths by cause, mean age at loss ----
+
+save_figure(
+  plot_cause6_mean_age("mother"),
+  file.path(appendix_figure_dir, "Fig_S6_mean_age_maternal_by_race_education_cause.png"),
+  width = 14, height = 10.5
+)
+
+# ---- Figure S7: paternal deaths by cause, mean age at loss ----
+
+save_figure(
+  plot_cause6_mean_age("father"),
+  file.path(appendix_figure_dir, "Fig_S7_mean_age_paternal_by_race_education_cause.png"),
+  width = 14, height = 10.5
+)
+
+# ---- Figure data ----
+
+# The table each figure is drawn from. Several figures share one table, so a
+# file can carry more rows than its figure plots. Aggregation diagnostics stay
+# in the bundle.
+
+figure_data_dir <- here::here("03_outputs", "04_figure_data")
+dir.create(figure_data_dir, recursive = TRUE, showWarnings = FALSE)
+
+write_figure_data <- function(dt, stem) {
+  diagnostics <- grep("_mcse_|_n_valid_draws$|_p_zero$", names(dt), value = TRUE)
+  out <- if (length(diagnostics)) dt[, !diagnostics, with = FALSE] else copy(dt)
+  fwrite(out, file.path(figure_data_dir, paste0(stem, "_data.csv")))
 }
 
-# ==============================================================================
-# Publication tables
-# ==============================================================================
+write_figure_data(incidence_total, "Fig_1_S1_incidence_by_race_education_parent")
+write_figure_data(
+  incidence_decomposition[, .(
+    year, race_eth, parent_type, cause_6,
+    no_ba_rate_per_1000_median, ba_plus_rate_per_1000_median,
+    rd_contribution_per_1000, stacked_total_per_1000,
+    total_gap_median = total_mid,
+    total_gap_lower_ci = total_lo, total_gap_upper_ci = total_hi
+  )],
+  "Fig_2_incidence_rate_education_gap_by_race_parent_cause"
+)
+write_figure_data(meanage_total, "Fig_3_mean_age_by_race_education_parent")
+write_figure_data(
+  meanage_decomposition[, .(
+    year, race_eth, parent_type, cause_6,
+    share_No_BA, share_BA_plus, mean_age_No_BA, mean_age_BA_plus,
+    shapley_contribution, stacked_total = mean_age_gap_total,
+    total_gap_median = total_mid,
+    total_gap_lower_ci = total_lo, total_gap_upper_ci = total_hi
+  )],
+  "Fig_4_mean_age_education_gap_by_race_parent_cause"
+)
+write_figure_data(incidence_cause6, "Fig_S2_S5_incidence_by_race_education_cause")
+write_figure_data(meanage_cause6, "Fig_S6_S7_mean_age_by_race_education_cause")
+
+# ---- Publication tables ----
 
 draw_label <- if (isTRUE(batch_summary$is_final)) {
   sprintf("M = %d draws", batch_summary$m_complete)
@@ -517,18 +379,23 @@ draw_label <- if (isTRUE(batch_summary$is_final)) {
           batch_summary$m_complete, batch_summary$m_expected)
 }
 
+# ---- Labels, formatting and table builders ----
+
 PUBLICATION_KEY_YEARS <- c(2010L, 2019L, 2021L, 2024L)
-PUBLICATION_RACE_LABELS <- c(
-  white = "NH White", black = "NH Black", hispanic = "Hispanic"
-)
-PUBLICATION_PANEL_LABELS <- c(
-  mother = "Panel A: maternal death",
-  father = "Panel B: paternal death"
-)
 PUBLICATION_EDUCATION_LABELS <- c(
   No_BA = "No BA", BA_plus = "BA or higher"
 )
 
+# Compact cause labels for the SI tables; CAUSE_6_LABELS keeps the fuller
+# wording the figures have room for.
+PUBLICATION_CAUSE_LABELS <- c(
+  drug_poisoning = "Drug poisoning",
+  firearm_deaths = "Firearm",
+  covid19 = "COVID-19",
+  cardiovascular_disease_and_diabetes = "CVD and diabetes",
+  cancer = "Cancer",
+  all_other_causes = "All other"
+)
 PUBLICATION_GAP_ROW_LABELS <- c(RD = "Gap", RR = "Ratio")
 
 format_publication_ci <- function(value, lower, upper, digits = 2L) {
@@ -622,11 +489,11 @@ build_decomposition_publication_table <- function(
     lower = NA_real_,
     upper = NA_real_
   )]
-  contributions[, row_label := CAUSE_6_LABELS[cause_6]]
+  contributions[, row_label := PUBLICATION_CAUSE_LABELS[cause_6]]
 
   out <- rbindlist(list(totals, contributions), use.names = TRUE)
   row_levels <- c(
-    "Total gap", unname(CAUSE_6_LABELS[CAUSE_6_LEVELS])
+    "Total gap", unname(PUBLICATION_CAUSE_LABELS[CAUSE_6_LEVELS])
   )
   out[, `:=`(
     panel = PUBLICATION_PANEL_LABELS[parent_type],
@@ -760,6 +627,8 @@ write_publication_panel_table_tex <- function(
   writeLines(latex_lines, path, useBytes = TRUE)
 }
 
+# ---- Table 1: bereaved children in key years ----
+
 table1_period_levels <- c("2010", "2019", "2021", "2024", "2010-2024")
 table1_row_levels <- c("Total", "No BA", "BA or higher")
 table1_numeric <- copy(main_number)
@@ -878,12 +747,16 @@ write_publication_panel_table_tex(
   )
 )
 
+# ---- Shared pieces for the SI tables ----
+
 publication_year_columns <- as.character(PUBLICATION_KEY_YEARS)
 publication_panel_levels <- unname(
   PUBLICATION_PANEL_LABELS[PARENT_TYPE_LEVELS]
 )
 publication_race_levels <- unname(PUBLICATION_RACE_LABELS[RACES_R3])
 publication_gap_rows <- unname(PUBLICATION_GAP_ROW_LABELS)
+
+# ---- Table S4: incidence rates and education gaps ----
 
 incidence_gap_rows <- incidence_gap[
   gap_metric %in% names(PUBLICATION_GAP_ROW_LABELS)
@@ -939,6 +812,8 @@ write_publication_panel_table_tex(
   )
 )
 
+# ---- Table S5: mean age and education gaps ----
+
 table_s5 <- build_level_gap_publication_table(
   level_dt = meanage_total,
   gap_dt = meanage_gap,
@@ -985,13 +860,15 @@ write_publication_panel_table_tex(
   )
 )
 
+# ---- Table S6: incidence gap cause decomposition ----
+
 table_s6 <- build_decomposition_publication_table(
   decomposition_dt = incidence_decomposition,
   contribution_column = "rd_contribution_per_1000",
   total_columns = c(
-    estimate = "total_rd_median",
-    lower = "total_rd_lower_ci",
-    upper = "total_rd_upper_ci"
+    estimate = "total_mid",
+    lower = "total_lo",
+    upper = "total_hi"
   )
 )
 table_s6_csv <- copy(table_s6)
@@ -1013,7 +890,7 @@ write_publication_panel_table_tex(
   panel_levels = publication_panel_levels,
   race_levels = publication_race_levels,
   row_levels = c(
-    "Total gap", unname(CAUSE_6_LABELS[CAUSE_6_LEVELS])
+    "Total gap", unname(PUBLICATION_CAUSE_LABELS[CAUSE_6_LEVELS])
   ),
   bold_rows = "Total gap",
   panel_separator = "\\midrule",
@@ -1030,13 +907,15 @@ write_publication_panel_table_tex(
   )
 )
 
+# ---- Table S7: mean-age gap cause decomposition ----
+
 table_s7 <- build_decomposition_publication_table(
   decomposition_dt = meanage_decomposition,
   contribution_column = "shapley_contribution",
   total_columns = c(
-    estimate = "total_gap_median",
-    lower = "total_gap_lower_ci",
-    upper = "total_gap_upper_ci"
+    estimate = "total_mid",
+    lower = "total_lo",
+    upper = "total_hi"
   )
 )
 table_s7_csv <- copy(table_s7)
@@ -1058,7 +937,7 @@ write_publication_panel_table_tex(
   panel_levels = publication_panel_levels,
   race_levels = publication_race_levels,
   row_levels = c(
-    "Total gap", unname(CAUSE_6_LABELS[CAUSE_6_LEVELS])
+    "Total gap", unname(PUBLICATION_CAUSE_LABELS[CAUSE_6_LEVELS])
   ),
   bold_rows = "Total gap",
   panel_separator = "\\midrule",
@@ -1075,5 +954,4 @@ write_publication_panel_table_tex(
   )
 )
 
-cat(sprintf("Tables and %d figures written for batch %s\n",
-            length(figures), batch_summary$batch_id))
+cat(sprintf("Tables and figures written for batch %s\n", batch_summary$batch_id))

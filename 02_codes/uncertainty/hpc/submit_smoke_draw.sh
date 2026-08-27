@@ -12,7 +12,7 @@
 #SBATCH --mem=32G
 # Two draws run back to back here, so this job gets the same limit as an array
 # task rather than a tighter one.
-#SBATCH --time=06:00:00
+#SBATCH --time=12:00:00
 
 set -euo pipefail
 
@@ -33,7 +33,7 @@ export R_DATATABLE_NUM_THREADS=1
 export EDU_PARENT_LOSS_BATCH_MODE=smoke
 
 cd "$EDU_PARENT_LOSS_REPO"
-Rscript --vanilla 02_codes/hpc/record_run_environment.r
+Rscript --vanilla 02_codes/uncertainty/hpc/record_run_environment.r
 
 DRAW_ROOT=""
 cleanup() {
@@ -51,7 +51,7 @@ run_one_draw() {
   EDU_PARENT_LOSS_DRAW_ROOT="$DRAW_ROOT" \
   EDU_PARENT_LOSS_DRAW_ID="$draw_id" \
   EDU_PARENT_LOSS_DRAW_MODE="$draw_mode" \
-    Rscript --vanilla 02_codes/14_run_draw.r
+    Rscript --vanilla 02_codes/uncertainty/02_run_draw.r
 
   cleanup
   DRAW_ROOT=""

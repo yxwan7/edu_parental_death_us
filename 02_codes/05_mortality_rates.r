@@ -82,8 +82,7 @@ build_all_cause_numerator <- function(death_main_panel) {
   dt <- bridge_child_unknown_educ2(dt, max_age = child_unknown_bridge_max_age)
 
   dt[
-    cause_group == "all_cause" &
-      year %in% YEARS_MODEL &
+    year %in% YEARS_MODEL &
       sex %chin% SEX_LEVELS &
       !is.na(age_years) &
       race_eth %chin% RACES_R5,
@@ -153,9 +152,8 @@ choose_bayes_donor <- function(candidates, target_exposure) {
     }
   }
 
-  # Graceful fallback: relax the broadest candidate's count threshold so a rare
-  # race x age cell with a small but non-empty donor pool still resolves instead
-  # of aborting the whole run.
+  # Relax the broadest candidate's count threshold, so a rare race x age cell
+  # with a small but non-empty donor pool still resolves.
   fallback <- candidates[[length(candidates)]]
   fallback$threshold <- 0
   scored <- score_candidate(fallback, target_exposure, alpha = 0.5)

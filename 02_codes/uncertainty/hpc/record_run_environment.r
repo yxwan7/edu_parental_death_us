@@ -9,7 +9,7 @@ suppressPackageStartupMessages({
   library(here)
 })
 
-here::i_am("02_codes/hpc/record_run_environment.r")
+here::i_am("02_codes/uncertainty/hpc/record_run_environment.r")
 source(here::here("02_codes", "00_functions.r"))
 
 # ---- Batch settings ----
@@ -49,7 +49,6 @@ FIXED_INPUTS <- list(
   c("01_data", "02_processed", "population", "02_pop_denominator_death.rds"),
   c("01_data", "02_processed", "population", "03_pop_denominator_birth.rds"),
   c("01_data", "02_processed", "population", "04_pop_replicate_panel.rds"),
-  c("01_data", "01_raw", "external", "hfc", "m_ASFR_USA.txt"),
   c("01_data", "02_processed", "edu_parent_loss",
     "point_estimate_incidence_total.rds"),
   c("01_data", "02_processed", "edu_parent_loss",

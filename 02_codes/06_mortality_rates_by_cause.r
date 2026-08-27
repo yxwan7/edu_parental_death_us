@@ -1,8 +1,8 @@
 # ==============================================================================
 # 06_mortality_rates_by_cause.r
 #
-# Split all-cause mortality into the ICD-10 and Schlüter et al. (2024)
-# cause classifications.
+# Split all-cause mortality into the 24 atom causes, carrying the 6 causes
+# derived from them.
 # ==============================================================================
 
 # ---- Packages ----
@@ -16,31 +16,6 @@ here::i_am("02_codes/06_mortality_rates_by_cause.r")
 
 source(here::here("02_codes", "00_functions.r"))
 
-# ---- Cause classifications ----
-
-EDU_PARENT_LOSS_CAUSE_15_LEVELS <- c(
-  "drug_poisoning_overdose",
-  "firearm_homicide",
-  "firearm_suicide",
-  "other_firearm_deaths",
-  "covid19",
-  "heart_disease",
-  "cerebrovascular_disease",
-  "diabetes_mellitus",
-  "cancer",
-  "chronic_lower_respiratory_disease",
-  "alcohol_attributable",
-  "nonfirearm_suicide",
-  "nonfirearm_homicide",
-  "other_unintentional_injuries",
-  "all_remaining_causes"
-)
-
-# ---- Allocation settings ----
-
-CAUSE_LEVELS <- c("drugs", "firearms", "other")
-CAUSE_15_LEVELS <- EDU_PARENT_LOSS_CAUSE_15_LEVELS
-
 # ---- Cause-rate files ----
 
 rate_dir <- here("01_data", "02_processed", "rate")
@@ -49,32 +24,15 @@ dir.create(rate_dir, recursive = TRUE, showWarnings = FALSE)
 death_input_path <- here("01_data", "02_processed", "deaths", "01_death_main_panel.rds")
 all_cause_input_path <- file.path(rate_dir, "01_education_mortality_rate_panel.rds")
 
-# Two parallel cause rate products:
-#   02  cause_15 / cause_6 (standard NCHS UCOD drug definition)
-#   02b flag-based drugs / firearms / other (Schlüter UCOD+T-code drug
-#       definition), consumed by the 3-category family in 11.
-cause_6_15_output_rds_path <- file.path(
+# The cause rate panel: the cause_atom split, with cause_6 derived from it.
+cause_atom_output_rds_path <- file.path(
   rate_dir, "02_education_mortality_rate_panel_by_cause.rds"
-)
-flag3_output_rds_path <- file.path(
-  rate_dir, "02b_education_mortality_rate_panel_by_cause_flag3.rds"
 )
 
 # ---- Cause allocation functions ----
 
-# Children carry no completed education, so their Unknown is reassigned to
-# No_BA (max_age = 17, matching 10).
-
-as_flag <- function(x) {
-  x <- as.integer(x)
-  x[is.na(x)] <- 0L
-  x
-}
-
-# Cause shares within each donor cell, one column per cause level. Both cause
-# families use this: the 3-way flag split passes CAUSE_LEVELS, the ICD-10 family
-# passes CAUSE_15_LEVELS. Cells with no deaths at all carry no share and are
-# left for a coarser donor.
+# Cause shares within each donor cell, one column per cause level. Cells with no
+# deaths at all carry no share and are left for a coarser donor.
 cause_share_table <- function(cause_counts, by_cols, cause_col, cause_levels,
                               share_cols, donor_source) {
   count_dt <- cause_counts[
@@ -131,8 +89,7 @@ fill_missing_shares <- function(target_dt, share_dt, by_cols, share_cols) {
 }
 
 # Donor ladder: try the finest cell first, then progressively coarser ones,
-# until every completed cell carries a set of cause shares. Shared by both cause
-# families so the two panels are split on the same ladder.
+# until every completed cell carries a set of cause shares.
 CAUSE_SHARE_DONORS <- list(
   list(by_cols = c("year", "sex", "age_years", "race_eth", "educ2"),
        source = "direct_year_sex_age_race_educ"),
@@ -173,7 +130,7 @@ assign_cause_shares <- function(completed_dt, cause_counts, cause_col, cause_lev
   target_dt[]
 }
 
-build_direct_cause_counts <- function(death_main_panel) {
+build_direct_cause_atom_counts <- function(death_main_panel) {
   dt <- as.data.table(death_main_panel)[
     year %in% YEARS_MODEL &
       sex %chin% SEX_LEVELS &
@@ -184,47 +141,7 @@ build_direct_cause_counts <- function(death_main_panel) {
       age_years = as.integer(age_years),
       race_eth = normalize_missing_character(race_eth),
       educ2 = normalize_missing_character(educ2),
-      drug_death = as_flag(drug_death),
-      firearm_death = as_flag(firearm_death),
-      n_deaths = as.numeric(n_deaths)
-    )
-  ]
-
-  dt <- bridge_child_unknown_educ2(dt)
-  dt <- dt[
-    race_eth %chin% RACES_R3 &
-      educ2 %chin% EDUC_LEVELS
-  ]
-
-  dt[
-    ,
-    cause := fcase(
-      drug_death == 1L, "drugs",
-      firearm_death == 1L, "firearms",
-      default = "other"
-    )
-  ]
-
-  dt[
-    ,
-    .(n_deaths_raw = sum(n_deaths, na.rm = TRUE)),
-    by = .(year, sex, age_years, race_eth, educ2, cause)
-  ]
-}
-
-build_direct_cause_6_15_counts <- function(death_main_panel) {
-  dt <- as.data.table(death_main_panel)[
-    year %in% YEARS_MODEL &
-      sex %chin% SEX_LEVELS &
-      !is.na(age_years),
-    .(
-      year = as.integer(year),
-      sex = normalize_missing_character(sex),
-      age_years = as.integer(age_years),
-      race_eth = normalize_missing_character(race_eth),
-      educ2 = normalize_missing_character(educ2),
-      cause_15 = normalize_missing_character(cause_15),
-      cause_6 = normalize_missing_character(cause_6),
+      cause_atom = normalize_missing_character(cause_atom),
       n_deaths = as.numeric(n_deaths)
     )
   ]
@@ -238,7 +155,7 @@ build_direct_cause_6_15_counts <- function(death_main_panel) {
   dt[
     ,
     .(n_deaths_raw = sum(n_deaths, na.rm = TRUE)),
-    by = .(year, sex, age_years, race_eth, educ2, cause_15)
+    by = .(year, sex, age_years, race_eth, educ2, cause_atom)
   ]
 }
 
@@ -271,101 +188,29 @@ prepare_all_cause_panel <- function(all_cause_panel, share_cols) {
   dt[]
 }
 
-# Flag-based 3-way split. "other" is taken as the residual so the three causes
-# add back to the completed all-cause count exactly.
-split_completed_deaths <- function(completed_dt, cause_counts) {
-  share_cols <- paste0("share__", CAUSE_LEVELS)
-  target_dt <- assign_cause_shares(
-    completed_dt = completed_dt,
-    cause_counts = cause_counts,
-    cause_col = "cause",
-    cause_levels = CAUSE_LEVELS,
-    share_cols = share_cols
-  )
-
-  share_drugs <- target_dt[["share__drugs"]]
-  share_firearms <- target_dt[["share__firearms"]]
-
-  drugs_dt <- copy(target_dt)
-  drugs_dt[, `:=`(cause = "drugs", cause_share = share_drugs,
-                  n_deaths_cause = n_deaths * share_drugs)]
-
-  firearms_dt <- copy(target_dt)
-  firearms_dt[, `:=`(cause = "firearms", cause_share = share_firearms,
-                     n_deaths_cause = n_deaths * share_firearms)]
-
-  other_dt <- copy(target_dt)
-  other_dt[
-    ,
-    `:=`(
-      cause = "other",
-      cause_share = pmax(0, 1 - share_drugs - share_firearms),
-      n_deaths_cause = pmax(0, n_deaths - n_deaths * share_drugs - n_deaths * share_firearms)
-    )
-  ]
-
-  cause_panel <- rbindlist(
-    list(drugs_dt, firearms_dt, other_dt),
-    use.names = TRUE,
-    fill = TRUE
-  )
-
-  cause_panel[
-    ,
-    `:=`(
-      n_deaths_all_cause = n_deaths,
-      n_deaths = n_deaths_cause,
-      rate_definition = "cause_specific",
-      mortality_rate_per_100k = 1e5 * n_deaths_cause / n_pop_weighted
-    )
-  ]
-
-  cause_panel[
-    ,
-    c("completed_cell_id", share_cols, "n_deaths_cause") := NULL
-  ]
-
-  setcolorder(
-    cause_panel,
-    c(
-      "rate_definition", "cause",
-      "year", "sex", "age_years", "race_eth", "educ2",
-      "n_deaths", "n_deaths_all_cause", "cause_share",
-      "cause_share_source", "n_pop_unweighted", "n_pop_weighted",
-      "mortality_rate_per_100k"
-    )
-  )
-  setorderv(
-    cause_panel,
-    c("year", "sex", "age_years", "race_eth", "educ2", "cause")
-  )
-
-  cause_panel[]
-}
-
-# ICD-10 cause_15 split, with cause_6 derived from it. Every level is taken
+# The cause_atom split, with cause_6 derived from it. Every level is taken
 # directly from its share.
-split_completed_deaths_cause_6_15 <- function(completed_dt, cause_6_15_counts) {
-  share_cols <- paste0("share__", CAUSE_15_LEVELS)
+split_completed_deaths_cause_atom <- function(completed_dt, cause_atom_counts) {
+  share_cols <- paste0("share__", CAUSE_ATOM_LEVELS)
   target_dt <- assign_cause_shares(
     completed_dt = completed_dt,
-    cause_counts = cause_6_15_counts,
-    cause_col = "cause_15",
-    cause_levels = CAUSE_15_LEVELS,
+    cause_counts = cause_atom_counts,
+    cause_col = "cause_atom",
+    cause_levels = CAUSE_ATOM_LEVELS,
     share_cols = share_cols
   )
 
-  cause_6_15_panel <- rbindlist(
+  cause_atom_panel <- rbindlist(
     lapply(
-      CAUSE_15_LEVELS,
+      CAUSE_ATOM_LEVELS,
       function(cause_level) {
         share_col <- paste0("share__", cause_level)
         cause_dt <- copy(target_dt)
         cause_dt[
           ,
           `:=`(
-            cause_15 = cause_level,
-            cause_6 = classify_cause_6_from_cause_15(cause_level),
+            cause_atom = cause_level,
+            cause_6 = classify_cause_6_from_cause_atom(cause_level),
             cause_share = get(share_col),
             n_deaths_cause = n_deaths * get(share_col)
           )
@@ -377,25 +222,25 @@ split_completed_deaths_cause_6_15 <- function(completed_dt, cause_6_15_counts) {
     fill = TRUE
   )
 
-  cause_6_15_panel[
+  cause_atom_panel[
     ,
     `:=`(
       n_deaths_all_cause = n_deaths,
       n_deaths = n_deaths_cause,
-      rate_definition = "cause_6_15",
+      rate_definition = "cause_atom",
       mortality_rate_per_100k = 1e5 * n_deaths_cause / n_pop_weighted
     )
   ]
 
-  cause_6_15_panel[
+  cause_atom_panel[
     ,
     c("completed_cell_id", share_cols, "n_deaths_cause") := NULL
   ]
 
   setcolorder(
-    cause_6_15_panel,
+    cause_atom_panel,
     c(
-      "rate_definition", "cause_15", "cause_6",
+      "rate_definition", "cause_atom", "cause_6",
       "year", "sex", "age_years", "race_eth", "educ2",
       "n_deaths", "n_deaths_all_cause", "cause_share",
       "cause_share_source", "n_pop_unweighted", "n_pop_weighted",
@@ -403,35 +248,28 @@ split_completed_deaths_cause_6_15 <- function(completed_dt, cause_6_15_counts) {
     )
   )
   setorderv(
-    cause_6_15_panel,
-    c("year", "sex", "age_years", "race_eth", "educ2", "cause_15")
+    cause_atom_panel,
+    c("year", "sex", "age_years", "race_eth", "educ2", "cause_atom")
   )
 
-  cause_6_15_panel[]
+  cause_atom_panel[]
 }
 
 # ---- Split the all-cause panel by cause ----
 
 all_cause_panel <- readRDS(all_cause_input_path)
-completed_mortality <- prepare_all_cause_panel(
-  all_cause_panel, paste0("share__", CAUSE_LEVELS)
-)
-completed_mortality_cause_6_15 <- prepare_all_cause_panel(
-  all_cause_panel, paste0("share__", CAUSE_15_LEVELS)
+completed_mortality_cause_atom <- prepare_all_cause_panel(
+  all_cause_panel, paste0("share__", CAUSE_ATOM_LEVELS)
 )
 rm(all_cause_panel)
 
 death_main_panel <- readRDS(death_input_path)
-cause_counts <- build_direct_cause_counts(death_main_panel)
-cause_6_15_counts <- build_direct_cause_6_15_counts(death_main_panel)
+cause_atom_counts <- build_direct_cause_atom_counts(death_main_panel)
 rm(death_main_panel)
 gc()
 
-cause_6_15_panel <- split_completed_deaths_cause_6_15(completed_mortality_cause_6_15, cause_6_15_counts)
+cause_atom_panel <- split_completed_deaths_cause_atom(completed_mortality_cause_atom, cause_atom_counts)
 
-flag3_panel <- split_completed_deaths(completed_mortality, cause_counts)
+# ---- Write the cause rate panel ----
 
-# ---- Cause-specific panels ----
-
-saveRDS(cause_6_15_panel, cause_6_15_output_rds_path)
-saveRDS(flag3_panel, flag3_output_rds_path)
+saveRDS(cause_atom_panel, cause_atom_output_rds_path)

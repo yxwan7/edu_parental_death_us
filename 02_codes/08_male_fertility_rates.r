@@ -1,8 +1,9 @@
 # ==============================================================================
-# 08_male_fertility_proxy.r
+# 08_male_fertility_rates.r
 #
-# Build the HFC-anchored male fertility proxy and its S1/S2 sensitivity panels
-# from father-age-standardized education TFRs.
+# Build male fertility rates and their S1/S2 sensitivity panels: race-specific
+# age-specific rates from resident births by father age over ACS male exposure,
+# split by father-age-standardized education TFRs.
 # ==============================================================================
 
 # ---- Packages ----
@@ -12,21 +13,21 @@ suppressPackageStartupMessages({
   library(here)
 })
 
-here::i_am("02_codes/08_male_fertility_proxy.r")
+here::i_am("02_codes/08_male_fertility_rates.r")
 
 source(here::here("02_codes", "00_functions.r"))
 
 # ---- Shared age definitions ----
 
 # The reproductive age spans and the father-age band width are shared with the
-# support gate in 13, so they are defined once in 00_functions.r.
+# support gate in uncertainty/01_replicate_weights.r, so they are defined once
+# in 00_functions.r.
 
 # ---- Fertility proxy files ----
 
 rate_dir <- here("01_data", "02_processed", "rate")
 dir.create(rate_dir, recursive = TRUE, showWarnings = FALSE)
 
-hfc_input_path <- here("01_data", "01_raw", "external", "hfc", "m_ASFR_USA.txt")
 female_panel_path <- file.path(rate_dir, "03_education_fertility_rate_panel.rds")
 birth_input_path <- here("01_data", "02_processed", "births", "01_birth_main_panel.rds")
 pop_input_path <- here("01_data", "02_processed", "population", "01_pop_main_panel.rds")
@@ -176,28 +177,11 @@ build_female_components <- function(fertility_panel) {
     )
   ]
 
-  female_national_age <- dt[
-    ,
-    .(
-      births = sum(n_births, na.rm = TRUE),
-      model_births = sum(model_births, na.rm = TRUE),
-      women = sum(n_women_weighted, na.rm = TRUE)
-    ),
-    by = .(year, age_years)
-  ]
-  female_national_age[, female_national_asfr := fifelse(women > 0, model_births / women, 0)]
-  female_national_tfr <- female_national_age[
-    ,
-    .(female_national_tfr = sum(female_national_asfr)),
-    by = .(year)
-  ]
-
   list(
     female_ratio_age = female_ratio_age,
     female_ratio_modeled = build_smoothed_female_ratio(female_ratio_age),
     female_total_tfr_by_race = female_total_tfr_by_race,
     female_educ_tfr_share = female_educ_tfr_share,
-    female_national_tfr = female_national_tfr,
     fertility_rate_input_col = fertility_rate_input_col,
     fertility_input_stabilized_rows = dt[small_cell_stabilized_flag == TRUE, .N],
     fertility_input_model_birth_delta = dt[
@@ -266,152 +250,6 @@ build_smoothed_female_ratio <- function(female_ratio_age) {
     female_ratio_modeled := 1
   ]
   out[order(year, race_eth, educ2, age_years)]
-}
-
-build_hfc_male_total <- function(hfc_path, female_national_tfr) {
-  hfc_dt <- fread(hfc_path)
-  setnames(hfc_dt, tolower(names(hfc_dt)))
-  male_direct <- hfc_dt[
-    year %in% 2000:2015 & age %in% AGES_MALE_REPRO,
-    .(
-      year = as.integer(year),
-      age_years = as.integer(age),
-      male_total_asfr = as.numeric(asfr)
-    )
-  ][order(year, age_years)]
-
-  male_direct_tfr <- male_direct[
-    ,
-    .(male_total_tfr = sum(male_total_asfr)),
-    by = .(year)
-  ]
-
-  female_national_2015 <- female_national_tfr[year %in% 2000:2015]
-  ratio_obs <- merge(
-    male_direct_tfr,
-    female_national_2015,
-    by = "year",
-    all.x = TRUE,
-    sort = TRUE
-  )
-  ratio_obs[
-    ,
-    national_male_female_tfr_ratio := fifelse(
-      female_national_tfr > 0,
-      male_total_tfr / female_national_tfr,
-      NA_real_
-    )
-  ]
-
-  ratio_fit <- stats::lm(
-    national_male_female_tfr_ratio ~ year,
-    data = ratio_obs[year %in% 2010:2015]
-  )
-  ratio_forecast <- data.table(
-    year = 2016:2024,
-    national_male_female_tfr_ratio = as.numeric(
-      predict(ratio_fit, newdata = data.frame(year = 2016:2024))
-    )
-  )
-  ratio_forecast[
-    ,
-    national_male_female_tfr_ratio := pmax(national_male_female_tfr_ratio, 0.01)
-  ]
-
-  male_forecast_raw <- male_direct[
-    year %in% 2010:2015 & male_total_asfr > 0,
-    {
-      dt <- .SD[order(year)]
-      if (.N >= 2L) {
-        pred <- exp(
-          predict(
-            stats::lm(log(male_total_asfr) ~ year, data = dt),
-            newdata = data.frame(year = 2016:2024)
-          )
-        )
-      } else if (.N == 1L) {
-        pred <- rep(dt$male_total_asfr[1L], length(2016:2024))
-      } else {
-        pred <- rep(0, length(2016:2024))
-      }
-
-      data.table(year = 2016:2024, male_total_asfr_raw = as.numeric(pred))
-    },
-    by = .(age_years)
-  ]
-
-  male_forecast_grid <- CJ(
-    year = 2016:2024,
-    age_years = AGES_MALE_REPRO,
-    unique = TRUE
-  )
-  male_forecast_raw <- male_forecast_raw[
-    male_forecast_grid,
-    on = .(year, age_years)
-  ]
-  male_forecast_raw[
-    is.na(male_total_asfr_raw) | !is.finite(male_total_asfr_raw),
-    male_total_asfr_raw := 0
-  ]
-  male_forecast_raw[
-    ,
-    male_total_asfr_std := if (sum(male_total_asfr_raw) > 0) {
-      male_total_asfr_raw / sum(male_total_asfr_raw)
-    } else {
-      rep(0, .N)
-    },
-    by = .(year)
-  ]
-
-  extended_total <- merge(
-    female_national_tfr[year %in% 2016:2024],
-    ratio_forecast,
-    by = "year",
-    all.x = TRUE,
-    sort = TRUE
-  )[
-    ,
-    .(
-      year,
-      male_total_tfr = female_national_tfr * national_male_female_tfr_ratio
-    )
-  ]
-
-  male_extended <- merge(
-    male_forecast_raw,
-    extended_total,
-    by = "year",
-    all.x = TRUE,
-    sort = FALSE
-  )[
-    ,
-    .(
-      year,
-      age_years,
-      male_total_asfr = male_total_tfr * male_total_asfr_std
-    )
-  ]
-
-  ratio_all <- rbindlist(
-    list(
-      ratio_obs[, .(year, national_male_female_tfr_ratio)],
-      ratio_forecast
-    ),
-    use.names = TRUE
-  )[order(year)]
-
-  male_total_all <- rbindlist(
-    list(
-      male_direct[, .(year, age_years, male_total_asfr)],
-      male_extended
-    ),
-    use.names = TRUE
-  )[order(year, age_years)]
-
-  list(
-    male_total_all = male_total_all,
-    ratio_all = ratio_all
-  )
 }
 
 allocate_missing_father_education <- function(
@@ -544,6 +382,79 @@ allocate_missing_father_education <- function(
   )
 }
 
+# Spread births with the father's age missing over the conditional distribution
+# of the parental age gap, estimated on births where both ages are reported.
+# Cells with too few donors fall back to the same race pooled over years, then to
+# all races pooled over years. Allocated births outside the male reproductive
+# span are dropped, as reported ones are.
+allocate_missing_father_age <- function(birth_main_panel, min_donor = 200) {
+  births <- as.data.table(birth_main_panel)[
+    resident_birth_flag %in% TRUE & year %in% YEARS_MODEL,
+    .(
+      year = as.integer(year),
+      race_eth = fifelse(is.na(father_race_eth), mother_race_eth, father_race_eth),
+      mother_age_years = as.integer(mother_age_years),
+      father_age_years = as.integer(father_age_years),
+      n_births = as.numeric(n_births)
+    )
+  ][race_eth %chin% RACES_R3]
+
+  observed <- births[
+    !is.na(father_age_years) & !is.na(mother_age_years),
+    .(n_births = sum(n_births)),
+    by = .(year, race_eth, mother_age_years, gap = father_age_years - mother_age_years)
+  ]
+  gap_by_year <- copy(observed)[
+    , share := n_births / sum(n_births), by = .(year, race_eth, mother_age_years)
+  ]
+  gap_by_race <- observed[
+    , .(n_births = sum(n_births)), by = .(race_eth, mother_age_years, gap)
+  ][, share := n_births / sum(n_births), by = .(race_eth, mother_age_years)]
+  gap_pooled <- observed[
+    , .(n_births = sum(n_births)), by = .(mother_age_years, gap)
+  ][, share := n_births / sum(n_births), by = .(mother_age_years)]
+
+  donor_by_year <- observed[
+    , .(n_births = sum(n_births)), by = .(year, race_eth, mother_age_years)
+  ][n_births >= min_donor, .(year, race_eth, mother_age_years)]
+  donor_by_race <- observed[
+    , .(n_births = sum(n_births)), by = .(race_eth, mother_age_years)
+  ][n_births >= min_donor, .(race_eth, mother_age_years)]
+
+  missing <- births[
+    is.na(father_age_years) & !is.na(mother_age_years),
+    .(n_missing = sum(n_births)), by = .(year, race_eth, mother_age_years)
+  ]
+  tier_year <- missing[donor_by_year, on = .(year, race_eth, mother_age_years), nomatch = 0]
+  remainder <- missing[!donor_by_year, on = .(year, race_eth, mother_age_years)]
+  tier_race <- remainder[donor_by_race, on = .(race_eth, mother_age_years), nomatch = 0]
+  tier_pooled <- remainder[!donor_by_race, on = .(race_eth, mother_age_years)]
+
+  spread <- function(tier, gaps, keys) {
+    merge(tier, gaps, by = keys, allow.cartesian = TRUE)[
+      , .(year, race_eth,
+          age_years = mother_age_years + gap,
+          n_births = n_missing * share)
+    ]
+  }
+  allocated <- rbind(
+    spread(tier_year, gap_by_year[, .(year, race_eth, mother_age_years, gap, share)],
+           c("year", "race_eth", "mother_age_years")),
+    spread(tier_race, gap_by_race[, .(race_eth, mother_age_years, gap, share)],
+           c("race_eth", "mother_age_years")),
+    spread(tier_pooled, gap_pooled[, .(mother_age_years, gap, share)],
+           "mother_age_years")
+  )
+
+  rbind(
+    births[!is.na(father_age_years), .(year, race_eth, age_years = father_age_years, n_births)],
+    allocated
+  )[
+    age_years %in% AGES_MALE_REPRO,
+    .(n_births = sum(n_births)), by = .(year, race_eth, age_years)
+  ]
+}
+
 build_male_educ_share <- function(
     birth_main_panel,
     female_share,
@@ -572,20 +483,20 @@ build_male_educ_share <- function(
     )
   ]
 
-  # Use births from years with sufficiently complete father education.
+  # Births from years with sufficiently complete father education. Where father
+  # race is not stated (14-20% of births) the record takes the mother's group.
+  # Fathers reported outside the three modelled groups stay out of scope.
   father_births <- as.data.table(birth_main_panel)[
-    resident_birth_flag %in% TRUE &
-      year %in% father_observed_years &
-      father_race_eth %chin% RACES_R3,
+    resident_birth_flag %in% TRUE & year %in% father_observed_years,
     .(
       year = as.integer(year),
-      race_eth = father_race_eth,
+      race_eth = fifelse(is.na(father_race_eth), mother_race_eth, father_race_eth),
       father_educ = normalize_educ2(father_educ2),
       mother_educ = normalize_educ2(mother_educ2),
       father_age_years = as.integer(father_age_years),
       n_births = as.numeric(n_births)
     )
-  ]
+  ][race_eth %chin% RACES_R3]
   father_births[!father_educ %chin% EDUC_LEVELS, father_educ := NA_character_]
   father_births[!mother_educ %chin% EDUC_LEVELS, mother_educ := "Unknown"]
 
@@ -600,7 +511,8 @@ build_male_educ_share <- function(
       missing_by_mother = missing_by_mother,
       missing_ba_odds_ratio = missing_ba_odds_ratio
     )
-    # Preserve the frozen MAR summation order.
+    # The MAR case is recomputed here rather than taken from the allocator
+    # above, keeping its original summation order.
     if (missing_ba_odds_ratio == 1) {
       father_educ_share_by_mother <- reported[
         ,
@@ -645,12 +557,9 @@ build_male_educ_share <- function(
     father_education_result <- NULL
   }
 
-  # Age structure of each education group's fertility, in 5-year father-age bands,
-  # taken from births with the father's age reported (15-59). Father age is missing
-  # on the same records as father education, so this assumes the reported-age
-  # structure represents the group (MAR on father age within year x race x
-  # education); it is weakest for Hispanic, where father reporting is least
-  # complete. This is the single simplifying assumption of the age standardization.
+  # Age structure of each education group's fertility, in 5-year father-age
+  # bands, from births with the father's age reported (15-59). Assumes MAR on
+  # father age within year x race x education.
   father_age_share_year <- reported[
     !is.na(father_age_years) & father_age_years %in% AGES_MALE_REPRO,
     .(n_births = sum(n_births)),
@@ -664,8 +573,7 @@ build_male_educ_share <- function(
   ][
     , age_share := n_births / sum(n_births), by = .(year, race_eth, educ2)
   ]
-  # Father age is 100% missing in 2012-2013 (a natality-file artifact), and some
-  # otherwise observed cells omit an isolated age band. Fall back at the band
+  # Some otherwise observed cells omit an isolated age band. Fall back at the band
   # level to the (race, education) structure pooled over all father-observed years,
   # then renormalize each year-race-education cell to sum to 1.
   father_age_share_pooled <- reported[
@@ -694,9 +602,9 @@ build_male_educ_share <- function(
   father_age_share[, age_share := fifelse(is.na(year_share), pooled_share, year_share)]
   father_age_share[, age_share := age_share / sum(age_share), by = .(year, race_eth, educ2)]
 
-  # Each education group's fertility as its TFR relative to the race pooled TFR:
-  # spread births over father-age bands, divide by age-matched male exposure for
-  # band ASFRs, and sum. Both TFRs are age-composition invariant.
+  # Each education group's fertility as its TFR relative to the race pooled
+  # TFR: spread births over father-age bands, divide by age-matched male
+  # exposure for band ASFRs, and sum.
   observed_age <- merge(
     completed_births[, .(year, race_eth, educ2, n_births_educ = n_births)],
     father_age_share[, .(year, race_eth, educ2, ageg, age_share)],
@@ -711,9 +619,7 @@ build_male_educ_share <- function(
   )
   observed_age[, asfr := fifelse(n_men > 0, n_births / n_men, 0)]
 
-  # The 5-year band width cancels in the education/pooled ratio;
-  # kept explicit so educ_tfr and pooled_tfr are genuine TFRs (for naming and any
-  # absolute checks).
+  # The band width is kept explicit so both columns are genuine TFRs.
   educ_tfr <- observed_age[
     , .(educ_tfr = FATHER_AGE_BAND_WIDTH * sum(asfr)),
     by = .(year, race_eth, educ2)
@@ -741,12 +647,8 @@ build_male_educ_share <- function(
   ]
 
   # The run-up (pre-2010) has almost no reported father education, so the male
-  # level cannot be observed there. Carry it back from the earliest observed
-  # anchor years, scaled by how each run-up year's observed female relative level
-  # departs from its own anchor. This preserves the year-specific female trend and
-  # assumes only that the male-to-female level ratio is stable across the bridge;
-  # it is continuous at the father-observed boundary. Relatives are centered on 1,
-  # so no renormalization is needed.
+  # level is carried back from the earliest observed anchor years, scaled by how
+  # each run-up year's observed female relative level departs from its anchor.
   male_anchor <- observed_level[
     year %in% anchor_years,
     .(male_anchor = mean(male_educ_rel)), by = .(race_eth, educ2)
@@ -782,10 +684,55 @@ build_male_educ_share <- function(
   )
 }
 
-# Assemble a full male proxy panel from a given education-level share. Everything
-# except educ_share is shared across legs, so swapping educ_share isolates the
-# education-gradient assumption.
-assemble_male_proxy <- function(female_components, hfc_components, educ_share,
+# Observed male level: age-specific rates built directly from resident births by
+# father age over ACS male exposure, by race, with no smoothing, so the implied
+# births reproduce the registered ones exactly. Missing father age is spread over
+# the conditional distribution of the parental age gap (see
+# allocate_missing_father_age). The ratio column is a diagnostic, not an input.
+observed_male_level <- function(birth_main_panel, pop_path, female_components) {
+  births <- allocate_missing_father_age(birth_main_panel)
+  population <- as.data.table(readRDS(pop_path))
+  male_exposure <- population[
+    sex == "male" &
+      race_eth %chin% RACES_R3 &
+      age_years %in% AGES_MALE_REPRO &
+      year %in% YEARS_MODEL,
+    .(n_men = sum(as.numeric(n_persons_weighted))),
+    by = .(year, race_eth, age_years)
+  ]
+
+  male_level <- merge(
+    male_exposure, births,
+    by = c("year", "race_eth", "age_years"),
+    all.x = TRUE,
+    sort = FALSE
+  )
+  male_level[is.na(n_births), n_births := 0]
+  male_level[, male_total_asfr := fifelse(n_men > 0, n_births / n_men, 0)]
+  male_level[, male_total_tfr_race := sum(male_total_asfr), by = .(year, race_eth)]
+
+  male_level <- merge(
+    male_level,
+    female_components$female_total_tfr_by_race[race_eth %chin% RACES_R3],
+    by = c("year", "race_eth"),
+    sort = FALSE
+  )
+  male_level[
+    ,
+    male_female_tfr_ratio := fifelse(
+      female_total_tfr > 0, male_total_tfr_race / female_total_tfr, NA_real_
+    )
+  ]
+  male_level[
+    ,
+    .(year, race_eth, age_years, male_total_asfr,
+      male_female_tfr_ratio, male_total_tfr_race)
+  ]
+}
+
+# Assemble a full male proxy panel from a male level table and an education-level
+# share. The S1 and S2 legs hold male_level fixed and swap educ_share.
+assemble_male_proxy <- function(female_components, male_level, educ_share,
                                 proxy_definition_tag) {
   male_proxy_age <- merge(
     female_components$female_ratio_modeled[
@@ -799,8 +746,8 @@ assemble_male_proxy <- function(female_components, hfc_components, educ_share,
         female_ratio_modeled
       )
     ],
-    hfc_components$male_total_all,
-    by = c("year", "age_years"),
+    male_level,
+    by = c("year", "race_eth", "age_years"),
     all.x = TRUE,
     sort = FALSE
   )
@@ -844,19 +791,9 @@ assemble_male_proxy <- function(female_components, hfc_components, educ_share,
     all.x = TRUE,
     sort = FALSE
   )
-  male_proxy_age <- merge(
-    male_proxy_age,
-    hfc_components$ratio_all,
-    by = "year",
-    all.x = TRUE,
-    sort = FALSE
-  )
   male_proxy_age[
     ,
-    `:=`(
-      male_total_tfr_race = female_total_tfr * national_male_female_tfr_ratio,
-      male_educ_tfr = female_total_tfr * national_male_female_tfr_ratio * male_educ_tfr_share
-    )
+    male_educ_tfr := male_total_tfr_race * male_educ_tfr_share
   ]
   male_proxy_age[
     ,
@@ -885,7 +822,7 @@ assemble_male_proxy <- function(female_components, hfc_components, educ_share,
         female_total_tfr,
         female_educ_tfr_share,
         male_educ_tfr_share,
-        national_male_female_tfr_ratio,
+        male_female_tfr_ratio,
         male_total_tfr_race,
         male_educ_tfr
       )
@@ -901,7 +838,7 @@ assemble_male_proxy <- function(female_components, hfc_components, educ_share,
   proxy_full[
     ,
     `:=`(
-      rate_definition = "male_hfc_proxy",
+      rate_definition = "male_proxy",
       proxy_definition = proxy_definition_tag,
       fertility_rate_per_1000 = asfr_male_proxy * 1000,
       fx = asfr_male_proxy
@@ -924,7 +861,7 @@ assemble_male_proxy <- function(female_components, hfc_components, educ_share,
       "female_total_tfr",
       "female_educ_tfr_share",
       "male_educ_tfr_share",
-      "national_male_female_tfr_ratio",
+      "male_female_tfr_ratio",
       "male_total_tfr_race",
       "male_educ_tfr"
     )
@@ -932,21 +869,18 @@ assemble_male_proxy <- function(female_components, hfc_components, educ_share,
   proxy_full[]
 }
 
-# ---- Build HFC-anchored male proxy ----
+# ---- Build male fertility rates ----
 
-# The proxy anchors the age shape on the HFC national male ASFR and sets the
-# education level from father-observed births; the female fertility panel (07)
-# still supplies the education age offset, the race TFR level, and the run-up
-# bridge trend.
+# Rates are built from resident births by father age over ACS male exposure, by
+# race, and split by the education level estimated from father-observed births.
+# The female fertility panel (07) supplies the education age offset and the
+# run-up bridge trend.
 
 female_panel <- readRDS(female_panel_path)
 birth_main_panel <- readRDS(birth_input_path)
 
 female_components <- build_female_components(female_panel)
-hfc_components <- build_hfc_male_total(
-  hfc_path = hfc_input_path,
-  female_national_tfr = female_components$female_national_tfr
-)
+male_level <- observed_male_level(birth_main_panel, pop_input_path, female_components)
 
 primary_result <- build_male_educ_share(
   birth_main_panel = birth_main_panel,
@@ -999,11 +933,11 @@ if (run_sensitivity_outputs) {
 }
 
 proxy_definition_primary <-
-  "hfc_male_age_shape_x_father_observed_imputed_educ_share_2010_2024_anchor_trend_bridge_prior"
+  "observed_race_specific_male_rates_x_father_observed_imputed_educ_share"
 
 proxy_full <- assemble_male_proxy(
   female_components,
-  hfc_components,
+  male_level,
   male_educ_level,
   proxy_definition_primary
 )
@@ -1023,27 +957,27 @@ if (run_sensitivity_outputs) {
   sensitivity_variants <- list(
     list(
       share = female_borrow_share,
-      tag = "hfc_male_age_shape_x_female_borrowed_educ_share_s1_upper",
+      tag = "observed_male_rates_x_female_borrowed_educ_share_s1",
       path = s1_female_borrow_path
     ),
     list(
       share = zero_gradient_share,
-      tag = "hfc_male_age_shape_x_education_neutral_educ_share_s1_zero",
+      tag = "observed_male_rates_x_education_neutral_educ_share_s1_zero",
       path = s1_zero_gradient_path
     ),
     list(
       share = complete_case_share,
-      tag = "hfc_male_age_shape_x_father_observed_reported_educ_share_complete_case",
+      tag = "observed_male_rates_x_father_reported_educ_share_complete_case",
       path = s2_complete_case_path
     ),
     list(
       share = all_noba_result$male_educ_level,
-      tag = "hfc_male_age_shape_x_father_educ_share_s2_mnar_all_noba",
+      tag = "observed_male_rates_x_father_educ_share_s2_mnar_all_noba",
       path = s2_all_noba_path
     ),
     list(
       share = all_ba_result$male_educ_level,
-      tag = "hfc_male_age_shape_x_father_educ_share_s2_mnar_all_ba",
+      tag = "observed_male_rates_x_father_educ_share_s2_mnar_all_ba",
       path = s2_all_ba_path
     )
   )
@@ -1051,7 +985,7 @@ if (run_sensitivity_outputs) {
   for (variant in sensitivity_variants) {
     panel <- assemble_male_proxy(
       female_components,
-      hfc_components,
+      male_level,
       variant$share,
       variant$tag
     )[

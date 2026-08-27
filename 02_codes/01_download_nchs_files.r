@@ -27,7 +27,7 @@ retry_sleep_seconds <- 2L
 use_inventory_fallback <- TRUE
 validate_downloads <- TRUE
 
-# NCHS public-use zips can be large, so raise R's default download timeout.
+# Raise R's download timeout for the large NCHS zips.
 options(timeout = max(600, getOption("timeout")))
 
 # ---- Download directories ----
@@ -521,7 +521,7 @@ download_nchs_files <- function(
 # ---- Build the download inventory ----
 
 # Settings can be overridden per run via environment variables; the inventory is
-# rebuilt from the live portal each run so new years appear without hard-coding.
+# rebuilt from the live portal each run.
 start_year <- get_env_integer(
   var_name = "NCHS_DOWNLOAD_START_YEAR",
   default_value = start_year

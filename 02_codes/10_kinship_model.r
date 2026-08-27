@@ -19,7 +19,7 @@ source(here::here("02_codes", "00_functions.r"))
 
 # ---- DemoKin definitions ----
 
-MALE_FERTILITY_RATE_DEFINITION <- "male_hfc_proxy"
+MALE_FERTILITY_RATE_DEFINITION <- "male_proxy"
 FOCAL_SEXES <- c("female", "male")
 ALLOWED_PARENT_SEX <- c("female", "male")
 FEMALE_REPRO_AGES <- 10:54
@@ -59,7 +59,7 @@ male_fertility_proxy_input_path <- file.path(
 population_input_path <- file.path(population_dir, "01_pop_main_panel.rds")
 
 exposure_pooled_output_path <- file.path(
-  parent_loss_dir, "02_education_parent_alive_exposure_pooled.rds"
+  parent_loss_dir, "01_education_parent_alive_exposure_pooled.rds"
 )
 
 # ---- DemoKin input preparation ----

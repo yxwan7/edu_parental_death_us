@@ -113,7 +113,7 @@ do_smoke() {
   m="${verb_args[1]:-$default_m}"
   root="$(run_path "$id")"
 
-  submit="sbatch --parsable --job-name=$id --output=$root/logs/smoke_%j.out --error=$root/logs/smoke_%j.err 02_codes/hpc/submit_smoke_draw.sh"
+  submit="sbatch --parsable --job-name=$id --output=$root/logs/smoke_%j.out --error=$root/logs/smoke_%j.err 02_codes/uncertainty/hpc/submit_smoke_draw.sh"
 
   command="mkdir -p $root/logs $root/accounting"
   command="$command && $(batch_exports "$id" smoke "$m")"
@@ -140,8 +140,8 @@ do_draws() {
     echo "The draw range must satisfy 1 <= START <= END <= M." >&2
     exit 1
   fi
-  if (( concurrency > 40 )); then
-    echo "CONCURRENCY cannot exceed 40 concurrent array tasks." >&2
+  if (( concurrency > 80 )); then
+    echo "CONCURRENCY cannot exceed 80 concurrent array tasks." >&2
     exit 1
   fi
 
@@ -150,9 +150,9 @@ do_draws() {
 
   command="mkdir -p $root/logs $root/accounting"
   command="$command && $(batch_exports "$id" random "$m")"
-  command="$command && prepare_job=\$(sbatch --parsable --job-name=prep_$id --output=$root/logs/prepare_%j.out --error=$root/logs/prepare_%j.err 02_codes/hpc/submit_prepare_batch.sh)"
+  command="$command && prepare_job=\$(sbatch --parsable --job-name=prep_$id --output=$root/logs/prepare_%j.out --error=$root/logs/prepare_%j.err 02_codes/uncertainty/hpc/submit_prepare_batch.sh)"
   command="$command && prepare_job=\${prepare_job%%;*}"
-  command="$command && array_job=\$(sbatch --parsable --dependency=afterok:\$prepare_job --job-name=draw_$id --array=$array_spec --output=$root/logs/draw_%A_%a.out --error=$root/logs/draw_%A_%a.err 02_codes/hpc/submit_draw_array.sh)"
+  command="$command && array_job=\$(sbatch --parsable --dependency=afterok:\$prepare_job --job-name=draw_$id --array=$array_spec --output=$root/logs/draw_%A_%a.out --error=$root/logs/draw_%A_%a.err 02_codes/uncertainty/hpc/submit_draw_array.sh)"
   command="$command && array_job=\${array_job%%;*}"
   command="$command && echo prepare job \$prepare_job, array job \$array_job"
   command="$command && squeue -u \$USER"
@@ -191,7 +191,7 @@ do_fetch() {
 
 usage() {
   cat <<'USAGE'
-usage: 02_codes/hpc/run_batch.sh <command> [args] [--dry-run]
+usage: 02_codes/uncertainty/hpc/run_batch.sh <command> [args] [--dry-run]
 
 Sync the project directory to HPC before submitting jobs.
 
