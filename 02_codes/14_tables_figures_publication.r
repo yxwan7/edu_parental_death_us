@@ -643,7 +643,7 @@ table1_numeric[, row_label := factor(
   levels = table1_row_levels
 )]
 table1_numeric[, parent_order := match(parent_type, PARENT_TYPE_LEVELS)]
-table1_numeric[, race_order := match(race_eth, RACES_R3)]
+table1_numeric[, race_order := match(race_eth, names(PUBLICATION_RACE_LABELS))]
 table1_numeric[, period_order := match(period, table1_period_levels)]
 setorder(table1_numeric, parent_order, race_order, row_label, period_order)
 
@@ -729,7 +729,7 @@ write_publication_panel_table_tex(
   second_column_label = "Parental education",
   year_columns = table1_period_levels,
   panel_levels = unname(PUBLICATION_PANEL_LABELS[PARENT_TYPE_LEVELS]),
-  race_levels = unname(PUBLICATION_RACE_LABELS[RACES_R3]),
+  race_levels = unname(PUBLICATION_RACE_LABELS),
   row_levels = table1_row_levels,
   bold_rows = "Total",
   vertically_center_rows = "Total",
@@ -743,7 +743,8 @@ write_publication_panel_table_tex(
     "replicates taking the 2.5th and 97.5th percentiles. No BA and BA or ",
     "higher rows are the percentages of each total attributed to the ",
     "corresponding parental education group, and percentages may not sum ",
-    "to 100 because of rounding."
+    "to 100 because of rounding. All groups rows pool the three racial and ",
+    "ethnic groups, with the pooling applied within each replicate."
   )
 )
 

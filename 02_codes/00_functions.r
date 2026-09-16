@@ -745,7 +745,8 @@ MAIN_TEXT_PERIOD_LABEL <- "2010-2024"
 
 # Row and panel headings shared by the two figure scripts.
 PUBLICATION_RACE_LABELS <- c(
-  white = "NH White", black = "NH Black", hispanic = "Hispanic"
+  all = "All groups", white = "NH White", black = "NH Black",
+  hispanic = "Hispanic"
 )
 PUBLICATION_PANEL_LABELS <- c(
   mother = "Panel A: maternal death",
@@ -758,6 +759,16 @@ build_bereaved_children_number_table <- function(incidence_total_dt) {
       parent_educ2 %chin% c("Total", "No_BA", "BA_plus"),
     .(year, race_eth, parent_type, parent_educ2, n_children_losing_parent)
   ]
+
+  # The main text quotes counts and shares for the three groups combined, so
+  # the pooled rows are carried in the table alongside the group-specific ones.
+  # Pooling before the share is taken gives the combined share directly, and in
+  # the uncertainty pipeline it happens inside each draw.
+  pooled <- dt[, .(
+    n_children_losing_parent = sum(n_children_losing_parent)
+  ), by = .(year, parent_type, parent_educ2)]
+  pooled[, race_eth := "all"]
+  dt <- rbindlist(list(dt, pooled), use.names = TRUE)
 
   annual <- dt[year %in% MAIN_TEXT_KEY_YEARS, .(
     period = as.character(year), race_eth, parent_type, parent_educ2,

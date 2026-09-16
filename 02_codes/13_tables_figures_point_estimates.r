@@ -167,7 +167,7 @@ table1[, csv_value := fcase(
 )]
 table1[, `:=`(
   parent_order = match(parent_type, PARENT_TYPE_LEVELS),
-  race_order = match(race_eth, RACES_R3)
+  race_order = match(race_eth, names(PUBLICATION_RACE_LABELS))
 )]
 
 table1_csv <- dcast(
