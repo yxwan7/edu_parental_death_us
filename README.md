@@ -4,7 +4,7 @@ Quantify the burden of children experiencing parental death by parental educatio
 ## Repository layout
 
 ```
-01_data/        inputs and derived panels; not distributed, see "Data" below
+01_data/        inputs and derived panels; see "Data" below
 02_codes/       run in numeric order, from the repository root
 ├── 00_functions.r                 shared definitions and helpers
 ├── 01_download_nchs_files.r
@@ -34,7 +34,9 @@ Quantify the burden of children experiencing parental death by parental educatio
 ## Data
 
 The inputs are public but not redistributed here. Place each at the path shown
-and the scripts will find it.
+and the scripts will find it. `01_data/02_processed/` keeps only the aggregated
+panels and estimates read from `10_kinship_model.r` onward, including the
+interval bundle of the reported batch (`draws/ui_20260827/final`).
 
 ```
 01_data/01_raw/

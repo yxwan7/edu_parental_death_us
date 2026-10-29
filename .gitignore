@@ -12,15 +12,23 @@ Desktop.ini
 .Ruserdata
 .Renviron
 
-# Data are not distributed with this repository. Raw files are obtained as
-# described in README.md; everything under 02_processed/ is rebuilt by the
-# scripts in 02_codes/.
+# Raw files are not distributed with this repository; they are obtained as
+# described in README.md. Under 02_processed/ only the aggregated panels and
+# estimates needed from 10_kinship_model.r onward are kept.
 /01_data/01_raw/**
 !/01_data/01_raw/
 !/01_data/01_raw/.gitkeep
 /01_data/02_processed/**
-!/01_data/02_processed/
+!/01_data/02_processed/**/
 !/01_data/02_processed/.gitkeep
+!/01_data/02_processed/rate/*.rds
+!/01_data/02_processed/population/0[1-3]_*.rds
+!/01_data/02_processed/edu_parent_loss/0[12]_*.rds
+!/01_data/02_processed/edu_parent_loss/point_estimate_*_total.rds
+!/01_data/02_processed/edu_parent_loss/point_estimate_*_cause6.rds
+!/01_data/02_processed/edu_parent_loss/sensitivity/*/02_*.rds
+!/01_data/02_processed/draws/ui_20260827/*.rds
+!/01_data/02_processed/draws/ui_20260827/final/*.rds
 /manuscript
 
 # Logs and temporary files
