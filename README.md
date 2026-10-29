@@ -1,5 +1,5 @@
-Quantify the burden of children experiencing parental death by parental education in the United States, 2010-2024
-=================================================================================================================
+US children of parents without a bachelor's degree experience parental death at higher rates and younger ages
+=============================================================================================================
 
 ## Repository layout
 
