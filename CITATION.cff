@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use this code or data, please cite it as below."
+title: "US children of parents without a bachelor's degree experience parental death at higher rates and younger ages"
+authors:
+  - family-names: Wan
+    given-names: Yunxiang
+    affiliation: "London School of Hygiene and Tropical Medicine"
+  - family-names: Zagheni
+    given-names: Emilio
+    affiliation: "Max Planck Institute for Demographic Research"
+  - family-names: Aburto
+    given-names: José Manuel
+    affiliation: "London School of Hygiene and Tropical Medicine"
+license: MIT
+repository-code: "https://github.com/yxwan7/edu_parental_death_us"
